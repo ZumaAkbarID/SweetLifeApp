@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.amikom.sweetlife"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.amikom.sweetlife"
@@ -66,4 +66,7 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    // SplashScreen
+    implementation(libs.androidx.core.splashscreen)
 }
