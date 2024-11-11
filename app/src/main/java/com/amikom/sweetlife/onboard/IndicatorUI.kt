@@ -21,8 +21,8 @@ import androidx.compose.ui.unit.dp
 fun IndicatorUI(
     pageSize: Int,
     currentPage: Int,
-    selectedColor: Color = MaterialTheme.colorScheme.secondary,
-    unselectedColor: Color = MaterialTheme.colorScheme.secondaryContainer
+    selectedColor: Color = MaterialTheme.colorScheme.primary,
+    unselectedColor: Color = MaterialTheme.colorScheme.secondary
 ) {
 
     Row (
@@ -38,7 +38,7 @@ fun IndicatorUI(
                         width = if(it == currentPage) 80.dp else 26.dp
                     )
                     .clip(
-                        RoundedCornerShape(10.dp)
+                        RoundedCornerShape(19.dp)
                     )
                     .background(
                         color = if(it == currentPage) selectedColor else unselectedColor
