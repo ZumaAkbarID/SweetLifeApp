@@ -34,7 +34,7 @@ val Typography = Typography(
         fontFamily = poppinsFontFamily,
         fontWeight = FontWeight.Bold,
         fontSize = 24.sp,
-        lineHeight = 28.sp,
+        lineHeight = 30.sp,
         letterSpacing = 0.sp
     ),
     bodySmall = TextStyle(
@@ -47,6 +47,7 @@ val Typography = Typography(
         fontWeight = FontWeight.Normal,
         fontSize = 14.sp
     ),
+
     /*
     labelSmall = TextStyle(
         fontFamily = FontFamily.Default,
