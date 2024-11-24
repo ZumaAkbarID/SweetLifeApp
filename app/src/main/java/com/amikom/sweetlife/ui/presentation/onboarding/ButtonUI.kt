@@ -1,6 +1,5 @@
-package com.amikom.sweetlife.onboard
+package com.amikom.sweetlife.ui.presentation.onboarding
 
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -21,7 +20,7 @@ import com.amikom.sweetlife.R
 
 @Composable
 fun ButtonUI(
-    text: String = "Next",
+    text: String = "Continue",
     isNext: Boolean = false,
     backgroundColor: Color = MaterialTheme.colorScheme.primary,
     textColor: Color = MaterialTheme.colorScheme.onPrimary,
@@ -54,7 +53,7 @@ fun ButtonUI(
 @Preview()
 @Composable
 fun NextButton() {
-    ButtonUI(text = "Next") {
+    ButtonUI(text = "Continue") {
 
     }
 }
@@ -63,7 +62,7 @@ fun NextButton() {
 @Composable
 fun BackButton() {
     ButtonUI(
-        text = "Back",
+        text = "Continue",
         backgroundColor = Color.DarkGray,
         textColor = Color.LightGray,
         textStyle = MaterialTheme.typography.bodySmall,

@@ -1,10 +1,11 @@
-package com.amikom.sweetlife.onboard
+package com.amikom.sweetlife.ui.presentation.onboarding
 
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
@@ -22,13 +23,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun OnBoardingScreen(
-    onFinished: () -> Unit
+fun OnBoardingUI(
+    event: (OnBoardingEvent) -> Unit
 ) {
 
     val pages: List<OnboardingModel> = listOf(
@@ -44,8 +46,8 @@ fun OnBoardingScreen(
     val buttonState: State<List<String>> = remember {
         derivedStateOf {
             when(pagerState.currentPage) {
-                0 -> listOf("", "Next")
-                1 -> listOf("Back", "Next")
+                0 -> listOf("", "Continue")
+                1 -> listOf("Back", "Continue")
                 2 -> listOf("Back", "Start")
                 else -> listOf("", "")
             }
@@ -70,7 +72,7 @@ fun OnBoardingScreen(
         bottomBar = {
         Row(
             modifier = Modifier.fillMaxWidth()
-                .padding(10.dp, 10.dp),
+                .padding(16.dp, 24.dp),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -112,7 +114,7 @@ fun OnBoardingScreen(
                         if(pagerState.currentPage < pages.size - 1) {
                             pagerState.animateScrollToPage(pagerState.currentPage + 1)
                         } else {
-                            onFinished()
+                            event(OnBoardingEvent.SaveAppEntry)
                         }
                     }
                 }
@@ -122,18 +124,22 @@ fun OnBoardingScreen(
         content = {
             Column(Modifier.padding(it)) {
                 HorizontalPager(state = pagerState) { index ->
-                    OnboardingGraphUI(onboardingModel = pages[index])
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        OnboardingGraphUI(onboardingModel = pages[index])
+                    }
                 }
             }
         }
     )
-
 }
 
-@Preview(showBackground = true)
 @Composable
-fun OnboardingScreenPreview() {
-    OnBoardingScreen() {
-
-    }
+fun OnBoardingScreen(
+    event: (OnBoardingEvent) -> Unit
+) {
+    // Logic Onboarding
+    OnBoardingUI(event)
 }

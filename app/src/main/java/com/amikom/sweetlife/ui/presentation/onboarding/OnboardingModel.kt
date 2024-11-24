@@ -1,4 +1,4 @@
-package com.amikom.sweetlife.onboard
+package com.amikom.sweetlife.ui.presentation.onboarding
 
 import androidx.annotation.DrawableRes
 import com.amikom.sweetlife.R

@@ -1,4 +1,4 @@
-package com.amikom.sweetlife.onboard
+package com.amikom.sweetlife.ui.presentation.onboarding
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
@@ -12,11 +12,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 
 @Composable
 fun OnboardingGraphUI(onboardingModel: OnboardingModel) {
@@ -56,7 +54,7 @@ fun OnboardingGraphUI(onboardingModel: OnboardingModel) {
             contentDescription = "OnBoardingImage",
             modifier = Modifier.fillMaxWidth()
                 .padding(20.dp, 0.dp)
-                .size(350.dp),
+                .size(250.dp),
             alignment = Alignment.Center
         )
 
