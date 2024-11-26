@@ -26,6 +26,10 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        // API BASE URL
+        buildConfigField("String", "BASE_URL_DEV", "\"https://api.sweetlife.my.id/\"")
+        buildConfigField("String", "BASE_URL_PROD", "\"https://api.sweetlife.my.id/\"")
     }
 
     buildTypes {
@@ -46,6 +50,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.13"
@@ -90,6 +95,18 @@ dependencies {
     implementation(libs.androidx.hilt.navigation.compose)
     implementation(libs.hilt.android)
     kapt(libs.dagger.hilt.android.compiler)
+
+    // Ui Controller
+    implementation(libs.accompanist.systemuicontroller)
+
+    // Retrofit Api Communication
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
+    implementation(libs.logging.interceptor)
+
+    // Compose LiveData
+    implementation(libs.androidx.runtime.livedata)
+    implementation(libs.androidx.runtime)
 }
 
 kapt {

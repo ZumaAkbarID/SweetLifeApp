@@ -1,4 +1,4 @@
-package com.amikom.sweetlife.ui.presentation.nvgraph
+package com.amikom.sweetlife.domain.nvgraph
 
 import kotlinx.serialization.Serializable
 
@@ -9,4 +9,7 @@ sealed class Route {
 
     @Serializable
     data object OnboardingScreen : Route()
+
+    @Serializable
+    data object LoginScreen : Route()
 }

@@ -17,19 +17,19 @@ class LocalUserManagerImpl(
 ) : LocalUserManager {
     override suspend fun saveAppEntry() {
         context.dataStore.edit { settings ->
-            settings[PreferencesKeys.APP_ENTRY] = true
+            settings[UserSettingsKeys.APP_ENTRY] = true
         }
     }
 
     override fun readAppEntry(): Flow<Boolean> {
         return context.dataStore.data.map { preferences ->
-            preferences[PreferencesKeys.APP_ENTRY] ?: false
+            preferences[UserSettingsKeys.APP_ENTRY] ?: false
         }
     }
 }
 
 private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = USER_SETTINGS)
 
-private object PreferencesKeys {
+private object UserSettingsKeys {
     val APP_ENTRY = booleanPreferencesKey(name =  Constants.APP_ENTRY)
 }
