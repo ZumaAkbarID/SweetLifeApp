@@ -72,6 +72,7 @@ dependencies {
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
+    implementation(libs.androidx.runtime.livedata)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -82,6 +83,22 @@ dependencies {
 
     // SplashScreen
     implementation(libs.androidx.core.splashscreen)
+    implementation(libs.androidx.navigation.compose)
+
+    //coil
+    implementation("io.coil-kt:coil-compose:2.2.2")
+
+
+    // Navigation Compose
+    implementation(libs.androidx.navigation.compose)
+    implementation(libs.kotlinx.serialization.json)
+    implementation ("androidx.compose.material3:material3:1.3.1")
+    implementation("androidx.navigation:navigation-compose:2.8.4")
+
+    //gson
+    implementation("com.google.code.gson:gson:2.10.1")
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.8.7")
+
 
     // Navigation Compose
     implementation(libs.androidx.navigation.compose)
@@ -93,8 +110,15 @@ dependencies {
 
     // Hilt
     implementation(libs.androidx.hilt.navigation.compose)
+    implementation ("androidx.hilt:hilt-navigation-fragment:1.2.0")
+    implementation ("com.google.dagger:hilt-android:2.51.1")
+    kapt ("com.google.dagger:hilt-compiler:2.51.1")
     implementation(libs.hilt.android)
     kapt(libs.dagger.hilt.android.compiler)
+
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.1")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
+
 
     // Ui Controller
     implementation(libs.accompanist.systemuicontroller)
