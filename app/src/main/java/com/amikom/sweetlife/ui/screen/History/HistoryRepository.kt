@@ -1,8 +1,9 @@
 package com.amikom.sweetlife.ui.screen.History
 
 import kotlinx.coroutines.delay
+import javax.inject.Inject
 
-class HistoryRepository {
+class HistoryRepository @Inject constructor() {
     suspend fun fetchEntries(): List<EntriesItem> {
         return fetchHistory().data?.foodLogs.orEmpty()
             .flatMap { it?.entries.orEmpty().filterNotNull() }
@@ -29,7 +30,7 @@ class HistoryRepository {
                                 editable = false,
                                 icon = Icon(
                                     backgroundColor = "#FF0000",
-                                    url = "https://www.example.com/icon.png"
+                                    url = "https://icons8.com/icon/qRqBSN5tASTC/taco"
                                 ),
                                 id = "1",
                                 calories = 100,

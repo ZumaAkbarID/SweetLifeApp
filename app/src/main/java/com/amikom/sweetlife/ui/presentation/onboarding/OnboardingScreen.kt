@@ -25,7 +25,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
-import com.amikom.sweetlife.ui.presentation.nvgraph.Route
+import com.amikom.sweetlife.domain.nvgraph.Route
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 

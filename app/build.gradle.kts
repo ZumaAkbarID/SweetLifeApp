@@ -110,12 +110,15 @@ dependencies {
 
     // Hilt
     implementation(libs.androidx.hilt.navigation.compose)
-    implementation ("androidx.hilt:hilt-lifecycle-viewmodel:1.0.0-alpha03")
     implementation ("androidx.hilt:hilt-navigation-fragment:1.2.0")
     implementation ("com.google.dagger:hilt-android:2.51.1")
     kapt ("com.google.dagger:hilt-compiler:2.51.1")
     implementation(libs.hilt.android)
     kapt(libs.dagger.hilt.android.compiler)
+
+    implementation("androidx.lifecycle:lifecycle-livedata-ktx:2.6.1")
+    implementation("androidx.lifecycle:lifecycle-viewmodel-ktx:2.6.1")
+
 
     // Ui Controller
     implementation(libs.accompanist.systemuicontroller)
