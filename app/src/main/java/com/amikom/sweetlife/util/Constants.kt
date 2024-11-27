@@ -7,6 +7,8 @@ object Constants {
 
     const val LOCAL_USER_INFO = "localUserInfo"
 
+    const val API_VERSION = "/api/v1/"
+
     const val USER_EMAIL = "userEmail"
     const val USER_NAME = "userName"
     const val USER_GENDER = "userGender"

@@ -15,7 +15,9 @@ import com.amikom.sweetlife.domain.usecases.app_entry.SaveAppEntry
 import com.amikom.sweetlife.domain.usecases.auth.LoginAction
 import com.amikom.sweetlife.domain.usecases.auth.AuthUseCases
 import com.amikom.sweetlife.domain.usecases.auth.CheckIsUserLogin
+import com.amikom.sweetlife.domain.usecases.auth.ForgotUserPassword
 import com.amikom.sweetlife.domain.usecases.auth.ReadUserAllToken
+import com.amikom.sweetlife.domain.usecases.auth.RegisterAction
 import com.amikom.sweetlife.domain.usecases.auth.SaveUserInfoLogin
 import com.amikom.sweetlife.util.AppExecutors
 import dagger.Module
@@ -96,10 +98,12 @@ object AppModule {
         localAuthUserManager: LocalAuthUserManager
     ) : AuthUseCases {
         return AuthUseCases(
-            login = LoginAction(authRepository),
+            login = LoginAction(authRepository = authRepository),
             checkIsUserLogin = CheckIsUserLogin(localAuthUserManager = localAuthUserManager),
             saveUserInfoLogin = SaveUserInfoLogin(localAuthUserManager = localAuthUserManager),
-            readUserAllToken = ReadUserAllToken(localAuthUserManager = localAuthUserManager)
+            readUserAllToken = ReadUserAllToken(localAuthUserManager = localAuthUserManager),
+            register = RegisterAction(authRepository = authRepository),
+            forgotPassword = ForgotUserPassword(authRepository = authRepository)
         )
     }
 
