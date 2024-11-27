@@ -24,6 +24,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
+import com.amikom.sweetlife.ui.presentation.nvgraph.Route
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
@@ -45,7 +47,7 @@ fun OnBoardingUI(
 
     val buttonState: State<List<String>> = remember {
         derivedStateOf {
-            when(pagerState.currentPage) {
+            when (pagerState.currentPage) {
                 0 -> listOf("", "Continue")
                 1 -> listOf("Back", "Continue")
                 2 -> listOf("Back", "Start")
@@ -59,7 +61,8 @@ fun OnBoardingUI(
     Scaffold(
         topBar = {
             Row(
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth()
                     .padding(16.dp, 32.dp, 16.dp, 27.dp),
                 horizontalArrangement = Arrangement.Start
             ) {
@@ -70,57 +73,58 @@ fun OnBoardingUI(
             }
         },
         bottomBar = {
-        Row(
-            modifier = Modifier.fillMaxWidth()
-                .padding(16.dp, 24.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            
-            Box(
-                modifier = Modifier.weight(1f),
-                contentAlignment = Alignment.CenterStart
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp, 24.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                if(buttonState.value[0].isNotEmpty()) {
-                    ButtonUI (
-                        text = buttonState.value[0],
-                        backgroundColor = Color.Transparent,
-                        textColor = Color.Gray
+
+                Box(
+                    modifier = Modifier.weight(1f),
+                    contentAlignment = Alignment.CenterStart
+                ) {
+                    if (buttonState.value[0].isNotEmpty()) {
+                        ButtonUI(
+                            text = buttonState.value[0],
+                            backgroundColor = Color.Transparent,
+                            textColor = Color.Gray
                         ) {
+                            scope.launch {
+                                if (pagerState.currentPage > 0) {
+                                    pagerState.animateScrollToPage(pagerState.currentPage - 1)
+                                }
+                            }
+                        }
+                    }
+                }
+
+                Box(
+                    modifier = Modifier.weight(1f)
+                )
+
+                Box(
+                    modifier = Modifier.weight(1f),
+                    contentAlignment = Alignment.CenterEnd,
+                ) {
+                    ButtonUI(
+                        text = buttonState.value[1],
+                        isNext = true,
+                        backgroundColor = MaterialTheme.colorScheme.primary,
+                        textColor = MaterialTheme.colorScheme.onPrimary
+                    ) {
                         scope.launch {
-                            if(pagerState.currentPage > 0) {
-                                pagerState.animateScrollToPage(pagerState.currentPage - 1)
+                            if (pagerState.currentPage < pages.size - 1) {
+                                pagerState.animateScrollToPage(pagerState.currentPage + 1)
+                            } else {
+                                event(OnBoardingEvent.SaveAppEntry)
                             }
                         }
                     }
                 }
             }
-
-            Box(
-                modifier = Modifier.weight(1f)
-            )
-
-            Box(
-                modifier = Modifier.weight(1f),
-                contentAlignment = Alignment.CenterEnd,
-            ) {
-                ButtonUI(
-                    text = buttonState.value[1],
-                    isNext = true,
-                    backgroundColor = MaterialTheme.colorScheme.primary,
-                    textColor = MaterialTheme.colorScheme.onPrimary
-                ) {
-                    scope.launch {
-                        if(pagerState.currentPage < pages.size - 1) {
-                            pagerState.animateScrollToPage(pagerState.currentPage + 1)
-                        } else {
-                            event(OnBoardingEvent.SaveAppEntry)
-                        }
-                    }
-                }
-            }
-        }
-    },
+        },
         content = {
             Column(Modifier.padding(it)) {
                 HorizontalPager(state = pagerState) { index ->
@@ -138,8 +142,17 @@ fun OnBoardingUI(
 
 @Composable
 fun OnBoardingScreen(
-    event: (OnBoardingEvent) -> Unit
+    event: (OnBoardingEvent) -> Unit,
+    navController: NavController
 ) {
     // Logic Onboarding
-    OnBoardingUI(event)
+    OnBoardingUI { event ->
+        when (event) {
+            OnBoardingEvent.SaveAppEntry -> {
+                navController.navigate(Route.LoginScreen) {
+                    popUpTo(Route.OnboardingScreen) { inclusive = true }
+                }
+            }
+        }
+    }
 }

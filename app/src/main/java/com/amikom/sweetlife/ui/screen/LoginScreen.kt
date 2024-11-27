@@ -1,9 +1,11 @@
 package com.amikom.sweetlife.ui.screen
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -28,6 +30,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import com.amikom.sweetlife.ui.presentation.nvgraph.Route
 import com.amikom.sweetlife.ui.theme.MainBlue
 
 
@@ -35,7 +39,7 @@ import com.amikom.sweetlife.ui.theme.MainBlue
 fun LoginScreen() {
     Column(
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxSize()
             .padding(16.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -43,7 +47,6 @@ fun LoginScreen() {
         Row() {
             Text(
                 text = "Login To ",
-                color = Color.Black,
                 fontWeight = FontWeight.SemiBold,
                 style = MaterialTheme.typography.titleLarge
             )
@@ -107,7 +110,8 @@ fun LoginScreen() {
 
         // Sign Up Button
         Button(
-            onClick = { },
+            onClick = {
+            },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 16.dp)
@@ -166,7 +170,15 @@ fun LoginScreen() {
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
+@Composable
+fun LoginScreen(
+    navController: NavController,
+) {
+
+}
+
+
+@Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
     LoginScreen()

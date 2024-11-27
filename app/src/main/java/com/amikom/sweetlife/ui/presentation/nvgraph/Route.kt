@@ -9,4 +9,17 @@ sealed class Route {
 
     @Serializable
     data object OnboardingScreen : Route()
+
+    @Serializable
+    data object LoginScreen : Route()
+
+    @Serializable
+    data object AssesmentScreen : Route()
+
+    @Serializable
+    data class ProfileScreen(val id: Int) : Route()
+
+    @Serializable
+    data class HistoryScreen(val id: Int) : Route()
+
 }

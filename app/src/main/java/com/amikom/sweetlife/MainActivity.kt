@@ -12,9 +12,12 @@ import androidx.compose.ui.Modifier
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.amikom.sweetlife.ui.presentation.nvgraph.NavGraph
+import com.amikom.sweetlife.ui.presentation.nvgraph.Route
 import com.amikom.sweetlife.ui.presentation.onboarding.OnBoardingViewModel
 import com.amikom.sweetlife.ui.theme.SweetLifeTheme
 import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.HiltAndroidApp
+
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -33,7 +36,7 @@ class MainActivity : ComponentActivity() {
             SweetLifeTheme {
                 Box(modifier = Modifier.background(color = MaterialTheme.colorScheme.background)) {
                     val startDestination = viewModel.startDestination
-                    NavGraph(startDestination = startDestination)
+                    NavGraph(startDestination = Route.HistoryScreen)
                 }
             }
         }

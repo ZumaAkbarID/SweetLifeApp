@@ -3,6 +3,7 @@ package com.amikom.sweetlife.ui.screen
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -33,7 +34,7 @@ import com.amikom.sweetlife.ui.theme.MainBlue
 fun CheckEmailScreen() {
     Column(
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxSize()
             .padding(16.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -75,7 +76,7 @@ fun CheckEmailScreen() {
     }
 
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun CheckEmailScreenPreview() {
     CheckEmailScreen()
