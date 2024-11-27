@@ -1,4 +1,4 @@
-package com.amikom.sweetlife.data.remote.dto
+package com.amikom.sweetlife.data.remote.dto.register
 
 import com.google.gson.annotations.SerializedName
 

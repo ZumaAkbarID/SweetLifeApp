@@ -45,7 +45,6 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
@@ -223,7 +222,7 @@ fun LoginScreen(
             colors = ButtonDefaults.buttonColors(
                 containerColor = MainBlue
             ),
-            enabled = loginResult !is Result.Loading // Menonaktifkan tombol saat loading
+            enabled = loginResult !is Result.Loading
         ) {
             if (loginResult is Result.Loading) {
                 CircularProgressIndicator(
@@ -330,7 +329,7 @@ fun LoginScreen(
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.clickable {
                     navController.navigate(Route.SignUpScreen) {
-                        popUpTo(Route.SignUpScreen) { inclusive = true }
+                        popUpTo<Route.SignUpScreen> { inclusive = false }
                     }
                 }
             )
@@ -341,7 +340,9 @@ fun LoginScreen(
             fontWeight = FontWeight.SemiBold,
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.clickable {
-                // Navigate to Forgot Password Screen
+                navController.navigate(Route.ForgotPasswordScreen) {
+                    popUpTo<Route.ForgotPasswordScreen> { inclusive = false }
+                }
             })
     }
 
@@ -352,7 +353,7 @@ fun LoginScreen(
 
     LaunchedEffect(isUserLoggedIn) {
         if (isUserLoggedIn) {
-            navController.navigate(Route.HomeScreen) {
+            navController.navigate(Route.LoginScreen) {
                 popUpTo<Route.HomeScreen> { inclusive = true }
                 launchSingleTop = true
             }

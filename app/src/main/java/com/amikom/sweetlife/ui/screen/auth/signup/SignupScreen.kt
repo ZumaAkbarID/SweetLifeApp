@@ -1,6 +1,5 @@
 package com.amikom.sweetlife.ui.screen.auth.signup
 
-import android.util.Log
 import android.util.Patterns
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -35,7 +34,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -55,8 +53,6 @@ fun SignupScreen(
     navController: NavHostController,
     event: (SignUpEvent) -> Unit
 ) {
-    val context = LocalContext.current
-
     val signUpResult by viewModel.signUpResult.collectAsState()
     val isUserLoggedIn by viewModel.isUserLoggedIn.collectAsState()
 
@@ -271,7 +267,7 @@ fun SignupScreen(
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.clickable {
                     navController.navigate(Route.LoginScreen) {
-                        popUpTo<Route.LoginScreen> { inclusive = true }
+                        popUpTo<Route.LoginScreen> { inclusive = false }
                     }
                 }
             )
@@ -286,7 +282,7 @@ fun SignupScreen(
                     message = "Congratulations! now you can login"
                     buttons = listOf(
                         "Ok" to {
-                            navController.navigate(Route.LoginScreen) {
+                            navController.navigate(Route.SignUpScreen) {
                                 popUpTo<Route.LoginScreen> { inclusive = true }
                             }
 
@@ -352,7 +348,7 @@ fun SignupScreen(
 
     LaunchedEffect(isUserLoggedIn) {
         if (isUserLoggedIn) {
-            navController.navigate(Route.HomeScreen) {
+            navController.navigate(Route.SignUpScreen) {
                 popUpTo<Route.HomeScreen> { inclusive = true }
                 launchSingleTop = true
             }

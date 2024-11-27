@@ -2,16 +2,17 @@ package com.amikom.sweetlife.data.remote.repository
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
+import com.amikom.sweetlife.data.model.ForgotPasswordModel
 import com.amikom.sweetlife.data.model.UserModel
 import com.amikom.sweetlife.data.remote.Result
 import com.amikom.sweetlife.data.remote.dto.ErrorResponse
+import com.amikom.sweetlife.data.remote.json_request.ForgotPasswordRequest
 import com.amikom.sweetlife.data.remote.json_request.LoginRequest
 import com.amikom.sweetlife.data.remote.json_request.RegisterRequest
 import com.amikom.sweetlife.data.remote.retrofit.AuthApiService
 import com.amikom.sweetlife.domain.repository.AuthRepository
 import com.amikom.sweetlife.util.AppExecutors
 import com.google.gson.Gson
-import kotlinx.coroutines.flow.Flow
 
 class AuthRepositoryImpl(
     private val authApiService: AuthApiService,
@@ -111,8 +112,51 @@ class AuthRepositoryImpl(
         TODO("Not yet implemented")
     }
 
-    override suspend fun forgotPassword(email: String) {
-        TODO("Not yet implemented")
+    override suspend fun forgotPassword(email: String) : LiveData<Result<ForgotPasswordModel>> {
+        val result = MediatorLiveData<Result<ForgotPasswordModel>>()
+        result.value = Result.Loading
+
+        try {
+            // Create request
+            val forgotPasswordRequest = ForgotPasswordRequest(email = email)
+
+            // Perform API call
+            val response = authApiService.forgotPassword(forgotPasswordRequest)
+
+            if (response.isSuccessful) {
+                // Parse response body
+                val registerStatus = response.body()?.status ?: false
+                val messageBody = response.body()?.message ?: "Server Error"
+
+                if(registerStatus && messageBody == "action success") {
+                    val forgotPasswordModelResult = ForgotPasswordModel(
+                        email = response.body()?.data?.email ?: "",
+                        expire = response.body()?.data?.expire ?: "",
+                    )
+
+                    // Update result on main thread
+                    appExecutors.mainThread.execute {
+                        result.value = Result.Success(forgotPasswordModelResult)
+                    }
+                } else {
+                    throw Exception(messageBody)
+                }
+            } else {
+                // Handle error response
+                val errorBody = Gson().fromJson(response.errorBody()?.string(), ErrorResponse::class.java)
+                val message = errorBody?.error ?: response.message()
+                appExecutors.mainThread.execute {
+                    result.value = Result.Error(message)
+                }
+            }
+        } catch (e: Exception) {
+            // Handle exceptions
+            appExecutors.mainThread.execute {
+                result.value = e.message?.let { Result.Error(it) }
+            }
+        }
+
+        return result
     }
 
     override suspend fun logout() {

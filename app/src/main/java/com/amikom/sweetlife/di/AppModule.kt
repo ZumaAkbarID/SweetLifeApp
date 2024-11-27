@@ -15,6 +15,7 @@ import com.amikom.sweetlife.domain.usecases.app_entry.SaveAppEntry
 import com.amikom.sweetlife.domain.usecases.auth.LoginAction
 import com.amikom.sweetlife.domain.usecases.auth.AuthUseCases
 import com.amikom.sweetlife.domain.usecases.auth.CheckIsUserLogin
+import com.amikom.sweetlife.domain.usecases.auth.ForgotUserPassword
 import com.amikom.sweetlife.domain.usecases.auth.ReadUserAllToken
 import com.amikom.sweetlife.domain.usecases.auth.RegisterAction
 import com.amikom.sweetlife.domain.usecases.auth.SaveUserInfoLogin
@@ -101,7 +102,8 @@ object AppModule {
             checkIsUserLogin = CheckIsUserLogin(localAuthUserManager = localAuthUserManager),
             saveUserInfoLogin = SaveUserInfoLogin(localAuthUserManager = localAuthUserManager),
             readUserAllToken = ReadUserAllToken(localAuthUserManager = localAuthUserManager),
-            register = RegisterAction(authRepository = authRepository)
+            register = RegisterAction(authRepository = authRepository),
+            forgotPassword = ForgotUserPassword(authRepository = authRepository)
         )
     }
 

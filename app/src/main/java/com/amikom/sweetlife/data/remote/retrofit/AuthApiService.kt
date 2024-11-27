@@ -1,7 +1,9 @@
 package com.amikom.sweetlife.data.remote.retrofit
 
-import com.amikom.sweetlife.data.remote.dto.LoginResponse
-import com.amikom.sweetlife.data.remote.dto.RegisterResponse
+import com.amikom.sweetlife.data.remote.dto.forgot_password.ForgotPasswordResponse
+import com.amikom.sweetlife.data.remote.dto.login.LoginResponse
+import com.amikom.sweetlife.data.remote.dto.register.RegisterResponse
+import com.amikom.sweetlife.data.remote.json_request.ForgotPasswordRequest
 import com.amikom.sweetlife.data.remote.json_request.LoginRequest
 import com.amikom.sweetlife.data.remote.json_request.RegisterRequest
 import com.amikom.sweetlife.util.Constants
@@ -24,5 +26,12 @@ interface AuthApiService {
         @Body request: RegisterRequest
 
     ) : Response<RegisterResponse>
+
+    @POST("${Constants.API_VERSION}auth/forgot-password")
+    suspend fun forgotPassword(
+
+        @Body request: ForgotPasswordRequest
+
+    ) : Response<ForgotPasswordResponse>
 
 }

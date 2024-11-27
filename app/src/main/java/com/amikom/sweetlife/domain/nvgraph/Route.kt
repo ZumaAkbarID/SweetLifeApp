@@ -15,4 +15,7 @@ sealed class Route {
 
     @Serializable
     data object SignUpScreen : Route()
+
+    @Serializable
+    data object ForgotPasswordScreen: Route()
 }

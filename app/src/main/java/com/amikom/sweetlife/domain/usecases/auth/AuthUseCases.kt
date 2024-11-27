@@ -6,5 +6,7 @@ data class AuthUseCases(
     val readUserAllToken: ReadUserAllToken,
     val saveUserInfoLogin: SaveUserInfoLogin,
 
-    val register: RegisterAction
+    val register: RegisterAction,
+
+    val forgotPassword: ForgotUserPassword
 )
