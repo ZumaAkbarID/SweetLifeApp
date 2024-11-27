@@ -1,0 +1,15 @@
+package com.amikom.sweetlife.domain.nvgraph
+
+import kotlinx.serialization.Serializable
+
+sealed class Route {
+
+    @Serializable
+    data object HomeScreen : Route()
+
+    @Serializable
+    data object OnboardingScreen : Route()
+
+    @Serializable
+    data object LoginScreen : Route()
+}

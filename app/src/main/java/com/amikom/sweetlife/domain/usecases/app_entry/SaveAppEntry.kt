@@ -1,4 +1,4 @@
-package com.amikom.sweetlife.domain.usecases
+package com.amikom.sweetlife.domain.usecases.app_entry
 
 import com.amikom.sweetlife.domain.manager.LocalUserManager
 

@@ -6,18 +6,17 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.runtime.SideEffect
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.hilt.navigation.compose.hiltViewModel
-import com.amikom.sweetlife.ui.presentation.nvgraph.NavGraph
-import com.amikom.sweetlife.ui.presentation.nvgraph.Route
-import com.amikom.sweetlife.ui.presentation.onboarding.OnBoardingViewModel
+import com.amikom.sweetlife.domain.nvgraph.NavGraph
 import com.amikom.sweetlife.ui.theme.SweetLifeTheme
+import com.google.accompanist.systemuicontroller.rememberSystemUiController
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.HiltAndroidApp
-
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
@@ -30,13 +29,26 @@ class MainActivity : ComponentActivity() {
                 viewModel.splashCondition
             }
         }
-        enableEdgeToEdge()
+
+        enableEdgeToEdge() // Udah di handle sama ini
 
         setContent {
             SweetLifeTheme {
+
+//                Jangan dipake deprecated anjer
+//                val isSystemInDarkMode = isSystemInDarkTheme()
+//                val systemController = rememberSystemUiController()
+//
+//                SideEffect {
+//                    systemController.setSystemBarsColor(
+//                        color = Color.Transparent,
+//                        darkIcons = !isSystemInDarkMode
+//                    )
+//                }
+
                 Box(modifier = Modifier.background(color = MaterialTheme.colorScheme.background)) {
                     val startDestination = viewModel.startDestination
-                    NavGraph(startDestination = Route.HistoryScreen)
+                    NavGraph(startDestination = startDestination)
                 }
             }
         }
