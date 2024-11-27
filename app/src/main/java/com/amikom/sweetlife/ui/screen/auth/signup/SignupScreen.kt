@@ -267,7 +267,7 @@ fun SignupScreen(
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.clickable {
                     navController.navigate(Route.LoginScreen) {
-                        popUpTo<Route.LoginScreen> { inclusive = false }
+                        popUpTo<Route.SignUpScreen> { inclusive = false }
                     }
                 }
             )
@@ -279,11 +279,11 @@ fun SignupScreen(
                     showDialog.value = true
                     icon = R.drawable.baseline_check_circle_outline_24
                     title = "Success!"
-                    message = "Congratulations! now you can login"
+                    message = "Account created!, please verify your email on your mail inbox"
                     buttons = listOf(
                         "Ok" to {
-                            navController.navigate(Route.SignUpScreen) {
-                                popUpTo<Route.LoginScreen> { inclusive = true }
+                            navController.navigate(Route.LoginScreen) {
+                                popUpTo<Route.SignUpScreen> { inclusive = false }
                             }
 
                             showDialog.value = false
@@ -319,6 +319,14 @@ fun SignupScreen(
                         showDialog.value = true
                         message = "Passwords do not match"
                         buttons = listOf("Ok" to { showDialog.value = false })
+                    } else {
+                        showDialog.value = true
+                        icon = R.drawable.baseline_info_outline_24
+                        title = "Something went wrong!"
+                        message = errorMessage
+                        buttons = listOf(
+                            "Ok" to { showDialog.value = false }
+                        )
                     }
                     hasShownError = true
                 }
@@ -348,8 +356,8 @@ fun SignupScreen(
 
     LaunchedEffect(isUserLoggedIn) {
         if (isUserLoggedIn) {
-            navController.navigate(Route.SignUpScreen) {
-                popUpTo<Route.HomeScreen> { inclusive = true }
+            navController.navigate(Route.DashboardScreen) {
+                popUpTo<Route.SignUpScreen> { inclusive = true }
                 launchSingleTop = true
             }
         }

@@ -32,6 +32,7 @@ import kotlinx.coroutines.launch
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun OnBoardingUI(
+    navController: NavController,
     event: (OnBoardingEvent) -> Unit
 ) {
 
@@ -119,6 +120,9 @@ fun OnBoardingUI(
                                 pagerState.animateScrollToPage(pagerState.currentPage + 1)
                             } else {
                                 event(OnBoardingEvent.SaveAppEntry)
+//                                navController.navigate(Route.LoginScreen) {
+//                                    popUpTo(Route.OnboardingScreen) { inclusive = true }
+//                                }
                             }
                         }
                     }
@@ -146,13 +150,5 @@ fun OnBoardingScreen(
     navController: NavController
 ) {
     // Logic Onboarding
-    OnBoardingUI { event ->
-        when (event) {
-            OnBoardingEvent.SaveAppEntry -> {
-                navController.navigate(Route.LoginScreen) {
-                    popUpTo(Route.OnboardingScreen) { inclusive = true }
-                }
-            }
-        }
-    }
+    OnBoardingUI(navController = navController, event = event)
 }

@@ -10,6 +10,8 @@ import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import com.amikom.sweetlife.ui.presentation.onboarding.OnBoardingScreen
 import com.amikom.sweetlife.ui.presentation.onboarding.OnBoardingViewModel
+import com.amikom.sweetlife.ui.screen.Dashboard.DashboardScreen
+import com.amikom.sweetlife.ui.screen.Dashboard.DashboardViewModel
 import com.amikom.sweetlife.ui.screen.auth.forgot_password.ForgotPasswordScreen
 import com.amikom.sweetlife.ui.screen.auth.forgot_password.ForgotPasswordViewModel
 import com.amikom.sweetlife.ui.screen.auth.login.LoginScreen
@@ -27,7 +29,7 @@ fun NavGraph(
     NavHost(navController = navController, startDestination = startDestination) {
         composable<Route.OnboardingScreen> {
             val viewModel: OnBoardingViewModel = hiltViewModel()
-            OnBoardingScreen(event = viewModel::onEvent)
+            OnBoardingScreen(event = viewModel::onEvent, navController = navController)
         }
 
         composable<Route.HomeScreen> {
@@ -47,6 +49,11 @@ fun NavGraph(
         composable<Route.ForgotPasswordScreen> {
             val forgotPasswordViewModel: ForgotPasswordViewModel = hiltViewModel()
             ForgotPasswordScreen(event = forgotPasswordViewModel::onEvent, navController = navController)
+        }
+
+        composable<Route.DashboardScreen> {
+            val dashboardViewModel: DashboardViewModel = hiltViewModel()
+            DashboardScreen(viewModel = dashboardViewModel)
         }
     }
 }

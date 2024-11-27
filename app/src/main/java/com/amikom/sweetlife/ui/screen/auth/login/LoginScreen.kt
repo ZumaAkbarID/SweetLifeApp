@@ -279,7 +279,16 @@ fun LoginScreen(
                         buttons = listOf(
                             "Ok" to { showDialog.value = false }
                         )
+                    } else {
+                        showDialog.value = true
+                        icon = R.drawable.baseline_info_outline_24
+                        title = "Something went wrong!"
+                        message = errorMessage
+                        buttons = listOf(
+                            "Ok" to { showDialog.value = false }
+                        )
                     }
+
                     hasShownError = true
                 }
             }
@@ -330,7 +339,7 @@ fun LoginScreen(
                 style = MaterialTheme.typography.bodyMedium,
                 modifier = Modifier.clickable {
                     navController.navigate(Route.SignUpScreen) {
-                        popUpTo<Route.SignUpScreen> { inclusive = false }
+                        popUpTo<Route.LoginScreen> { inclusive = false }
                     }
                 }
             )
@@ -342,7 +351,7 @@ fun LoginScreen(
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.clickable {
                 navController.navigate(Route.ForgotPasswordScreen) {
-                    popUpTo<Route.ForgotPasswordScreen> { inclusive = false }
+                    popUpTo<Route.LoginScreen> { inclusive = false }
                 }
             })
     }
@@ -354,8 +363,8 @@ fun LoginScreen(
 
     LaunchedEffect(isUserLoggedIn) {
         if (isUserLoggedIn) {
-            navController.navigate(Route.LoginScreen) {
-                popUpTo<Route.HomeScreen> { inclusive = true }
+            navController.navigate(Route.DashboardScreen) {
+                popUpTo<Route.LoginScreen> { inclusive = true }
                 launchSingleTop = true
             }
         }

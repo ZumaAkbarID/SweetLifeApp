@@ -139,6 +139,7 @@ fun CustomDialogUI(
                             Text(
                                 text = buttonText,
                                 fontWeight = FontWeight.Bold,
+                                style = MaterialTheme.typography.bodyMedium,
                                 color = buttonColor,
                                 modifier = Modifier.padding(top = 5.dp, bottom = 5.dp)
                             )

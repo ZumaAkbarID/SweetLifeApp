@@ -46,7 +46,6 @@ import com.amikom.sweetlife.ui.component.CustomDialog
 import com.amikom.sweetlife.ui.theme.MainBlue
 import com.amikom.sweetlife.util.formatDateTime 
 
-@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun ForgotPasswordScreen(
     viewModel: ForgotPasswordViewModel = hiltViewModel(),
@@ -217,7 +216,17 @@ fun ForgotPasswordScreen(
                         buttons = listOf(
                             "Ok" to { showDialog.value = false }
                         )
+                    } else {
+                        showDialog.value = true
+                        icon = R.drawable.baseline_info_outline_24
+                        title = "Something went wrong!"
+                        message = errorMessage
+                        buttons = listOf(
+                            "Ok" to { showDialog.value = false }
+                        )
                     }
+
+
                     hasShownError = true
                 }
             }

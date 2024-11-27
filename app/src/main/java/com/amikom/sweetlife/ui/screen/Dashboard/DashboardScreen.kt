@@ -3,10 +3,12 @@ package com.amikom.sweetlife.ui.screen.Dashboard
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Card
@@ -38,7 +40,12 @@ fun DashboardScreen(viewModel: DashboardViewModel = hiltViewModel()) {
         viewModel.fetchDashboard()
     }
     if (isLoading) {
-        CircularProgressIndicator()
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator()
+        }
     } else {
         dashboardData?.data?.let { data ->
             DashboardScreenUI(data)
@@ -120,12 +127,12 @@ private fun DailyProgressCard(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Text(
-                text = "Your Daily Progress",
+                text = "🧋 Your Daily Progress",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )
             ProgressItem(
-                title = "Calorie",
+                title = "🔥 Calorie",
                 current = calorie.current ?: 0,
                 target = calorie.target ?: 0,
                 percentage = calorie.percentage ?: 0,
@@ -163,7 +170,7 @@ private fun ProgressItem(
         )
     }
     LinearProgressIndicator(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().height(8.dp),
         progress = percentage / 100f,
         //belom tau nilai satisfactionya apa
         color = when (satisfaction) {
