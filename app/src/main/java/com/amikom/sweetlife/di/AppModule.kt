@@ -5,10 +5,13 @@ import com.amikom.sweetlife.BuildConfig
 import com.amikom.sweetlife.data.manager.LocalAuthUserManagerImpl
 import com.amikom.sweetlife.data.manager.LocalUserManagerImpl
 import com.amikom.sweetlife.data.remote.repository.AuthRepositoryImpl
+import com.amikom.sweetlife.data.remote.repository.DashboardRepositoryImpl
 import com.amikom.sweetlife.data.remote.retrofit.AuthApiService
+import com.amikom.sweetlife.data.remote.retrofit.FeatureApiService
 import com.amikom.sweetlife.domain.manager.LocalAuthUserManager
 import com.amikom.sweetlife.domain.manager.LocalUserManager
 import com.amikom.sweetlife.domain.repository.AuthRepository
+import com.amikom.sweetlife.domain.repository.DashboardRepository
 import com.amikom.sweetlife.domain.usecases.app_entry.AppEntryUseCases
 import com.amikom.sweetlife.domain.usecases.app_entry.ReadAppEntry
 import com.amikom.sweetlife.domain.usecases.app_entry.SaveAppEntry
@@ -19,11 +22,15 @@ import com.amikom.sweetlife.domain.usecases.auth.ForgotUserPassword
 import com.amikom.sweetlife.domain.usecases.auth.ReadUserAllToken
 import com.amikom.sweetlife.domain.usecases.auth.RegisterAction
 import com.amikom.sweetlife.domain.usecases.auth.SaveUserInfoLogin
+import com.amikom.sweetlife.domain.usecases.dashboard.DashboardUseCases
+import com.amikom.sweetlife.domain.usecases.dashboard.FetchData
 import com.amikom.sweetlife.util.AppExecutors
+import com.amikom.sweetlife.util.Constants
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -41,10 +48,6 @@ object AppModule {
     } else {
         HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.NONE)
     }
-
-    private val client: OkHttpClient = OkHttpClient.Builder()
-        .addInterceptor(loggingInterceptor)
-        .build()
 
     @Provides
     @Singleton
@@ -72,12 +75,40 @@ object AppModule {
     @Provides
     @Singleton
     fun provideAuthApi() : AuthApiService {
+        val client: OkHttpClient = OkHttpClient.Builder()
+            .addInterceptor(loggingInterceptor)
+            .build()
+
         return Retrofit.Builder()
             .baseUrl(baseUrl)
             .addConverterFactory(GsonConverterFactory.create())
             .client(client)
             .build()
             .create(AuthApiService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideFeatureApi() : FeatureApiService {
+        val authInterceptor = Interceptor { chain ->
+            val req = chain.request()
+            val requestHeaders = req.newBuilder()
+                .addHeader("Authorization", "Bearer ${Constants.CURRENT_TOKEN}")
+                .build()
+            chain.proceed(requestHeaders)
+        }
+
+        val client: OkHttpClient = OkHttpClient.Builder()
+            .addInterceptor(loggingInterceptor)
+            .addInterceptor(authInterceptor)
+            .build()
+
+        return Retrofit.Builder()
+            .baseUrl(baseUrl)
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(client)
+            .build()
+            .create(FeatureApiService::class.java)
     }
 
     @Provides
@@ -93,6 +124,13 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideDashboardRepository(
+        featureApiService: FeatureApiService,
+        appExecutors: AppExecutors
+    ): DashboardRepository = DashboardRepositoryImpl(featureApiService, appExecutors)
+
+    @Provides
+    @Singleton
     fun provideLoginUseCases(
         authRepository: AuthRepository,
         localAuthUserManager: LocalAuthUserManager
@@ -104,6 +142,16 @@ object AppModule {
             readUserAllToken = ReadUserAllToken(localAuthUserManager = localAuthUserManager),
             register = RegisterAction(authRepository = authRepository),
             forgotPassword = ForgotUserPassword(authRepository = authRepository)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideDashboardUseCases(
+        dashboardRepository: DashboardRepository,
+    ) : DashboardUseCases {
+        return DashboardUseCases(
+            fetchData = FetchData(dashboardRepository = dashboardRepository),
         )
     }
 

@@ -1,6 +1,5 @@
-package com.amikom.sweetlife.ui.screen.Dashboard
+package com.amikom.sweetlife.ui.screen.dashboard
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -18,7 +16,6 @@ import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
@@ -26,30 +23,55 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import com.amikom.sweetlife.R
+import com.amikom.sweetlife.data.model.DashboardModel
+import com.amikom.sweetlife.data.model.Data
+import com.amikom.sweetlife.data.model.ProgressDetail
+import com.amikom.sweetlife.data.remote.Result
 
 @Composable
-fun DashboardScreen(viewModel: DashboardViewModel = hiltViewModel()) {
+fun DashboardScreen(
+    viewModel: DashboardViewModel = hiltViewModel(),
+    navController: NavHostController,
+) {
     val dashboardData by viewModel.dashboardData.observeAsState()
-    val isLoading by viewModel.isLoading.observeAsState(false)
 
-    LaunchedEffect(Unit) {
-        viewModel.fetchDashboard()
-    }
-    if (isLoading) {
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator()
+    when (dashboardData) {
+        is Result.Loading -> {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator()
+            }
         }
-    } else {
-        dashboardData?.data?.let { data ->
-            DashboardScreenUI(data)
-        } ?: Text("Failed to load data", style = MaterialTheme.typography.titleLarge)
+
+        is Result.Success -> {
+            val data = (dashboardData as Result.Success<DashboardModel>).data
+            DashboardScreenUI(data.data)
+        }
+
+        is Result.Error -> {
+            Text(
+                text = (dashboardData as Result.Error).error,
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.fillMaxSize().padding(16.dp),
+                textAlign = TextAlign.Center
+            )
+        }
+
+        else -> {
+            Text(
+                text = "Unknown error",
+                style = MaterialTheme.typography.titleLarge,
+                modifier = Modifier.fillMaxSize().padding(16.dp),
+                textAlign = TextAlign.Center
+            )
+        }
     }
 }
 
@@ -66,22 +88,14 @@ fun DashboardScreenUI(data: Data) {
             diabetesType = data.user?.diabetesType.orEmpty()
         )
 
-        if (data.dailyProgress != null) {
-            DailyProgressCard(
-                glucose = data.dailyProgress.glucose ?: Glucose(),
-                calorie = data.dailyProgress.calorie ?: Calorie()
-            )
-        } else {
-            Text("Daily progress data is not available.")
-        }
+        DailyProgressCard(
+            glucose = data.dailyProgress.glucose,
+            calorie = data.dailyProgress.calorie
+        )
 
-        if (data.status != null) {
-            StatusCard(
-                satisfaction = data.status.satisfaction.orEmpty()
-            )
-        } else {
-            Text("Status data is not available.")
-        }
+        StatusCard(
+            satisfaction = data.status.satisfaction
+        )
     }
 }
 
@@ -114,8 +128,8 @@ private fun UserHeader(
 // daily progress
 @Composable
 private fun DailyProgressCard(
-    glucose: Glucose,
-    calorie: Calorie
+    glucose: ProgressDetail,
+    calorie: ProgressDetail
 ) {
     Card(
         modifier = Modifier
@@ -133,17 +147,17 @@ private fun DailyProgressCard(
             )
             ProgressItem(
                 title = "🔥 Calorie",
-                current = calorie.current ?: 0,
-                target = calorie.target ?: 0,
-                percentage = calorie.percentage ?: 0,
-                satisfaction = calorie.satisfaction.orEmpty()
+                current = calorie.current,
+                target = calorie.target,
+                percentage = calorie.percentage.toInt(),
+                satisfaction = calorie.satisfaction
             )
             ProgressItem(
-                title = "Glucose",
-                current = glucose.current ?: 0,
-                target = glucose.target ?: 0,
-                percentage = glucose.percentage ?: 0,
-                satisfaction = glucose.satisfaction.orEmpty()
+                title = "🧋 Glucose",
+                current = glucose.current,
+                target = glucose.target,
+                percentage = glucose.percentage.toInt(),
+                satisfaction = glucose.satisfaction
             )
         }
     }
@@ -174,7 +188,7 @@ private fun ProgressItem(
         progress = percentage / 100f,
         //belom tau nilai satisfactionya apa
         color = when (satisfaction) {
-            "Good" -> Color.Green
+            "UNDER" -> Color.Green
             "Satisfactory" -> Color.Yellow
             else -> Color.Red
         }
@@ -194,42 +208,11 @@ private fun StatusCard(
         painter = painterResource(
             //belom tau nilai satisfac apa
             id = when (satisfaction) {
-                "Stable" -> R.drawable.idle
+                "UNDER" -> R.drawable.idle
                 "Improving" -> R.drawable.gendut
                 else -> R.drawable.kurus
             }
         ),
         contentDescription = "Status Icon",
-    )
-}
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun DashboardScreenPreview() {
-    DashboardScreenUI(
-        data = Data(
-            dailyProgress = DailyProgress(
-                glucose = Glucose(
-                    current = 120,
-                    percentage = 60,
-                    satisfaction = "Stable",
-                    target = 200
-                ),
-                calorie = Calorie(
-                    current = 1500,
-                    percentage = 75,
-                    satisfaction = "Impoving",
-                    target = 2000
-                )
-            ),
-            user = User(
-                name = "John Doe",
-                diabetesType = "Type 3"
-            ),
-            status = Status(
-                satisfaction = "Stable",
-                message = "Keep up the good work"
-            )
-        )
     )
 }
