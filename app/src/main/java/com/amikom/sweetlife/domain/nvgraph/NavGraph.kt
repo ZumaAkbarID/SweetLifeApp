@@ -2,16 +2,13 @@ package com.amikom.sweetlife.domain.nvgraph
 
 import androidx.compose.runtime.Composable
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.navigation.NavDestination
-import androidx.navigation.NavGraph
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import androidx.navigation.compose.navigation
 import androidx.navigation.compose.rememberNavController
 import com.amikom.sweetlife.ui.presentation.onboarding.OnBoardingScreen
 import com.amikom.sweetlife.ui.presentation.onboarding.OnBoardingViewModel
-import com.amikom.sweetlife.ui.screen.Dashboard.DashboardScreen
-import com.amikom.sweetlife.ui.screen.Dashboard.DashboardViewModel
+import com.amikom.sweetlife.ui.screen.dashboard.DashboardScreen
+import com.amikom.sweetlife.ui.screen.dashboard.DashboardViewModel
 import com.amikom.sweetlife.ui.screen.auth.forgot_password.ForgotPasswordScreen
 import com.amikom.sweetlife.ui.screen.auth.forgot_password.ForgotPasswordViewModel
 import com.amikom.sweetlife.ui.screen.auth.login.LoginScreen
@@ -53,7 +50,7 @@ fun NavGraph(
 
         composable<Route.DashboardScreen> {
             val dashboardViewModel: DashboardViewModel = hiltViewModel()
-            DashboardScreen(viewModel = dashboardViewModel)
+            DashboardScreen(viewModel = dashboardViewModel, navController = navController)
         }
     }
 }

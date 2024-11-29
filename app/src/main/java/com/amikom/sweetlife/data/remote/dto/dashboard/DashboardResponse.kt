@@ -1,59 +1,17 @@
-package com.amikom.sweetlife.ui.screen.Dashboard
+package com.amikom.sweetlife.data.remote.dto.dashboard
 
 import com.google.gson.annotations.SerializedName
 
-data class DashboardModel(
+data class DashboardResponse(
 
 	@field:SerializedName("data")
 	val data: Data? = null,
 
-	@field:SerializedName("status")
-	val status: String? = null
-)
-
-data class Calorie(
-
-	@field:SerializedName("current")
-	val current: Int? = null,
-
-	@field:SerializedName("percentage")
-	val percentage: Int? = null,
-
-	@field:SerializedName("satisfaction")
-	val satisfaction: String? = null,
-
-	@field:SerializedName("target")
-	val target: Int? = null
-)
-
-data class DailyProgress(
-
-	@field:SerializedName("glucose")
-	val glucose: Glucose? = null,
-
-	@field:SerializedName("calorie")
-	val calorie: Calorie? = null
-)
-
-data class Data(
-
-	@field:SerializedName("dailyProgress")
-	val dailyProgress: DailyProgress? = null,
-
-	@field:SerializedName("user")
-	val user: User? = null,
-
-	@field:SerializedName("status")
-	val status: Status? = null
-)
-
-data class Status(
-
-	@field:SerializedName("satisfaction")
-	val satisfaction: String? = null,
-
 	@field:SerializedName("message")
-	val message: String? = null
+	val message: String? = null,
+
+	@field:SerializedName("status")
+	val status: Boolean? = null
 )
 
 data class User(
@@ -71,7 +29,52 @@ data class Glucose(
 	val current: Int? = null,
 
 	@field:SerializedName("percentage")
-	val percentage: Int? = null,
+	val percentage: Double? = null,
+
+	@field:SerializedName("satisfaction")
+	val satisfaction: String? = null,
+
+	@field:SerializedName("target")
+	val target: Int? = null
+)
+
+data class Data(
+
+	@field:SerializedName("dailyProgress")
+	val dailyProgress: DailyProgress? = null,
+
+	@field:SerializedName("user")
+	val user: User? = null,
+
+	@field:SerializedName("status")
+	val status: Status? = null
+)
+
+data class DailyProgress(
+
+	@field:SerializedName("glucose")
+	val glucose: Glucose? = null,
+
+	@field:SerializedName("calorie")
+	val calorie: Calorie? = null
+)
+
+data class Status(
+
+	@field:SerializedName("message")
+	val message: String? = null,
+
+	@field:SerializedName("satisfaction")
+	val satisfaction: String? = null
+)
+
+data class Calorie(
+
+	@field:SerializedName("current")
+	val current: Int? = null,
+
+	@field:SerializedName("percentage")
+	val percentage: Double? = null,
 
 	@field:SerializedName("satisfaction")
 	val satisfaction: String? = null,
