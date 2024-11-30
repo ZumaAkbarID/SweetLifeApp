@@ -1,30 +1,42 @@
-package com.amikom.sweetlife.ui.screen.Dashboard
+package com.amikom.sweetlife.ui.screen.dashboard
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.amikom.sweetlife.data.model.DashboardModel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import com.amikom.sweetlife.data.remote.Result
+import com.amikom.sweetlife.domain.usecases.dashboard.DashboardUseCases
 
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
-    private val repository: DashboardRepository
+    private val dashboardUseCases: DashboardUseCases
 ) : ViewModel() {
 
-    private val _dashboardData = MutableLiveData<DashboardModel>()
-    val dashboardData: LiveData<DashboardModel> = _dashboardData
+    private val _dashboardState = MutableLiveData<Result<DashboardModel>>()
+    val dashboardData: LiveData<Result<DashboardModel>> = _dashboardState
 
-    private val _isLoading = MutableLiveData<Boolean>()
-    val isLoading: LiveData<Boolean> = _isLoading
+    init {
+        fetchDashboard()
+    }
 
-    fun fetchDashboard() {
+    private fun fetchDashboard() {
         viewModelScope.launch {
-            _isLoading.postValue(true)
-            val data = repository.fetchDashboardData()
-            _dashboardData.postValue(data)
-            _isLoading.postValue(false)
+            _dashboardState.postValue(Result.Loading)
+
+            try {
+                val result = dashboardUseCases.fetchData()
+
+                result.observeForever { dashboardResult ->
+                    _dashboardState.postValue(dashboardResult)
+                }
+            } catch (e: Exception) {
+                _dashboardState.postValue(Result.Error(e.message ?: "Unexpected Error"))
+            }
         }
     }
 }
+
