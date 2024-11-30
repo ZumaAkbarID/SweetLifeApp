@@ -2,6 +2,7 @@ package com.amikom.sweetlife.ui.screen.profile
 
 import android.text.TextUtils.TruncateAt
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -31,6 +32,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -43,55 +45,73 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.amikom.sweetlife.R
+import com.amikom.sweetlife.ui.component.BottomNavigationBar
+import com.amikom.sweetlife.ui.component.getBottomNavButtons
+import com.amikom.sweetlife.ui.component.rememberSelectedIndex
 import com.amikom.sweetlife.ui.theme.MainBlue
 
 @Composable
 fun UserProfileScreen(
+    navController: NavController,
     userProfile: UserProfile,
     onEditProfile: () -> Unit,
     onEditHealthData: () -> Unit,
     onSettingsClick: () -> Unit,
     onLogout: () -> Unit
 ) {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-    ) {
-        Column(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center,
+    val selectedIndex = rememberSelectedIndex()
+
+    val buttons = getBottomNavButtons(selectedIndex, navController)
+
+    Scaffold(
+        bottomBar = {
+            BottomNavigationBar(buttons = buttons)
+        },
+        modifier = Modifier.fillMaxSize(),
+    ) { innerPadding ->
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(16.dp),
         ) {
-            UserInfo(userProfile = userProfile)
-            gmailBox(text = userProfile.email, onClick = { })
-            UserHealthData(userProfile = userProfile)
             Column(
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.Center,
             ) {
-                Spacer(modifier = Modifier.height(16.dp))
-                ProfileMenuItem(
-                    icon = Icons.Default.Edit,
-                    text = "Edit Profile",
-                    onClick = { /* TODO: Handle Edit Profile */ }
-                )
-                ProfileMenuItem(
-                    icon = Icons.Default.Settings,
-                    text = "Edit Health Data",
-                    onClick = { /* TODO: Handle Edit Health Data */ }
-                )
-                ProfileMenuItem(
-                    icon = Icons.Default.Settings,
-                    text = "Settings",
-                    onClick = { /* TODO: Handle Settings */ }
-                )
-                ProfileMenuItem(
-                    icon = Icons.Default.LocationOn,
-                    text = "Logout",
-                    textColor = Color.Red,
-                    onClick = { /* TODO: Handle Logout */ }
-                )
+                UserInfo(userProfile = userProfile)
+                gmailBox(text = userProfile.email, onClick = { })
+                UserHealthData(userProfile = userProfile)
+                Column(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    Spacer(modifier = Modifier.height(16.dp))
+                    ProfileMenuItem(
+                        icon = Icons.Default.Edit,
+                        text = "Edit Profile",
+                        onClick = { /* TODO: Handle Edit Profile */ }
+                    )
+                    ProfileMenuItem(
+                        icon = Icons.Default.Settings,
+                        text = "Edit Health Data",
+                        onClick = { /* TODO: Handle Edit Health Data */ }
+                    )
+                    ProfileMenuItem(
+                        icon = Icons.Default.Settings,
+                        text = "Settings",
+                        onClick = { /* TODO: Handle Settings */ }
+                    )
+                    ProfileMenuItem(
+                        icon = Icons.Default.LocationOn,
+                        text = "Logout",
+                        textColor = Color.Red,
+                        onClick = { /* TODO: Handle Logout */ }
+                    )
+                }
             }
         }
     }
@@ -118,7 +138,7 @@ private fun UserInfo(
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = userProfile.name, style = MaterialTheme.typography.titleMedium)
+            Text(text = userProfile.name, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
         }
 
     }
@@ -128,7 +148,7 @@ private fun UserInfo(
 private fun gmailBox(
     text: String,
     onClick: () -> Unit,
-    textColor: Color = Color.Black,
+    textColor: Color = MaterialTheme.colorScheme.primary,
 ){
     Card(
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
@@ -140,7 +160,7 @@ private fun gmailBox(
         modifier = Modifier
             .wrapContentWidth()
             .clickable(onClick = onClick)
-            .padding(16.dp)
+            .padding(0.dp, 16.dp)
     ) {
         Row(
             modifier = Modifier.padding(16.dp),
@@ -268,23 +288,4 @@ data class UserProfile(
     val age: Int,
     val isDiabetesRisk: Boolean
 )
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun UserProfileScreenPreview() {
-    UserProfileScreen(
-        userProfile = UserProfile(
-            name = "John Doe",
-            email = "jokowi@gmail.com",
-            weight = 70,
-            height = 170,
-            age = 25,
-            isDiabetesRisk = true
-        ),
-        onEditProfile = {},
-        onEditHealthData = {},
-        onSettingsClick = {},
-        onLogout = {}
-    )
-}
 

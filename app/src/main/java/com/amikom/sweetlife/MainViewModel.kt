@@ -29,14 +29,12 @@ class MainViewModel @Inject constructor(
     val startDestination: Route get() = _startDestination
 
     private val _isUserLoggedIn = MutableStateFlow(false)
-    val isUserLoggedIn: StateFlow<Boolean> = _isUserLoggedIn
+    private val isUserLoggedIn: StateFlow<Boolean> = _isUserLoggedIn
 
     init {
         viewModelScope.launch {
             authUseCases.readUserAllToken().collect { tokens ->
-                tokens.forEach { token ->
-                    Log.d(token.first, token.second.toString())
-                }
+                Log.d("B4 Refresh: ${tokens[0].first}", tokens[0].second.toString())
             }
         }
 

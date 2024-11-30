@@ -13,3 +13,10 @@ data class ErrorResponse(
 	@field:SerializedName("status")
 	val status: Boolean? = null
 )
+
+data class Unauthorized(
+
+	@field:SerializedName("error")
+	val error: String? = null
+
+)

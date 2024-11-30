@@ -132,7 +132,8 @@ private fun Avatar(
 ) {
     Box(
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .padding(0.dp, 16.dp),
         contentAlignment = Alignment.Center // Menjaga semua konten tetap di tengah
     ) {
         // Avatar Image

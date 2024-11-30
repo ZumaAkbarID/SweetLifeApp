@@ -2,6 +2,7 @@ package com.amikom.sweetlife.domain.repository
 
 import androidx.lifecycle.LiveData
 import com.amikom.sweetlife.data.model.ForgotPasswordModel
+import com.amikom.sweetlife.data.model.NewTokenModel
 import com.amikom.sweetlife.data.model.UserModel
 import com.amikom.sweetlife.data.remote.Result
 
@@ -17,6 +18,6 @@ interface AuthRepository {
 
     suspend fun logout()
 
-    suspend fun refreshToken(refreshToken: String)
+    suspend fun refreshToken(refreshToken: String) : LiveData<Result<NewTokenModel>>
 
 }

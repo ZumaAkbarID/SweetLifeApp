@@ -14,6 +14,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.LinearProgressIndicator
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -26,12 +27,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.amikom.sweetlife.R
 import com.amikom.sweetlife.data.model.DashboardModel
 import com.amikom.sweetlife.data.model.Data
 import com.amikom.sweetlife.data.model.ProgressDetail
 import com.amikom.sweetlife.data.remote.Result
+import com.amikom.sweetlife.ui.component.BottomNavigationBar
+import com.amikom.sweetlife.ui.component.getBottomNavButtons
+import com.amikom.sweetlife.ui.component.rememberSelectedIndex
 
 @Composable
 fun DashboardScreen(
@@ -52,7 +57,7 @@ fun DashboardScreen(
 
         is Result.Success -> {
             val data = (dashboardData as Result.Success<DashboardModel>).data
-            DashboardScreenUI(data.data)
+            DashboardScreenUI(data.data, navController)
         }
 
         is Result.Error -> {
@@ -76,26 +81,38 @@ fun DashboardScreen(
 }
 
 @Composable
-fun DashboardScreenUI(data: Data) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        UserHeader(
-            name = data.user?.name.orEmpty(),
-            diabetesType = data.user?.diabetesType.orEmpty()
-        )
+fun DashboardScreenUI(data: Data, navController: NavController) {
+    val selectedIndex = rememberSelectedIndex()
 
-        DailyProgressCard(
-            glucose = data.dailyProgress.glucose,
-            calorie = data.dailyProgress.calorie
-        )
+    val buttons = getBottomNavButtons(selectedIndex, navController)
 
-        StatusCard(
-            satisfaction = data.status.satisfaction
-        )
+    Scaffold(
+        bottomBar = {
+            BottomNavigationBar(buttons = buttons)
+        },
+        modifier = Modifier.fillMaxSize(),
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+                .padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            UserHeader(
+                name = data.user.name,
+                diabetesType = data.user.diabetesType
+            )
+
+            DailyProgressCard(
+                glucose = data.dailyProgress.glucose,
+                calorie = data.dailyProgress.calorie
+            )
+
+            StatusCard(
+                satisfaction = data.status.satisfaction
+            )
+        }
     }
 }
 

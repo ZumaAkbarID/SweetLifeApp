@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.amikom.sweetlife.data.model.NewTokenModel
 import com.amikom.sweetlife.data.model.UserModel
 import com.amikom.sweetlife.domain.manager.LocalAuthUserManager
 import com.amikom.sweetlife.util.Constants
@@ -31,9 +32,22 @@ class LocalAuthUserManagerImpl @Inject constructor(
         }
     }
 
+    override suspend fun saveNewTokenInfo(newToken: NewTokenModel) {
+        context.dataStore.edit { pref ->
+            pref[LocalUserInfoKeys.USER_TOKEN] = newToken.accessToken
+            pref[LocalUserInfoKeys.USER_REFRESH_TOKEN] = newToken.refreshToken
+        }
+    }
+
     override fun readInfoLogin(): Flow<Boolean> {
         return context.dataStore.data.map { preferences ->
             preferences[LocalUserInfoKeys.USER_IS_LOGIN] ?: false
+        }
+    }
+
+    override suspend fun logout() {
+        context.dataStore.edit { pref ->
+            pref.clear()
         }
     }
 

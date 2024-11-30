@@ -4,12 +4,14 @@ import android.app.Application
 import com.amikom.sweetlife.BuildConfig
 import com.amikom.sweetlife.data.manager.LocalAuthUserManagerImpl
 import com.amikom.sweetlife.data.manager.LocalUserManagerImpl
+import com.amikom.sweetlife.data.remote.interceptor.AuthInterceptor
 import com.amikom.sweetlife.data.remote.repository.AuthRepositoryImpl
 import com.amikom.sweetlife.data.remote.repository.DashboardRepositoryImpl
 import com.amikom.sweetlife.data.remote.retrofit.AuthApiService
 import com.amikom.sweetlife.data.remote.retrofit.FeatureApiService
 import com.amikom.sweetlife.domain.manager.LocalAuthUserManager
 import com.amikom.sweetlife.domain.manager.LocalUserManager
+import com.amikom.sweetlife.domain.manager.SessionManager
 import com.amikom.sweetlife.domain.repository.AuthRepository
 import com.amikom.sweetlife.domain.repository.DashboardRepository
 import com.amikom.sweetlife.domain.usecases.app_entry.AppEntryUseCases
@@ -20,7 +22,9 @@ import com.amikom.sweetlife.domain.usecases.auth.AuthUseCases
 import com.amikom.sweetlife.domain.usecases.auth.CheckIsUserLogin
 import com.amikom.sweetlife.domain.usecases.auth.ForgotUserPassword
 import com.amikom.sweetlife.domain.usecases.auth.ReadUserAllToken
+import com.amikom.sweetlife.domain.usecases.auth.RefreshNewTokenAction
 import com.amikom.sweetlife.domain.usecases.auth.RegisterAction
+import com.amikom.sweetlife.domain.usecases.auth.SaveNewToken
 import com.amikom.sweetlife.domain.usecases.auth.SaveUserInfoLogin
 import com.amikom.sweetlife.domain.usecases.dashboard.DashboardUseCases
 import com.amikom.sweetlife.domain.usecases.dashboard.FetchData
@@ -89,15 +93,9 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideFeatureApi() : FeatureApiService {
-        val authInterceptor = Interceptor { chain ->
-            val req = chain.request()
-            val requestHeaders = req.newBuilder()
-                .addHeader("Authorization", "Bearer ${Constants.CURRENT_TOKEN}")
-                .build()
-            chain.proceed(requestHeaders)
-        }
-
+    fun provideFeatureApi(
+        authInterceptor: AuthInterceptor,
+    ) : FeatureApiService {
         val client: OkHttpClient = OkHttpClient.Builder()
             .addInterceptor(loggingInterceptor)
             .addInterceptor(authInterceptor)
@@ -114,6 +112,14 @@ object AppModule {
     @Provides
     @Singleton
     fun provideAppExecutors(): AppExecutors = AppExecutors()
+
+    @Provides
+    @Singleton
+    fun provideSessionManager(
+        localAuthUserManager: LocalAuthUserManager
+    ): SessionManager {
+        return SessionManager(localAuthUserManager)
+    }
 
     @Provides
     @Singleton
@@ -141,7 +147,9 @@ object AppModule {
             saveUserInfoLogin = SaveUserInfoLogin(localAuthUserManager = localAuthUserManager),
             readUserAllToken = ReadUserAllToken(localAuthUserManager = localAuthUserManager),
             register = RegisterAction(authRepository = authRepository),
-            forgotPassword = ForgotUserPassword(authRepository = authRepository)
+            forgotPassword = ForgotUserPassword(authRepository = authRepository),
+            refreshNewToken = RefreshNewTokenAction(authRepository = authRepository),
+            saveNewToken = SaveNewToken(localAuthUserManager = localAuthUserManager)
         )
     }
 

@@ -21,4 +21,7 @@ sealed class Route {
 
     @Serializable
     data object DashboardScreen: Route()
+
+    @Serializable
+    data object ProfileScreen: Route()
 }

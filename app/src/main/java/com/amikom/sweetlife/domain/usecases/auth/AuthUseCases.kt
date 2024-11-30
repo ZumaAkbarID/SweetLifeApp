@@ -8,5 +8,8 @@ data class AuthUseCases(
 
     val register: RegisterAction,
 
-    val forgotPassword: ForgotUserPassword
+    val forgotPassword: ForgotUserPassword,
+
+    val refreshNewToken: RefreshNewTokenAction,
+    val saveNewToken: SaveNewToken,
 )

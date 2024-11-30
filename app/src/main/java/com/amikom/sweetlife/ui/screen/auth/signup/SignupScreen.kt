@@ -306,6 +306,8 @@ fun SignupScreen(
                         )
                     } else if (errorMessage == "email already registered") {
                         showDialog.value = true
+                        icon = R.drawable.baseline_info_outline_24
+                        title = "Failed!"
                         message = "Email already registered!"
                         buttons = listOf(
                             "Ok" to { showDialog.value = false },

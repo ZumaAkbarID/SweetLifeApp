@@ -131,6 +131,9 @@ dependencies {
     // Compose LiveData
     implementation(libs.androidx.runtime.livedata)
     implementation(libs.androidx.runtime)
+
+    // Bottom Nav
+    implementation ("com.github.0xRahad:RioBottomNavigation:1.0.2")
 }
 
 kapt {
