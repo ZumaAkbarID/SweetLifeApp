@@ -142,31 +142,7 @@ fun PersonalData() {
             Spacer(modifier = Modifier.height(8.dp))
 
             // Gender Dropdown
-            var expanded by remember { mutableStateOf(false) }
-            var selectedGender by remember { mutableStateOf("") }
-            Box(modifier = Modifier.fillMaxWidth()) {
-                OutlinedTextField(
-                    value = selectedGender,
-                    onValueChange = {},
-                    label = {
-                        Text(
-                            text = "Select Gender",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = Color.Gray
-                        )
-                    },
-                    readOnly = true,
-                    trailingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.ArrowDropDown,
-                            contentDescription = "Dropdown Icon",
-                            modifier = Modifier.clickable { expanded = !expanded }
-                        )
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(15.dp),
-                )
-            }
+            genderDropdown()
         }
 
         //Button
@@ -188,7 +164,55 @@ fun PersonalData() {
     }
 }
 
-@Preview(showBackground = true)
+@Composable
+fun genderDropdown() {
+    var expanded by remember { mutableStateOf(false) }
+    var selectedGender by remember { mutableStateOf("") }
+
+    val genderOptions = listOf("Male", "Female")
+
+    Box(modifier = Modifier.fillMaxWidth()) {
+        OutlinedTextField(
+            value = selectedGender,
+            onValueChange = {},
+            label = {
+                Text(
+                    text = "Select Gender",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.Gray
+                )
+            },
+            readOnly = true,
+            trailingIcon = {
+                Icon(
+                    imageVector = Icons.Default.ArrowDropDown,
+                    contentDescription = "Dropdown Icon",
+                    modifier = Modifier.clickable { expanded = !expanded }
+                )
+            },
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(15.dp),
+        )
+
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            genderOptions.forEach { gender ->
+                DropdownMenuItem(
+                    text = { Text(gender) },
+                    onClick = {
+                        selectedGender = gender
+                        expanded = false
+                    }
+                )
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun PersonalDataPreview() {
     MaterialTheme {

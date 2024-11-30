@@ -23,7 +23,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 fun RekomenScreen(
     viewModel: RekomenViewModel = hiltViewModel()
 ) {
-    val rekomend by viewModel.rekomend.observeAsState(emptyList())
+    val rekomend by viewModel.foodRecommendations.observeAsState(emptyList())
     val isLoading by viewModel.isLoading.observeAsState(false)
     val error by viewModel.error.observeAsState(null)
 
@@ -34,14 +34,15 @@ fun RekomenScreen(
     Box(modifier = Modifier.fillMaxSize()) {
         when {
             isLoading -> CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+
             error != null -> Text(
-                text = error ?: "",
+                text = error ?: "Unknown error",
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.align(Alignment.Center)
             )
 
             rekomend.isEmpty() -> Text(
-                text = "No data",
+                text = "No recommendations available",
                 style = MaterialTheme.typography.bodyLarge,
                 modifier = Modifier.align(Alignment.Center)
             )
@@ -58,19 +59,52 @@ fun RekomenScreen(
 }
 
 @Composable
-fun RekomendItem(item: RekomendationData) {
-    Text(
-        text = item.foodRecommendations?.get(0)?.name ?: "",
-        style = MaterialTheme.typography.bodyMedium,
-        modifier = Modifier.padding(16.dp)
-    )
+fun RekomendItem(item: FoodRecommendation) {
+    Column(modifier = Modifier.padding(16.dp)) {
+        Text(
+            text = item.name ?: "Unknown food",
+            style = MaterialTheme.typography.titleMedium
+        )
+        Text(
+            text = "Calories: ${item.details?.calories ?: 0}",
+            style = MaterialTheme.typography.bodyMedium
+        )
+        Text(
+            text = "Portion: ${item.details?.portion ?: "Unknown"}",
+            style = MaterialTheme.typography.bodyMedium
+        )
+    }
 }
-@Preview
+
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun PreviewRekomenScreen() {
-    Column {
-        RekomenScreen(
-
+    val mockData = listOf(
+        FoodRecommendation(
+            name = "Nasi Goreng",
+            details = FoodDetails(
+                calories = 300,
+                portion = "1 porsi",
+                type = "Makanan berat"
+            ),
+            image = Image(url = "https://www.example.com/nasi-goreng.png")
+        ),
+        FoodRecommendation(
+            name = "Ayam Penyet",
+            details = FoodDetails(
+                calories = 450,
+                portion = "1 porsi",
+                type = "Makanan berat"
+            ),
+            image = Image(url = "https://www.example.com/ayam-penyet.png")
         )
+    )
+
+    Column {
+        LazyColumn {
+            items(mockData) { item ->
+                RekomendItem(item = item)
+            }
+        }
     }
 }

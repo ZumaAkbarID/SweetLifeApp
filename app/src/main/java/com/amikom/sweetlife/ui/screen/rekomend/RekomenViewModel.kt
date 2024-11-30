@@ -18,16 +18,17 @@ class RekomenViewModel @Inject constructor(
         private val _error = MutableLiveData<String?>()
         val error: LiveData<String?> = _error
 
-        private val _rekomend = MutableLiveData<List<RekomendationData>>()
-        val rekomend: LiveData<List<RekomendationData>> get() = _rekomend
+    private val _foodRecommendations = MutableLiveData<List<FoodRecommendation>>()
+    val foodRecommendations: LiveData<List<FoodRecommendation>> = _foodRecommendations
 
     fun fetchRekomend() {
         viewModelScope.launch {
             _isLoading.postValue(true)
             _error.postValue(null)
             try {
-                val entries = rekomendRepository.fetchRekomend() as List<RekomendationData>
-                _rekomend.postValue(rekomend.value?.plus(entries) ?: entries)
+                val response = rekomendRepository.fetchRekomend()
+                val foods = response.data?.foodRecommendations ?: emptyList()
+                _foodRecommendations.postValue(foods)
             } catch (e: Exception) {
                 _error.postValue("Failed to load rekomend: ${e.message}")
             } finally {
