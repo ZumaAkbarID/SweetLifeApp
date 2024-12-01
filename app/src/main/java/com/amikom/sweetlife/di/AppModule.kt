@@ -7,6 +7,7 @@ import com.amikom.sweetlife.data.manager.LocalUserManagerImpl
 import com.amikom.sweetlife.data.remote.interceptor.AuthInterceptor
 import com.amikom.sweetlife.data.remote.repository.AuthRepositoryImpl
 import com.amikom.sweetlife.data.remote.repository.DashboardRepositoryImpl
+import com.amikom.sweetlife.data.remote.repository.ProfileRepositoryImpl
 import com.amikom.sweetlife.data.remote.retrofit.AuthApiService
 import com.amikom.sweetlife.data.remote.retrofit.FeatureApiService
 import com.amikom.sweetlife.domain.manager.LocalAuthUserManager
@@ -14,6 +15,7 @@ import com.amikom.sweetlife.domain.manager.LocalUserManager
 import com.amikom.sweetlife.domain.manager.SessionManager
 import com.amikom.sweetlife.domain.repository.AuthRepository
 import com.amikom.sweetlife.domain.repository.DashboardRepository
+import com.amikom.sweetlife.domain.repository.ProfileRepository
 import com.amikom.sweetlife.domain.usecases.app_entry.AppEntryUseCases
 import com.amikom.sweetlife.domain.usecases.app_entry.ReadAppEntry
 import com.amikom.sweetlife.domain.usecases.app_entry.SaveAppEntry
@@ -28,13 +30,14 @@ import com.amikom.sweetlife.domain.usecases.auth.SaveNewToken
 import com.amikom.sweetlife.domain.usecases.auth.SaveUserInfoLogin
 import com.amikom.sweetlife.domain.usecases.dashboard.DashboardUseCases
 import com.amikom.sweetlife.domain.usecases.dashboard.FetchData
+import com.amikom.sweetlife.domain.usecases.profile.FetchDataHealthProfile
+import com.amikom.sweetlife.domain.usecases.profile.ProfileUseCases
+import com.amikom.sweetlife.domain.usecases.profile.FetchDataProfile
 import com.amikom.sweetlife.util.AppExecutors
-import com.amikom.sweetlife.util.Constants
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
-import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -137,6 +140,13 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideProfileRepository(
+        featureApiService: FeatureApiService,
+        appExecutors: AppExecutors
+    ): ProfileRepository = ProfileRepositoryImpl(featureApiService, appExecutors)
+
+    @Provides
+    @Singleton
     fun provideLoginUseCases(
         authRepository: AuthRepository,
         localAuthUserManager: LocalAuthUserManager
@@ -159,7 +169,18 @@ object AppModule {
         dashboardRepository: DashboardRepository,
     ) : DashboardUseCases {
         return DashboardUseCases(
-            fetchData = FetchData(dashboardRepository = dashboardRepository),
+            fetchData = FetchData(dashboardRepository = dashboardRepository)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideProfileUseCases(
+        profileRepository: ProfileRepository,
+    ) : ProfileUseCases {
+        return ProfileUseCases(
+            fetchDataProfile = FetchDataProfile(profileRepository = profileRepository),
+            fetchDataHealthProfile = FetchDataHealthProfile(profileRepository = profileRepository)
         )
     }
 

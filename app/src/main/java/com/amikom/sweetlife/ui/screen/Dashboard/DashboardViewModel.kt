@@ -10,6 +10,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import com.amikom.sweetlife.data.remote.Result
 import com.amikom.sweetlife.domain.usecases.dashboard.DashboardUseCases
+import com.amikom.sweetlife.domain.usecases.profile.ProfileUseCases
 
 @HiltViewModel
 class DashboardViewModel @Inject constructor(

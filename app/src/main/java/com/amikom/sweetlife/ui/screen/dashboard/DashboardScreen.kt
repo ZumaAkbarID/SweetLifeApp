@@ -37,6 +37,7 @@ import com.amikom.sweetlife.data.remote.Result
 import com.amikom.sweetlife.ui.component.BottomNavigationBar
 import com.amikom.sweetlife.ui.component.getBottomNavButtons
 import com.amikom.sweetlife.ui.component.rememberSelectedIndex
+import com.amikom.sweetlife.util.Constants
 
 @Composable
 fun DashboardScreen(
@@ -82,9 +83,9 @@ fun DashboardScreen(
 
 @Composable
 fun DashboardScreenUI(data: Data, navController: NavController) {
-    val selectedIndex = rememberSelectedIndex()
+    Constants.CURRENT_BOTTOM_BAR_PAGE_ID = rememberSelectedIndex()
 
-    val buttons = getBottomNavButtons(selectedIndex, navController)
+    val buttons = getBottomNavButtons(Constants.CURRENT_BOTTOM_BAR_PAGE_ID, navController)
 
     Scaffold(
         bottomBar = {
