@@ -1,5 +1,6 @@
 package com.amikom.sweetlife.data.remote.repository
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import com.amikom.sweetlife.data.model.ForgotPasswordModel
@@ -165,52 +166,35 @@ class AuthRepositoryImpl(
         TODO("Not yet implemented")
     }
 
-    override suspend fun refreshToken(refreshToken: String) : LiveData<Result<NewTokenModel>> {
-        val result = MediatorLiveData<Result<NewTokenModel>>()
-        result.value = Result.Loading
-
-        try {
-            // Create request
+    override suspend fun refreshToken(refreshToken: String): Result<NewTokenModel> {
+        return try {
             val refreshTokenRequest = RefreshTokenRequest(refresh_token = refreshToken)
 
-            // Perform API call
             val response = authApiService.refreshToken(refreshTokenRequest)
 
             if (response.isSuccessful) {
-                // Parse response body
                 val mainResponse = response.body()
                 val dataResponse = response.body()?.data
 
-                if(mainResponse?.status == true && mainResponse.message == "action success") {
-                    val newTokenModel = NewTokenModel(
-                        accessToken = dataResponse?.accessToken ?: "",
-                        refreshToken = dataResponse?.refreshToken ?: "",
-                        type = dataResponse?.type ?: ""
-                    )
+                Log.d("BIJIXTOKEN", mainResponse.toString())
 
-                    // Update result on main thread
-                    appExecutors.mainThread.execute {
-                        result.value = Result.Success(newTokenModel)
-                    }
+                if (mainResponse?.status == true && mainResponse.message == "action success") {
+                    Result.Success(
+                        NewTokenModel(
+                            accessToken = dataResponse?.accessToken.orEmpty(),
+                            refreshToken = dataResponse?.refreshToken.orEmpty(),
+                            type = dataResponse?.type.orEmpty()
+                        )
+                    )
                 } else {
-                    throw Exception(mainResponse?.message)
+                    Result.Error(mainResponse?.message ?: "Unknown error")
                 }
             } else {
-                // Handle error response
                 val errorBody = Gson().fromJson(response.errorBody()?.string(), ErrorResponse::class.java)
-                val message = errorBody?.error ?: response.message()
-                appExecutors.mainThread.execute {
-                    result.value = Result.Error(message)
-                }
+                Result.Error(errorBody?.error ?: response.message())
             }
         } catch (e: Exception) {
-            // Handle exceptions
-            appExecutors.mainThread.execute {
-                result.value = e.message?.let { Result.Error(it) }
-            }
+            Result.Error(e.message ?: "Unexpected error occurred")
         }
-
-        return result
     }
-
 }

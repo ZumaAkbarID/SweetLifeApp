@@ -2,6 +2,9 @@ package com.amikom.sweetlife.util
 
 import android.os.Build
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.Period
+import java.time.format.DateTimeFormatter
 import java.util.Calendar
 import java.util.Locale
 
@@ -31,5 +34,54 @@ fun formatDateTime(dateTimeString: String): String {
         } catch (e: Exception) {
             "Invalid date format"
         }
+    }
+}
+
+fun countAgeFromDate(bornDate: String): Int {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val tanggalLahirDate = LocalDate.parse(bornDate, formatter)
+        val today = LocalDate.now()
+        val period = Period.between(tanggalLahirDate, today)
+        period.years
+    } else {
+        try {
+            val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
+            val date = inputFormat.parse(bornDate) ?: return 0
+
+            val calendar = Calendar.getInstance()
+            calendar.time = date
+
+            val birthYear = calendar.get(Calendar.YEAR)
+            val birthMonth = calendar.get(Calendar.MONTH)
+            val birthDay = calendar.get(Calendar.DAY_OF_MONTH)
+
+            val today = Calendar.getInstance()
+            val currentYear = today.get(Calendar.YEAR)
+            val currentMonth = today.get(Calendar.MONTH)
+            val currentDay = today.get(Calendar.DAY_OF_MONTH)
+
+            var age = currentYear - birthYear
+
+            if (currentMonth < birthMonth || (currentMonth == birthMonth && currentDay < birthDay)) {
+                age--
+            }
+
+            age
+        } catch (e: Exception) {
+            0
+        }
+    }
+}
+
+fun getCurrentDate(): String {
+    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
+        val currentDate = LocalDate.now()
+        currentDate.format(formatter)
+    } else {
+        val formatter = SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH)
+        val currentDate = Calendar.getInstance().time
+        formatter.format(currentDate)
     }
 }

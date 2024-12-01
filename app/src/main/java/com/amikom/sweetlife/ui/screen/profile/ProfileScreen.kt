@@ -1,8 +1,6 @@
 package com.amikom.sweetlife.ui.screen.profile
 
-import android.text.TextUtils.TruncateAt
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,18 +21,19 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,28 +42,114 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.amikom.sweetlife.R
+import com.amikom.sweetlife.data.model.DiabetesPrediction
+import com.amikom.sweetlife.data.model.HealthProfileModel
+import com.amikom.sweetlife.data.model.ProfileModel
+import com.amikom.sweetlife.data.remote.Result
+import com.amikom.sweetlife.domain.nvgraph.Route
 import com.amikom.sweetlife.ui.component.BottomNavigationBar
+import com.amikom.sweetlife.ui.component.CustomDialog
 import com.amikom.sweetlife.ui.component.getBottomNavButtons
-import com.amikom.sweetlife.ui.component.rememberSelectedIndex
-import com.amikom.sweetlife.ui.theme.MainBlue
 import com.amikom.sweetlife.util.Constants
+import com.amikom.sweetlife.util.countAgeFromDate
+import com.amikom.sweetlife.util.getCurrentDate
 
 @Composable
 fun UserProfileScreen(
+    profileViewModel: ProfileViewModel,
     navController: NavController,
-    userProfile: UserProfile,
     onEditProfile: () -> Unit,
     onEditHealthData: () -> Unit,
     onSettingsClick: () -> Unit,
     onLogout: () -> Unit
 ) {
-    val selectedIndex = Constants.CURRENT_BOTTOM_BAR_PAGE_ID
+    val profileRawData by profileViewModel.profileData.observeAsState()
+    val healthRawData by profileViewModel.healthData.observeAsState()
+    val isUserLoggedIn by profileViewModel.isUserLoggedIn.collectAsState()
 
+    val selectedIndex = Constants.CURRENT_BOTTOM_BAR_PAGE_ID
     val buttons = getBottomNavButtons(selectedIndex, navController)
+
+    var profileData: ProfileModel
+    var healthData: HealthProfileModel
+
+    when (profileRawData) {
+        Result.Loading -> {
+            profileData = ProfileModel(
+                "Loading...",
+                "Loading...",
+                "Loading...",
+                getCurrentDate(),
+                "Loading...",
+            )
+        }
+
+        is Result.Success -> {
+            profileData = (profileRawData as Result.Success<ProfileModel>).data
+        }
+
+        else -> {
+            profileData = ProfileModel(
+                Constants.DEFAULT_ERROR_TEXT,
+                Constants.DEFAULT_ERROR_TEXT,
+                Constants.DEFAULT_ERROR_TEXT,
+                getCurrentDate(),
+                Constants.DEFAULT_ERROR_TEXT,
+            )
+        }
+    }
+
+    when (healthRawData) {
+        Result.Loading -> {
+            healthData = HealthProfileModel(
+                "Loading...",
+                0.0,
+                0.0,
+                false,
+                "Loading...",
+                false,
+                "Loading...",
+                DiabetesPrediction(
+                    0,
+                    "Loading...",
+                    "Loading..."
+                ),
+            )
+        }
+
+        is Result.Success -> {
+            healthData = (healthRawData as Result.Success<HealthProfileModel>).data
+        }
+
+        else -> {
+            healthData = HealthProfileModel(
+                Constants.DEFAULT_ERROR_TEXT,
+                0.0,
+                0.0,
+                false,
+                Constants.DEFAULT_ERROR_TEXT,
+                false,
+                Constants.DEFAULT_ERROR_TEXT,
+                DiabetesPrediction(
+                    0,
+                    Constants.DEFAULT_ERROR_TEXT,
+                    Constants.DEFAULT_ERROR_TEXT
+                ),
+            )
+        }
+    }
+
+    val userProfile = UserProfile(
+        email = profileData.email,
+        name = profileData.name,
+        weight = healthData.weight,
+        height = healthData.weight,
+        age = countAgeFromDate(profileData.dateOfBirth),
+        isDiabetesRisk = healthData.isDiabetic
+    )
 
     Scaffold(
         bottomBar = {
@@ -116,6 +201,23 @@ fun UserProfileScreen(
             }
         }
     }
+
+    if (!isUserLoggedIn) {
+        CustomDialog(
+            icon = R.drawable.baseline_info_outline_24,
+            title = "Info",
+            message = "You'r session is ended. Please login again",
+            openDialogCustom = remember { mutableStateOf(true) },
+            buttons = listOf(
+                "Ok" to {
+                    navController.navigate(Route.LoginScreen) {
+                        launchSingleTop = true
+                    }
+                }
+            ),
+            dismissOnBackdropClick = false
+        )
+    }
 }
 
 @Composable
@@ -126,7 +228,7 @@ private fun UserInfo(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
+    ) {
         Image(
             painter = painterResource(id = R.drawable.gendut),
             contentDescription = "User Profile Image",
@@ -139,7 +241,11 @@ private fun UserInfo(
         Column(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(text = userProfile.name, style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+            Text(
+                text = userProfile.name,
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold
+            )
         }
 
     }
@@ -150,13 +256,46 @@ private fun gmailBox(
     text: String,
     onClick: () -> Unit,
     textColor: Color = MaterialTheme.colorScheme.primary,
-){
+) {
     Card(
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
         shape = RoundedCornerShape(15.dp),
         colors = CardDefaults.cardColors(
             containerColor = Color.White,
             contentColor = Color.Black
+        ),
+        modifier = Modifier
+            .wrapContentWidth()
+            .clickable(onClick = onClick)
+            .padding(0.dp, 16.dp)
+    ) {
+        Row(
+            modifier = Modifier.padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = text,
+                color = textColor,
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.bodyMedium,
+                modifier = Modifier.weight(1f)
+            )
+        }
+    }
+}
+
+@Composable
+private fun diabetesRisk(
+    text: String,
+    onClick: () -> Unit,
+    textColor: Color = Color.White,
+) {
+    Card(
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+        shape = RoundedCornerShape(15.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = Color.Red,
+            contentColor = Color.White
         ),
         modifier = Modifier
             .wrapContentWidth()
@@ -210,7 +349,8 @@ private fun UserHealthData(userProfile: UserProfile) {
             )
             UserHealthItem(
                 label = "Diabetes Risk",
-                value = if (userProfile.isDiabetesRisk) "At risk" else "Not at risk", boolean = userProfile.isDiabetesRisk
+                value = if (userProfile.isDiabetesRisk) "At risk" else "Not at risk",
+                boolean = userProfile.isDiabetesRisk
             )
         }
     }
@@ -228,7 +368,12 @@ private fun UserHealthItem(
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Text(text = label, style = MaterialTheme.typography.bodySmall)
-        Text(text = value, style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold, color = if (boolean) Color.Red else Color.Black)
+        Text(
+            text = value,
+            style = MaterialTheme.typography.bodySmall,
+            fontWeight = FontWeight.Bold,
+            color = if (boolean) Color.Red else Color.Black
+        )
     }
 }
 
@@ -284,8 +429,8 @@ fun ProfileMenuItem(
 data class UserProfile(
     val name: String,
     val email: String,
-    val weight: Int,
-    val height: Int,
+    val weight: Double,
+    val height: Double,
     val age: Int,
     val isDiabetesRisk: Boolean
 )

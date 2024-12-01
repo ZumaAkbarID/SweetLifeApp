@@ -21,4 +21,6 @@ object Constants {
     var CURRENT_TOKEN: String = ""
 
     lateinit var CURRENT_BOTTOM_BAR_PAGE_ID: MutableState<Int>
+
+    const val DEFAULT_ERROR_TEXT = "Error Fetching Data"
 }

@@ -21,6 +21,7 @@ import com.amikom.sweetlife.ui.screen.auth.login.LoginViewModel
 import com.amikom.sweetlife.ui.screen.auth.signup.SignUpViewModel
 import com.amikom.sweetlife.ui.screen.auth.signup.SignupScreen
 import com.amikom.sweetlife.ui.screen.home.HomeScreen
+import com.amikom.sweetlife.ui.screen.profile.ProfileViewModel
 import com.amikom.sweetlife.ui.screen.profile.UserProfile
 import com.amikom.sweetlife.ui.screen.profile.UserProfileScreen
 import com.amikom.sweetlife.ui.screen.profile.settings.SettingsScreen
@@ -74,16 +75,10 @@ fun NavGraph(
         }
 
         composable<Route.ProfileScreen> {
+            val profileViewModel: ProfileViewModel = hiltViewModel()
             UserProfileScreen(
+                profileViewModel = profileViewModel,
                 navController = navController,
-                userProfile = UserProfile(
-                    name = "John Doe",
-                    email = "jokowi@gmail.com",
-                    weight = 70,
-                    height = 170,
-                    age = 25,
-                    isDiabetesRisk = true
-                ),
                 onEditProfile = {},
                 onEditHealthData = {},
                 onSettingsClick = {},

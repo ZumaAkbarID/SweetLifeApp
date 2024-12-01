@@ -8,7 +8,7 @@ import com.amikom.sweetlife.domain.repository.AuthRepository
 class RefreshNewTokenAction(
     private val authRepository: AuthRepository
 ) {
-    suspend operator fun invoke(refreshToken: String) : LiveData<Result<NewTokenModel>> {
+    suspend operator fun invoke(refreshToken: String) : Result<NewTokenModel> {
         return authRepository.refreshToken(refreshToken = refreshToken)
     }
 }

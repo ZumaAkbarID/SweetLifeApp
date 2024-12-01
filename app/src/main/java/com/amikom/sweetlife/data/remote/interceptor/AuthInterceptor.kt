@@ -18,7 +18,6 @@ class AuthInterceptor @Inject constructor(
 ) : Interceptor {
 
     override fun intercept(chain: Interceptor.Chain): Response {
-        //  token dari LocalAuthUserManager
         val tokens = runBlocking { localAuthUserManager.getAllToken().first() }
         val accessToken = tokens.firstOrNull { it.first == Constants.USER_TOKEN }?.second
         val refreshToken = tokens.firstOrNull { it.first == Constants.USER_REFRESH_TOKEN }?.second
@@ -26,38 +25,30 @@ class AuthInterceptor @Inject constructor(
         val originalRequest = chain.request()
         val requestBuilder = originalRequest.newBuilder()
 
-        // header Authorization
         if (!accessToken.isNullOrEmpty()) {
             requestBuilder.addHeader("Authorization", "Bearer $accessToken")
         }
 
         val response = chain.proceed(requestBuilder.build())
 
-        // Cek response 401 (Unauthorized)
         if (response.code == 401 && !refreshToken.isNullOrEmpty()) {
-            response.close() // Tutup response lama
+            response.close()
 
-            val newTokenResult = runBlocking { authRepository.refreshToken(refreshToken).value }
+            val newTokenResult = runBlocking { authRepository.refreshToken(refreshToken) }
 
             if (newTokenResult is Result.Success) {
-                // Simpan token baru
                 val newToken = newTokenResult.data
-                runBlocking {
-                    localAuthUserManager.saveNewTokenInfo(newToken)
-                }
-
                 Log.d("NEW_TOKEN", newToken.accessToken)
+                runBlocking { localAuthUserManager.saveNewTokenInfo(newToken) }
 
-                // Kirim ulang request dengan token baru
                 val newRequest = originalRequest.newBuilder()
                     .removeHeader("Authorization")
                     .addHeader("Authorization", "Bearer ${newToken.accessToken}")
                     .build()
                 return chain.proceed(newRequest)
             } else {
-                // Jika gagal refresh, logout dan lempar exception
                 runBlocking { localAuthUserManager.saveInfoLogin(UserModel("", "", "", "", "", false)) }
-                throw Exception("Token refresh failed. Please login again.")
+//                throw Exception("Token refresh failed. Please login again.")
             }
         }
 
