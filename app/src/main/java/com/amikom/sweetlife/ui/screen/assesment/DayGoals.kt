@@ -25,10 +25,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.amikom.sweetlife.R
 import com.amikom.sweetlife.ui.theme.MainBlue
 
 @Composable
@@ -104,6 +107,7 @@ fun DayGoals() {
     }
 }
 
+
 @Composable
 fun calories() {
     OutlinedTextField(
@@ -114,17 +118,17 @@ fun calories() {
         shape = RoundedCornerShape(15.dp),
         label = {
             Text(
-                "Full Name",
+                "Calories",
                 style = MaterialTheme.typography.bodyMedium,
                 color = Color.Gray
             )
         },
         leadingIcon = {
-            Icon(
-                imageVector = Icons.Default.LocationOn,
-                contentDescription = "Person Icon",
-                tint = Color.Gray
-            )
+                Icon(
+                    painter = painterResource(id = R.drawable.cookingpot),
+                    contentDescription = "Person Icon",
+                    tint = Color.Gray
+                )
         },
         singleLine = true
     )
