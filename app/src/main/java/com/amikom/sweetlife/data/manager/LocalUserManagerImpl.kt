@@ -21,9 +21,21 @@ class LocalUserManagerImpl(
         }
     }
 
+    override suspend fun updateAppThemeMode(isDarkMode: Boolean) {
+        context.dataStore.edit { settings ->
+            settings[UserSettingsKeys.APP_IS_DARK_MODE] = isDarkMode
+        }
+    }
+
     override fun readAppEntry(): Flow<Boolean> {
         return context.dataStore.data.map { preferences ->
             preferences[UserSettingsKeys.APP_ENTRY] ?: false
+        }
+    }
+
+    override fun getAppThemeMode(): Flow<Boolean> {
+        return context.dataStore.data.map { preferences ->
+            preferences[UserSettingsKeys.APP_IS_DARK_MODE] ?: false
         }
     }
 }
@@ -32,4 +44,5 @@ private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(na
 
 private object UserSettingsKeys {
     val APP_ENTRY = booleanPreferencesKey(name =  Constants.APP_ENTRY)
+    val APP_IS_DARK_MODE = booleanPreferencesKey(name =  Constants.APP_IS_DARK_MODE) // true = dark
 }

@@ -1,12 +1,11 @@
 package com.amikom.sweetlife.domain.nvgraph
 
-import SettingsViewModel
+import com.amikom.sweetlife.ui.screen.profile.settings.SettingsViewModel
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -24,7 +23,6 @@ import com.amikom.sweetlife.ui.screen.auth.signup.SignUpViewModel
 import com.amikom.sweetlife.ui.screen.auth.signup.SignupScreen
 import com.amikom.sweetlife.ui.screen.home.HomeScreen
 import com.amikom.sweetlife.ui.screen.profile.ProfileViewModel
-import com.amikom.sweetlife.ui.screen.profile.UserProfile
 import com.amikom.sweetlife.ui.screen.profile.UserProfileScreen
 import com.amikom.sweetlife.ui.screen.profile.settings.SettingsScreen
 import com.amikom.sweetlife.ui.screen.rekomend.RekomenScreen
@@ -96,7 +94,8 @@ fun NavGraph(
         }
 
         composable<Route.SettingsScreen> {
-            SettingsScreen()
+            val settingsViewModel: SettingsViewModel = hiltViewModel()
+            SettingsScreen(settingsViewModel)
         }
     }
 }
