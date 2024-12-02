@@ -20,6 +20,9 @@ sealed class Route {
     data object ForgotPasswordScreen: Route()
 
     @Serializable
+    data object CheckEmailScreen: Route()
+
+    @Serializable
     data object DashboardScreen: Route()
 
     @Serializable
@@ -30,4 +33,7 @@ sealed class Route {
 
     @Serializable
     data object HistoryScreen: Route()
+
+    @Serializable
+    data object SettingsScreen: Route()
 }

@@ -17,8 +17,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -34,7 +37,9 @@ import com.amikom.sweetlife.data.model.DashboardModel
 import com.amikom.sweetlife.data.model.Data
 import com.amikom.sweetlife.data.model.ProgressDetail
 import com.amikom.sweetlife.data.remote.Result
+import com.amikom.sweetlife.domain.nvgraph.Route
 import com.amikom.sweetlife.ui.component.BottomNavigationBar
+import com.amikom.sweetlife.ui.component.CustomDialog
 import com.amikom.sweetlife.ui.component.getBottomNavButtons
 import com.amikom.sweetlife.ui.component.rememberSelectedIndex
 import com.amikom.sweetlife.util.Constants
@@ -45,6 +50,24 @@ fun DashboardScreen(
     navController: NavHostController,
 ) {
     val dashboardData by viewModel.dashboardData.observeAsState()
+    val isUserLoggedIn by viewModel.isUserLoggedIn.collectAsState()
+
+    if (!isUserLoggedIn) {
+        CustomDialog(
+            icon = R.drawable.baseline_info_outline_24,
+            title = "Info",
+            message = "You'r session is ended. Please login again",
+            openDialogCustom = remember { mutableStateOf(true) },
+            buttons = listOf(
+                "Ok" to {
+                    navController.navigate(Route.LoginScreen) {
+                        launchSingleTop = true
+                    }
+                }
+            ),
+            dismissOnBackdropClick = false
+        )
+    }
 
     when (dashboardData) {
         is Result.Loading -> {

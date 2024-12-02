@@ -160,31 +160,35 @@ fun ForgotPasswordScreen(
             is Result.Success -> {
                 if (!hasShownSuccess) {
 
-                    val result = (forgotPasswordResult as Result.Success<ForgotPasswordModel>).data
+                    navController.navigate(Route.CheckEmailScreen) {
+                        popUpTo<Route.ForgotPasswordScreen> { inclusive = false }
+                    }
 
-                    showDialog.value = true
-                    title = "Success!"
-                    message = "We have sent an email to $email, please check your inbox or spam. Link will expire at: ${formatDateTime(result.expire)}"
-                    buttons = listOf(
-                        "Ok, I'll do it later" to { showDialog.value = false },
-                        "Open Gmail App" to {
-                            val emailIntent = Intent(Intent.ACTION_MAIN).apply {
-                                addCategory(Intent.CATEGORY_APP_EMAIL)
-                            }
-
-                            if (emailIntent.resolveActivity(context.packageManager) != null) {
-                                context.startActivity(emailIntent)
-                            } else {
-                                context.startActivity(
-                                    Intent(
-                                        Intent.ACTION_VIEW,
-                                        Uri.parse("https://gmail.com")
-                                    )
-                                )
-                            }
-                            showDialog.value = false
-                        }
-                    )
+//                    val result = (forgotPasswordResult as Result.Success<ForgotPasswordModel>).data
+//
+//                    showDialog.value = true
+//                    title = "Success!"
+//                    message = "We have sent an email to $email, please check your inbox or spam. Link will expire at: ${formatDateTime(result.expire)}"
+//                    buttons = listOf(
+//                        "Ok, I'll do it later" to { showDialog.value = false },
+//                        "Open Gmail App" to {
+//                            val emailIntent = Intent(Intent.ACTION_MAIN).apply {
+//                                addCategory(Intent.CATEGORY_APP_EMAIL)
+//                            }
+//
+//                            if (emailIntent.resolveActivity(context.packageManager) != null) {
+//                                context.startActivity(emailIntent)
+//                            } else {
+//                                context.startActivity(
+//                                    Intent(
+//                                        Intent.ACTION_VIEW,
+//                                        Uri.parse("https://gmail.com")
+//                                    )
+//                                )
+//                            }
+//                            showDialog.value = false
+//                        }
+//                    )
 
                     hasShownSuccess = true
                 }

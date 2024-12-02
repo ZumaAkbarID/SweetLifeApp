@@ -17,12 +17,15 @@ import com.amikom.sweetlife.data.remote.retrofit.FeatureApiService
 import com.amikom.sweetlife.domain.repository.DashboardRepository
 import com.amikom.sweetlife.domain.repository.ProfileRepository
 import com.amikom.sweetlife.util.AppExecutors
+import com.amikom.sweetlife.util.Constants
 import com.google.gson.Gson
 
 class ProfileRepositoryImpl(
     private val featureApiService: FeatureApiService,
     private val appExecutors: AppExecutors
 ) : ProfileRepository {
+    private val defaultErrorValue = Constants.DEFAULT_ERROR_TEXT
+
     override suspend fun fetchDataProfile(): LiveData<Result<ProfileModel>> {
         val result = MediatorLiveData<Result<ProfileModel>>()
         result.value = Result.Loading
@@ -38,10 +41,10 @@ class ProfileRepositoryImpl(
 
                 val profileModel = ProfileModel(
                     id = data?.id ?: "",
-                    email = data?.email ?: "",
-                    name = data?.name ?: "",
-                    gender = data?.gender ?: "",
-                    dateOfBirth = data?.dateOfBirth ?: ""
+                    email = data?.email ?: defaultErrorValue,
+                    name = data?.name ?: defaultErrorValue,
+                    gender = data?.gender ?: defaultErrorValue,
+                    dateOfBirth = data?.dateOfBirth ?: defaultErrorValue
                 )
 
                 // Update result on main thread
@@ -84,13 +87,13 @@ class ProfileRepositoryImpl(
                     height = data?.height ?: 0.0,
                     weight = data?.weight ?: 0.0,
                     isDiabetic = data?.isDiabetic ?: false,
-                    smokingHistory = data?.smokingHistory ?: "",
+                    smokingHistory = data?.smokingHistory ?: defaultErrorValue,
                     hasHeartDisease = data?.hasHeartDisease ?: false,
-                    activityLevel = data?.activityLevel ?: "",
+                    activityLevel = data?.activityLevel ?: defaultErrorValue,
                     diabetesPrediction = DiabetesPrediction(
                         riskPercentage = data?.diabetesPrediction?.riskPercentage ?: 0,
-                        riskLevel = data?.diabetesPrediction?.riskLevel ?: "",
-                        note = data?.diabetesPrediction?.note ?: ""
+                        riskLevel = data?.diabetesPrediction?.riskLevel ?: defaultErrorValue,
+                        note = data?.diabetesPrediction?.note ?: defaultErrorValue
                     )
                 )
 

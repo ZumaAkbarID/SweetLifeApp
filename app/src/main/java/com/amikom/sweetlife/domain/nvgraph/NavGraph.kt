@@ -6,14 +6,14 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.amikom.sweetlife.domain.manager.SessionViewModel
 import com.amikom.sweetlife.ui.presentation.onboarding.OnBoardingScreen
 import com.amikom.sweetlife.ui.presentation.onboarding.OnBoardingViewModel
-import com.amikom.sweetlife.ui.screen.History.HistoryScreen
-import com.amikom.sweetlife.ui.screen.History.HistoryViewModel
+import com.amikom.sweetlife.ui.screen.auth.forgot_password.CheckEmailScreen
 import com.amikom.sweetlife.ui.screen.dashboard.DashboardScreen
 import com.amikom.sweetlife.ui.screen.dashboard.DashboardViewModel
 import com.amikom.sweetlife.ui.screen.auth.forgot_password.ForgotPasswordScreen
@@ -23,11 +23,10 @@ import com.amikom.sweetlife.ui.screen.auth.login.LoginViewModel
 import com.amikom.sweetlife.ui.screen.auth.signup.SignUpViewModel
 import com.amikom.sweetlife.ui.screen.auth.signup.SignupScreen
 import com.amikom.sweetlife.ui.screen.home.HomeScreen
+import com.amikom.sweetlife.ui.screen.profile.ProfileViewModel
 import com.amikom.sweetlife.ui.screen.profile.UserProfile
 import com.amikom.sweetlife.ui.screen.profile.UserProfileScreen
 import com.amikom.sweetlife.ui.screen.profile.settings.SettingsScreen
-import com.amikom.sweetlife.ui.screen.rekomend.RekomenScreen
-import com.amikom.sweetlife.ui.screen.rekomend.RekomenViewModel
 
 @Composable
 fun NavGraph(
@@ -72,37 +71,29 @@ fun NavGraph(
             ForgotPasswordScreen(event = forgotPasswordViewModel::onEvent, navController = navController)
         }
 
+        composable<Route.CheckEmailScreen> {
+            CheckEmailScreen(navController = navController)
+        }
+
         composable<Route.DashboardScreen> {
             val dashboardViewModel: DashboardViewModel = hiltViewModel()
             DashboardScreen(viewModel = dashboardViewModel, navController = navController)
         }
 
-        composable<Route.RekomenScreen> {
-            val rekomenViewModel: RekomenViewModel = hiltViewModel()
-            RekomenScreen(viewModel = rekomenViewModel)
-        }
-
-        composable<Route.HistoryScreen> {
-            val historyViewModel: HistoryViewModel = hiltViewModel()
-            HistoryScreen(viewModel = historyViewModel)
-        }
-
         composable<Route.ProfileScreen> {
+            val profileViewModel: ProfileViewModel = hiltViewModel()
             UserProfileScreen(
+                profileViewModel = profileViewModel,
                 navController = navController,
-                userProfile = UserProfile(
-                    name = "John Doe",
-                    email = "jokowi@gmail.com",
-                    weight = 70,
-                    height = 170,
-                    age = 25,
-                    isDiabetesRisk = true
-                ),
                 onEditProfile = {},
                 onEditHealthData = {},
                 onSettingsClick = {},
                 onLogout = {}
             )
+        }
+
+        composable<Route.SettingsScreen> {
+            SettingsScreen()
         }
     }
 }

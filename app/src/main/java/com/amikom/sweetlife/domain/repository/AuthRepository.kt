@@ -18,6 +18,6 @@ interface AuthRepository {
 
     suspend fun logout()
 
-    suspend fun refreshToken(refreshToken: String) : LiveData<Result<NewTokenModel>>
+    suspend fun refreshToken(refreshToken: String) : Result<NewTokenModel>
 
 }
