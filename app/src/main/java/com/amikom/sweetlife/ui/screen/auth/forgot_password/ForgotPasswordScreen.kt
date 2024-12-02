@@ -7,6 +7,7 @@ import android.util.Patterns
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -15,6 +16,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -71,7 +73,7 @@ fun ForgotPasswordScreen(
 
     Column(
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxSize()
             .padding(16.dp),
         verticalArrangement = Arrangement.Center,
 //        horizontalAlignment = Alignment.CenterHorizontally
@@ -82,7 +84,8 @@ fun ForgotPasswordScreen(
             fontWeight = FontWeight.SemiBold,
             style = MaterialTheme.typography.titleLarge
         )
-        Text(text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+        Text(
+            text = "Can't Access Your Account?\n\nDon't worry. Enter your email below, and we'll send you a password reset link.",
             color = Color.Black,
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.padding(0.dp, 10.dp)
@@ -152,7 +155,7 @@ fun ForgotPasswordScreen(
                 )
             } else {
                 Text("Continue")
-                Icon(imageVector = Icons.Default.PlayArrow, contentDescription = "")
+                Icon(imageVector = Icons.Default.KeyboardArrowRight, contentDescription = "")
             }
         }
 

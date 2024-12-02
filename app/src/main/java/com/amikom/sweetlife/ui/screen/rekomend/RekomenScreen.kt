@@ -111,7 +111,7 @@ fun RekomenItemExercise(item: ExerciseRecommendations) {
 @Preview(showBackground = true)
 fun RekomenScreenPreview() {
     val foodRecommendation = FoodRecommendation(
-        imageUrl = 0, // Gunakan image resource atau URL sesuai kebutuhan
+        imageUrl = "",
         name = "Apple",
         details = Details(
             calories = "100",
@@ -125,7 +125,7 @@ fun RekomenScreenPreview() {
         exerciseDuration = 30,
         exerciseList = listOf(
             Exercise(
-                image = 0, // Gunakan image resource sesuai kebutuhan
+                image = "",
                 name = "Running",
                 desc = "Running for 30 minutes"
             )

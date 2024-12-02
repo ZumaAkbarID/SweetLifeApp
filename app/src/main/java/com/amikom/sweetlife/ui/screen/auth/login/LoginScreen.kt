@@ -18,6 +18,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.outlined.Lock
@@ -41,6 +42,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
@@ -171,7 +173,7 @@ fun LoginScreen(
             trailingIcon = {
                 IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
                     Icon(
-                        imageVector = if (isPasswordVisible) Icons.Outlined.Warning else Icons.Outlined.Lock,
+                        painter = painterResource(id = if (isPasswordVisible) R.drawable.eye else R.drawable.eyeslash),
                         contentDescription = if (isPasswordVisible) "Hide Password" else "Show Password"
                     )
                 }
@@ -233,7 +235,7 @@ fun LoginScreen(
                 )
             } else {
                 Text("Login")
-                Icon(imageVector = Icons.Default.PlayArrow, contentDescription = "")
+                Icon(imageVector = Icons.Default.KeyboardArrowRight, contentDescription = "")
             }
         }
 
@@ -309,20 +311,20 @@ fun LoginScreen(
         }
 
         // google sign up
-        Button(
-            onClick = { },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 10.dp)
-                .height(48.dp),
-            shape = RoundedCornerShape(15.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MainBlue
-            )
-        ) {
-            Icon(imageVector = Icons.Default.AccountCircle, contentDescription = "")
-            Text("  Sign Up with Google Account")
-        }
+//        Button(
+//            onClick = { },
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(top = 10.dp)
+//                .height(48.dp),
+//            shape = RoundedCornerShape(15.dp),
+//            colors = ButtonDefaults.buttonColors(
+//                containerColor = MainBlue
+//            )
+//        ) {
+//            Icon(imageVector = Icons.Default.AccountCircle, contentDescription = "")
+//            Text("  Sign Up with Google Account")
+//        }
         Row(
             modifier = Modifier.padding(top = 16.dp, bottom = 10.dp),
         ) {

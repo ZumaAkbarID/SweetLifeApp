@@ -84,7 +84,10 @@ fun NavGraph(
 
         composable<Route.RekomenScreen> {
             val viewModel: RekomenViewModel = hiltViewModel()
-            RekomenScreen(viewModel = viewModel)
+            RekomenScreen(
+                // dummy
+
+            )
         }
 
         composable<Route.ProfileScreen> {

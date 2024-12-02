@@ -33,7 +33,7 @@ data class ExerciseRecommendations(
 
 data class Exercise(
     @field:SerializedName("image")
-    val image: Int = 0,
+    val image: String = "",
 
     @field:SerializedName("name")
     val name: String = "",
@@ -44,7 +44,7 @@ data class Exercise(
 
 data class FoodRecommendation(
     @field:SerializedName("image")
-    val imageUrl: Int = 0,
+    val imageUrl: String = "",
 
     @field:SerializedName("name")
     val name: String = "",

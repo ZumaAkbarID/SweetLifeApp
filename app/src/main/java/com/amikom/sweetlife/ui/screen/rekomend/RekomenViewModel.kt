@@ -34,11 +34,25 @@ class RekomenViewModel @Inject constructor(
             _error.postValue(null)
 
             val result = rekomendRepository.fetchRekomend()
-            result.onSuccess { response ->
-                val foods = response.data?.foodRecommendation
-                _foodRecommendations.postValue(foods ?: emptyList())
-            }.onFailure { error ->
-                _error.postValue(error)
+
+            // Periksa jenis Result yang dikembalikan
+            when (result) {
+                is ApiResult.Success -> {
+                    // Hasil sukses, ambil data dan post ke LiveData
+                    val foods = result.data.data?.foodRecommendation
+                    _foodRecommendations.postValue(foods ?: emptyList())
+                }
+                is ApiResult.Error -> {
+                    // Hasil error, ambil pesan error dan post ke LiveData
+                    _error.postValue(result.error)
+                }
+                is ApiResult.Loading -> {
+                    // Loading state, bisa ditangani jika diperlukan
+                }
+                else -> {
+                    // Tidak ada data atau kasus lainnya
+                    _error.postValue("Unknown error occurred")
+                }
             }
 
             _isLoading.postValue(false)
