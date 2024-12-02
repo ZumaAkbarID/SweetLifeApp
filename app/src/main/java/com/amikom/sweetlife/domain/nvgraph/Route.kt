@@ -29,5 +29,11 @@ sealed class Route {
     data object ProfileScreen: Route()
 
     @Serializable
+    data object RekomenScreen: Route()
+
+    @Serializable
+    data object HistoryScreen: Route()
+
+    @Serializable
     data object SettingsScreen: Route()
 }

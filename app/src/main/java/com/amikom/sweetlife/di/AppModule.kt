@@ -8,6 +8,7 @@ import com.amikom.sweetlife.data.remote.interceptor.AuthInterceptor
 import com.amikom.sweetlife.data.remote.repository.AuthRepositoryImpl
 import com.amikom.sweetlife.data.remote.repository.DashboardRepositoryImpl
 import com.amikom.sweetlife.data.remote.repository.ProfileRepositoryImpl
+import com.amikom.sweetlife.data.remote.repository.RekomenRepositoryImpl
 import com.amikom.sweetlife.data.remote.retrofit.AuthApiService
 import com.amikom.sweetlife.data.remote.retrofit.FeatureApiService
 import com.amikom.sweetlife.domain.manager.LocalAuthUserManager
@@ -16,6 +17,7 @@ import com.amikom.sweetlife.domain.manager.SessionManager
 import com.amikom.sweetlife.domain.repository.AuthRepository
 import com.amikom.sweetlife.domain.repository.DashboardRepository
 import com.amikom.sweetlife.domain.repository.ProfileRepository
+import com.amikom.sweetlife.domain.repository.RekomenRepository
 import com.amikom.sweetlife.domain.usecases.app_entry.AppEntryUseCases
 import com.amikom.sweetlife.domain.usecases.app_entry.ReadAppEntry
 import com.amikom.sweetlife.domain.usecases.app_entry.SaveAppEntry
@@ -34,6 +36,7 @@ import com.amikom.sweetlife.domain.usecases.profile.FetchDataHealthProfile
 import com.amikom.sweetlife.domain.usecases.profile.ProfileUseCases
 import com.amikom.sweetlife.domain.usecases.profile.FetchDataProfile
 import com.amikom.sweetlife.util.AppExecutors
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

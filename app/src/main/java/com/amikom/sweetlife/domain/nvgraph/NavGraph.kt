@@ -27,6 +27,8 @@ import com.amikom.sweetlife.ui.screen.profile.ProfileViewModel
 import com.amikom.sweetlife.ui.screen.profile.UserProfile
 import com.amikom.sweetlife.ui.screen.profile.UserProfileScreen
 import com.amikom.sweetlife.ui.screen.profile.settings.SettingsScreen
+import com.amikom.sweetlife.ui.screen.rekomend.RekomenScreen
+import com.amikom.sweetlife.ui.screen.rekomend.RekomenViewModel
 
 @Composable
 fun NavGraph(
@@ -78,6 +80,11 @@ fun NavGraph(
         composable<Route.DashboardScreen> {
             val dashboardViewModel: DashboardViewModel = hiltViewModel()
             DashboardScreen(viewModel = dashboardViewModel, navController = navController)
+        }
+
+        composable<Route.RekomenScreen> {
+            val viewModel: RekomenViewModel = hiltViewModel()
+            RekomenScreen(viewModel = viewModel)
         }
 
         composable<Route.ProfileScreen> {
