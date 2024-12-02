@@ -34,29 +34,31 @@ class AuthInterceptor @Inject constructor(
         val response = chain.proceed(requestBuilder.build())
 
         if (response.code == 401 && !refreshToken.isNullOrEmpty()) {
+            response.close()
+
             synchronized(lock) {
                 if (!isRefreshing) {
                     isRefreshing = true
                     try {
-                        val newTokenResult =
-                            runBlocking { authRepository.refreshToken(refreshToken) }
+                        val newTokenResult = runBlocking { authRepository.refreshToken(refreshToken) }
 
                         if (newTokenResult is Result.Success) {
                             val newToken = newTokenResult.data
                             runBlocking { localAuthUserManager.saveNewTokenInfo(newToken) }
+
+                            // Buat ulang request dengan token baru
+                            return chain.proceed(
+                                originalRequest.newBuilder()
+                                    .removeHeader("Authorization")
+                                    .addHeader("Authorization", "Bearer ${newToken.accessToken}")
+                                    .build()
+                            )
                         }
                     } finally {
                         isRefreshing = false
                     }
                 }
             }
-
-            return chain.proceed(
-                originalRequest.newBuilder()
-                    .removeHeader("Authorization")
-                    .addHeader("Authorization", "Bearer $accessToken")
-                    .build()
-            )
         }
 
         return response

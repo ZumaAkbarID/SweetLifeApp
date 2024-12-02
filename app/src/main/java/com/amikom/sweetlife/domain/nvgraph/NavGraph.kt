@@ -85,10 +85,6 @@ fun NavGraph(
             UserProfileScreen(
                 profileViewModel = profileViewModel,
                 navController = navController,
-                onEditProfile = {},
-                onEditHealthData = {},
-                onSettingsClick = {},
-                onLogout = {}
             )
         }
 
