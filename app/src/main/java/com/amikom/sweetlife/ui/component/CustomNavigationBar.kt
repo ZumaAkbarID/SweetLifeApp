@@ -33,8 +33,8 @@ object BottomNavItems {
 
     val routes = listOf(
         Route.DashboardScreen,
-        Route.HomeScreen,
-        Route.HomeScreen,
+        Route.HistoryScreen,
+        Route.RekomenScreen,
         Route.ProfileScreen
     )
 }

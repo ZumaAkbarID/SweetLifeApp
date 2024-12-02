@@ -24,4 +24,10 @@ sealed class Route {
 
     @Serializable
     data object ProfileScreen: Route()
+
+    @Serializable
+    data object RekomenScreen: Route()
+
+    @Serializable
+    data object HistoryScreen: Route()
 }

@@ -1,5 +1,6 @@
 package com.amikom.sweetlife.ui.screen.rekomend
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,15 +19,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.amikom.sweetlife.data.remote.dto.rekomen.Details
+import com.amikom.sweetlife.data.remote.dto.rekomen.Exercise
+import com.amikom.sweetlife.data.remote.dto.rekomen.ExerciseRecommendations
+import com.amikom.sweetlife.data.remote.dto.rekomen.FoodRecommendation
+import com.amikom.sweetlife.domain.repository.RekomenRepository
 
 @Composable
 fun RekomenScreen(
     viewModel: RekomenViewModel = hiltViewModel()
 ) {
+    // Observing the LiveData from the ViewModel
     val rekomend by viewModel.foodRecommendations.observeAsState(emptyList())
     val isLoading by viewModel.isLoading.observeAsState(false)
     val error by viewModel.error.observeAsState(null)
 
+    // Triggering the fetchRekomend function when the screen is first launched
     LaunchedEffect(Unit) {
         viewModel.fetchRekomend()
     }
@@ -34,7 +42,6 @@ fun RekomenScreen(
     Box(modifier = Modifier.fillMaxSize()) {
         when {
             isLoading -> CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-
             error != null -> Text(
                 text = error ?: "Unknown error",
                 style = MaterialTheme.typography.bodyLarge,
@@ -51,7 +58,7 @@ fun RekomenScreen(
                 modifier = Modifier.fillMaxSize()
             ) {
                 items(rekomend) { item ->
-                    RekomendItem(item = item)
+                    RekomendItemFood(item = item)
                 }
             }
         }
@@ -59,7 +66,7 @@ fun RekomenScreen(
 }
 
 @Composable
-fun RekomendItem(item: FoodRecommendation) {
+fun RekomendItemFood(item: FoodRecommendation) {
     Column(modifier = Modifier.padding(16.dp)) {
         Text(
             text = item.name ?: "Unknown food",
@@ -70,41 +77,58 @@ fun RekomendItem(item: FoodRecommendation) {
             style = MaterialTheme.typography.bodyMedium
         )
         Text(
-            text = "Portion: ${item.details?.portion ?: "Unknown"}",
+            text = "Proteins: ${item.details?.proteins ?: 0}",
+            style = MaterialTheme.typography.bodyMedium
+        )
+        Text(
+            text = "Carb: ${item.details?.carbohydrate ?: 0}",
             style = MaterialTheme.typography.bodyMedium
         )
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
 @Composable
-fun PreviewRekomenScreen() {
-    val mockData = listOf(
-        FoodRecommendation(
-            name = "Nasi Goreng",
-            details = FoodDetails(
-                calories = 300,
-                portion = "1 porsi",
-                type = "Makanan berat"
-            ),
-            image = Image(url = "https://www.example.com/nasi-goreng.png")
-        ),
-        FoodRecommendation(
-            name = "Ayam Penyet",
-            details = FoodDetails(
-                calories = 450,
-                portion = "1 porsi",
-                type = "Makanan berat"
-            ),
-            image = Image(url = "https://www.example.com/ayam-penyet.png")
+fun RekomenItemExercise(item: ExerciseRecommendations) {
+    Column(modifier = Modifier.padding(16.dp)) {
+        Text(
+            text = "Calories burned: ${item.caloriesBurned}",
+            style = MaterialTheme.typography.titleMedium
+        )
+        Text(
+            text = "Duration: ${item.exerciseDuration}",
+            style = MaterialTheme.typography.bodyMedium
+        )
+        item.exerciseList?.forEach { exercise ->
+            Text(
+                text = exercise.name,
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
+    }
+}
+
+@Composable
+@Preview(showBackground = true)
+fun RekomenScreenPreview() {
+    val foodRecommendation = FoodRecommendation(
+        imageUrl = 0, // Gunakan image resource atau URL sesuai kebutuhan
+        name = "Apple",
+        details = Details(
+            calories = "100",
+            proteins = "10",
+            carbohydrate = "20"
         )
     )
 
-    Column {
-        LazyColumn {
-            items(mockData) { item ->
-                RekomendItem(item = item)
-            }
-        }
-    }
+    val exerciseRecommendation = ExerciseRecommendations(
+        caloriesBurned = 100,
+        exerciseDuration = 30,
+        exerciseList = listOf(
+            Exercise(
+                image = 0, // Gunakan image resource sesuai kebutuhan
+                name = "Running",
+                desc = "Running for 30 minutes"
+            )
+        )
+    )
 }

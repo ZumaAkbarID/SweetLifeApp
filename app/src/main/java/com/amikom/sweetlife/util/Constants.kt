@@ -1,5 +1,7 @@
 package com.amikom.sweetlife.util
 
+import androidx.compose.runtime.MutableState
+
 object Constants {
     const val USER_SETTINGS = "userSettings"
 
@@ -17,4 +19,6 @@ object Constants {
     const val USER_IS_LOGIN = "userIsLogin"
 
     var CURRENT_TOKEN: String = ""
+
+    lateinit var CURRENT_BOTTOM_BAR_PAGE_ID: MutableState<Int>
 }

@@ -12,6 +12,8 @@ import androidx.navigation.compose.rememberNavController
 import com.amikom.sweetlife.domain.manager.SessionViewModel
 import com.amikom.sweetlife.ui.presentation.onboarding.OnBoardingScreen
 import com.amikom.sweetlife.ui.presentation.onboarding.OnBoardingViewModel
+import com.amikom.sweetlife.ui.screen.History.HistoryScreen
+import com.amikom.sweetlife.ui.screen.History.HistoryViewModel
 import com.amikom.sweetlife.ui.screen.dashboard.DashboardScreen
 import com.amikom.sweetlife.ui.screen.dashboard.DashboardViewModel
 import com.amikom.sweetlife.ui.screen.auth.forgot_password.ForgotPasswordScreen
@@ -24,6 +26,8 @@ import com.amikom.sweetlife.ui.screen.home.HomeScreen
 import com.amikom.sweetlife.ui.screen.profile.UserProfile
 import com.amikom.sweetlife.ui.screen.profile.UserProfileScreen
 import com.amikom.sweetlife.ui.screen.profile.settings.SettingsScreen
+import com.amikom.sweetlife.ui.screen.rekomend.RekomenScreen
+import com.amikom.sweetlife.ui.screen.rekomend.RekomenViewModel
 
 @Composable
 fun NavGraph(
@@ -71,6 +75,16 @@ fun NavGraph(
         composable<Route.DashboardScreen> {
             val dashboardViewModel: DashboardViewModel = hiltViewModel()
             DashboardScreen(viewModel = dashboardViewModel, navController = navController)
+        }
+
+        composable<Route.RekomenScreen> {
+            val rekomenViewModel: RekomenViewModel = hiltViewModel()
+            RekomenScreen(viewModel = rekomenViewModel)
+        }
+
+        composable<Route.HistoryScreen> {
+            val historyViewModel: HistoryViewModel = hiltViewModel()
+            HistoryScreen(viewModel = historyViewModel)
         }
 
         composable<Route.ProfileScreen> {

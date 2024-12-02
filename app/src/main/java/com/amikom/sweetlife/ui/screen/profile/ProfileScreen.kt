@@ -51,6 +51,7 @@ import com.amikom.sweetlife.ui.component.BottomNavigationBar
 import com.amikom.sweetlife.ui.component.getBottomNavButtons
 import com.amikom.sweetlife.ui.component.rememberSelectedIndex
 import com.amikom.sweetlife.ui.theme.MainBlue
+import com.amikom.sweetlife.util.Constants
 
 @Composable
 fun UserProfileScreen(
@@ -61,7 +62,7 @@ fun UserProfileScreen(
     onSettingsClick: () -> Unit,
     onLogout: () -> Unit
 ) {
-    val selectedIndex = rememberSelectedIndex()
+    val selectedIndex = Constants.CURRENT_BOTTOM_BAR_PAGE_ID
 
     val buttons = getBottomNavButtons(selectedIndex, navController)
 
