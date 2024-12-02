@@ -31,10 +31,11 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.amikom.sweetlife.ui.theme.MainBlue
 
 @Composable
-fun SettingsScreen(viewModel: SettingsViewModel) {
+fun SettingsScreen(viewModel: SettingsViewModel = viewModel()) {
     val userChoice by viewModel.userChoice.collectAsState()
     Column(
         modifier = Modifier.fillMaxSize().padding(top = 16.dp),

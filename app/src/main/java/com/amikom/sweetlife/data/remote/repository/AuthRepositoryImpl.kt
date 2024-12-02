@@ -176,8 +176,6 @@ class AuthRepositoryImpl(
                 val mainResponse = response.body()
                 val dataResponse = response.body()?.data
 
-                Log.d("BIJIXTOKEN", mainResponse.toString())
-
                 if (mainResponse?.status == true && mainResponse.message == "action success") {
                     Result.Success(
                         NewTokenModel(

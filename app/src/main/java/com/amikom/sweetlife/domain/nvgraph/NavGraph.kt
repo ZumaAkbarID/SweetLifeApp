@@ -6,12 +6,14 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.amikom.sweetlife.domain.manager.SessionViewModel
 import com.amikom.sweetlife.ui.presentation.onboarding.OnBoardingScreen
 import com.amikom.sweetlife.ui.presentation.onboarding.OnBoardingViewModel
+import com.amikom.sweetlife.ui.screen.auth.forgot_password.CheckEmailScreen
 import com.amikom.sweetlife.ui.screen.dashboard.DashboardScreen
 import com.amikom.sweetlife.ui.screen.dashboard.DashboardViewModel
 import com.amikom.sweetlife.ui.screen.auth.forgot_password.ForgotPasswordScreen
@@ -69,6 +71,10 @@ fun NavGraph(
             ForgotPasswordScreen(event = forgotPasswordViewModel::onEvent, navController = navController)
         }
 
+        composable<Route.CheckEmailScreen> {
+            CheckEmailScreen(navController = navController)
+        }
+
         composable<Route.DashboardScreen> {
             val dashboardViewModel: DashboardViewModel = hiltViewModel()
             DashboardScreen(viewModel = dashboardViewModel, navController = navController)
@@ -84,6 +90,10 @@ fun NavGraph(
                 onSettingsClick = {},
                 onLogout = {}
             )
+        }
+
+        composable<Route.SettingsScreen> {
+            SettingsScreen()
         }
     }
 }

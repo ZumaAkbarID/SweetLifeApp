@@ -1,7 +1,5 @@
 package com.amikom.sweetlife.data.remote.interceptor
 
-import android.util.Log
-import com.amikom.sweetlife.data.model.UserModel
 import com.amikom.sweetlife.data.remote.Result
 import com.amikom.sweetlife.domain.manager.LocalAuthUserManager
 import com.amikom.sweetlife.domain.repository.AuthRepository
@@ -16,6 +14,10 @@ class AuthInterceptor @Inject constructor(
     private val localAuthUserManager: LocalAuthUserManager,
     private val authRepository: AuthRepository
 ) : Interceptor {
+
+    @Volatile
+    private var isRefreshing = false
+    private val lock = Any()
 
     override fun intercept(chain: Interceptor.Chain): Response {
         val tokens = runBlocking { localAuthUserManager.getAllToken().first() }
@@ -32,26 +34,32 @@ class AuthInterceptor @Inject constructor(
         val response = chain.proceed(requestBuilder.build())
 
         if (response.code == 401 && !refreshToken.isNullOrEmpty()) {
-            response.close()
+            synchronized(lock) {
+                if (!isRefreshing) {
+                    isRefreshing = true
+                    try {
+                        val newTokenResult =
+                            runBlocking { authRepository.refreshToken(refreshToken) }
 
-            val newTokenResult = runBlocking { authRepository.refreshToken(refreshToken) }
-
-            if (newTokenResult is Result.Success) {
-                val newToken = newTokenResult.data
-                Log.d("NEW_TOKEN", newToken.accessToken)
-                runBlocking { localAuthUserManager.saveNewTokenInfo(newToken) }
-
-                val newRequest = originalRequest.newBuilder()
-                    .removeHeader("Authorization")
-                    .addHeader("Authorization", "Bearer ${newToken.accessToken}")
-                    .build()
-                return chain.proceed(newRequest)
-            } else {
-                runBlocking { localAuthUserManager.saveInfoLogin(UserModel("", "", "", "", "", false)) }
-//                throw Exception("Token refresh failed. Please login again.")
+                        if (newTokenResult is Result.Success) {
+                            val newToken = newTokenResult.data
+                            runBlocking { localAuthUserManager.saveNewTokenInfo(newToken) }
+                        }
+                    } finally {
+                        isRefreshing = false
+                    }
+                }
             }
+
+            return chain.proceed(
+                originalRequest.newBuilder()
+                    .removeHeader("Authorization")
+                    .addHeader("Authorization", "Bearer $accessToken")
+                    .build()
+            )
         }
 
         return response
     }
+
 }

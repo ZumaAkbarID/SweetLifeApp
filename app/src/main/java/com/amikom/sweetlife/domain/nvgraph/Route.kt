@@ -20,8 +20,14 @@ sealed class Route {
     data object ForgotPasswordScreen: Route()
 
     @Serializable
+    data object CheckEmailScreen: Route()
+
+    @Serializable
     data object DashboardScreen: Route()
 
     @Serializable
     data object ProfileScreen: Route()
+
+    @Serializable
+    data object SettingsScreen: Route()
 }

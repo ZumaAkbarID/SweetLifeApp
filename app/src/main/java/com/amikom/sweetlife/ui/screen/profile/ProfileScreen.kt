@@ -14,8 +14,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowRight
@@ -162,42 +164,47 @@ fun UserProfileScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(16.dp),
+                .padding(16.dp, 0.dp)
         ) {
             Column(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .verticalScroll(rememberScrollState())
+                    .padding(0.dp, 0.dp, 0.dp, 16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Center,
+                verticalArrangement = Arrangement.Top
             ) {
                 UserInfo(userProfile = userProfile)
                 gmailBox(text = userProfile.email, onClick = { })
                 UserHealthData(userProfile = userProfile)
-                Column(
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    Spacer(modifier = Modifier.height(16.dp))
-                    ProfileMenuItem(
-                        icon = Icons.Default.Edit,
-                        text = "Edit Profile",
-                        onClick = { /* TODO: Handle Edit Profile */ }
-                    )
-                    ProfileMenuItem(
-                        icon = Icons.Default.Settings,
-                        text = "Edit Health Data",
-                        onClick = { /* TODO: Handle Edit Health Data */ }
-                    )
-                    ProfileMenuItem(
-                        icon = Icons.Default.Settings,
-                        text = "Settings",
-                        onClick = { /* TODO: Handle Settings */ }
-                    )
-                    ProfileMenuItem(
-                        icon = Icons.Default.LocationOn,
-                        text = "Logout",
-                        textColor = Color.Red,
-                        onClick = { /* TODO: Handle Logout */ }
-                    )
-                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                ProfileMenuItem(
+                    icon = Icons.Default.Edit,
+                    text = "Edit Profile",
+                    onClick = { /* TODO: Handle Edit Profile */ }
+                )
+                ProfileMenuItem(
+                    icon = Icons.Default.Settings,
+                    text = "Edit Health Data",
+                    onClick = { /* TODO: Handle Edit Health Data */ }
+                )
+                ProfileMenuItem(
+                    icon = Icons.Default.Settings,
+                    text = "Settings",
+                    onClick = {
+                        navController.navigate(Route.SettingsScreen) {
+                            popUpTo<Route.ProfileScreen> { inclusive = false }
+                        }
+                    }
+                )
+                ProfileMenuItem(
+                    icon = Icons.Default.LocationOn,
+                    text = "Logout",
+                    textColor = Color.Red,
+                    onClick = { /* TODO: Handle Logout */ }
+                )
             }
         }
     }
