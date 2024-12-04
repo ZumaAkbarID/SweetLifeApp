@@ -56,7 +56,10 @@ fun getBottomNavButtons(
             onClick = {
                 selectedIndex.value = index
 
-                navController.navigate(BottomNavItems.routes[index])
+                navController.navigate(BottomNavItems.routes[index]) {
+                    launchSingleTop = true
+                    restoreState = true
+                }
             },
             label = BottomNavItems.labels[index]
         )

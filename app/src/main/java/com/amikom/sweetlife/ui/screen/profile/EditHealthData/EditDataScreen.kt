@@ -91,37 +91,37 @@ fun EditDataScreen() {
         }
 
 //Carbohydtrate
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = "Carbohydrate",
-            style = MaterialTheme.typography.bodyMedium,
-            color = Color.Gray
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-
-        OutlinedTextField(
-            value = "",
-            onValueChange = { },
-            modifier = Modifier
-                .fillMaxWidth(),
-            shape = RoundedCornerShape(15.dp),
-            label = {
-                Text(
-                    "Carbohydrate",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color.Gray
-                )
-            },
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Default.DateRange,
-                    contentDescription = "Person Icon",
-                    tint = Color.Gray
-                )
-            },
-            singleLine = true
-        )
+//        Spacer(modifier = Modifier.height(16.dp))
+//
+//        Text(
+//            text = "Carbohydrate",
+//            style = MaterialTheme.typography.bodyMedium,
+//            color = Color.Gray
+//        )
+//        Spacer(modifier = Modifier.height(8.dp))
+//
+//        OutlinedTextField(
+//            value = "",
+//            onValueChange = { },
+//            modifier = Modifier
+//                .fillMaxWidth(),
+//            shape = RoundedCornerShape(15.dp),
+//            label = {
+//                Text(
+//                    "Carbohydrate",
+//                    style = MaterialTheme.typography.bodyMedium,
+//                    color = Color.Gray
+//                )
+//            },
+//            leadingIcon = {
+//                Icon(
+//                    imageVector = Icons.Default.DateRange,
+//                    contentDescription = "Person Icon",
+//                    tint = Color.Gray
+//                )
+//            },
+//            singleLine = true
+//        )
 
         // blood sugar
 
@@ -159,74 +159,74 @@ fun EditDataScreen() {
 
 
         // Glucose
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = "Glucose",
-            style = MaterialTheme.typography.bodyMedium,
-            color = Color.Gray
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-
-        OutlinedTextField(
-            value = "",
-            onValueChange = { },
-            modifier = Modifier
-                .fillMaxWidth(),
-            shape = RoundedCornerShape(15.dp),
-            label = {
-                Text(
-                    "Glucose",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color.Gray
-                )
-            },
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Default.DateRange,
-                    contentDescription = "Person Icon",
-                    tint = Color.Gray
-                )
-            },
-            singleLine = true
-        )
-
-        // Calories form
-        Spacer(modifier = Modifier.height(16.dp))
-
-        Text(
-            text = "Calories",
-            style = MaterialTheme.typography.bodyMedium,
-            color = Color.Gray
-        )
-        Spacer(modifier = Modifier.height(8.dp))
-
-        OutlinedTextField(
-            value = "",
-            onValueChange = { newValue ->
-//                if (newValue.all { it.isDigit() }) {
-//                    inputText = newValue
-//                }
-            },
-            modifier = Modifier
-                .fillMaxWidth(),
-            shape = RoundedCornerShape(15.dp),
-            label = {
-                Text(
-                    "Calories",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color.Gray
-                )
-            },
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Default.DateRange,
-                    contentDescription = "Person Icon",
-                    tint = Color.Gray
-                )
-            },
-            singleLine = true
-        )
+//        Spacer(modifier = Modifier.height(16.dp))
+//
+//        Text(
+//            text = "Glucose",
+//            style = MaterialTheme.typography.bodyMedium,
+//            color = Color.Gray
+//        )
+//        Spacer(modifier = Modifier.height(8.dp))
+//
+//        OutlinedTextField(
+//            value = "",
+//            onValueChange = { },
+//            modifier = Modifier
+//                .fillMaxWidth(),
+//            shape = RoundedCornerShape(15.dp),
+//            label = {
+//                Text(
+//                    "Glucose",
+//                    style = MaterialTheme.typography.bodyMedium,
+//                    color = Color.Gray
+//                )
+//            },
+//            leadingIcon = {
+//                Icon(
+//                    imageVector = Icons.Default.DateRange,
+//                    contentDescription = "Person Icon",
+//                    tint = Color.Gray
+//                )
+//            },
+//            singleLine = true
+//        )
+//
+//        // Calories form
+//        Spacer(modifier = Modifier.height(16.dp))
+//
+//        Text(
+//            text = "Calories",
+//            style = MaterialTheme.typography.bodyMedium,
+//            color = Color.Gray
+//        )
+//        Spacer(modifier = Modifier.height(8.dp))
+//
+//        OutlinedTextField(
+//            value = "",
+//            onValueChange = { newValue ->
+////                if (newValue.all { it.isDigit() }) {
+////                    inputText = newValue
+////                }
+//            },
+//            modifier = Modifier
+//                .fillMaxWidth(),
+//            shape = RoundedCornerShape(15.dp),
+//            label = {
+//                Text(
+//                    "Calories",
+//                    style = MaterialTheme.typography.bodyMedium,
+//                    color = Color.Gray
+//                )
+//            },
+//            leadingIcon = {
+//                Icon(
+//                    imageVector = Icons.Default.DateRange,
+//                    contentDescription = "Person Icon",
+//                    tint = Color.Gray
+//                )
+//            },
+//            singleLine = true
+//        )
 
         //button save
         Spacer(modifier = Modifier.height(16.dp))

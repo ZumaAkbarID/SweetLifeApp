@@ -7,6 +7,7 @@ import com.amikom.sweetlife.data.manager.LocalUserManagerImpl
 import com.amikom.sweetlife.data.remote.interceptor.AuthInterceptor
 import com.amikom.sweetlife.data.remote.repository.AuthRepositoryImpl
 import com.amikom.sweetlife.data.remote.repository.DashboardRepositoryImpl
+import com.amikom.sweetlife.data.remote.repository.EditProfileRepositoryImpl
 import com.amikom.sweetlife.data.remote.repository.ProfileRepositoryImpl
 import com.amikom.sweetlife.data.remote.repository.RekomenRepositoryImpl
 import com.amikom.sweetlife.data.remote.retrofit.AuthApiService
@@ -16,6 +17,7 @@ import com.amikom.sweetlife.domain.manager.LocalUserManager
 import com.amikom.sweetlife.domain.manager.SessionManager
 import com.amikom.sweetlife.domain.repository.AuthRepository
 import com.amikom.sweetlife.domain.repository.DashboardRepository
+import com.amikom.sweetlife.domain.repository.EditProfileRepository
 import com.amikom.sweetlife.domain.repository.ProfileRepository
 import com.amikom.sweetlife.domain.repository.RekomenRepository
 import com.amikom.sweetlife.domain.usecases.app_entry.AppEntryUseCases
@@ -40,6 +42,7 @@ import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -71,6 +74,7 @@ object AppModule {
         readAppEntry = ReadAppEntry(localUserManager),
         saveAppEntry = SaveAppEntry(localUserManager)
     )
+
 
     @Provides
     @Singleton
@@ -185,4 +189,9 @@ object AppModule {
         )
     }
 
+    @Provides
+    @Singleton
+    fun provideEditProfileRepository(
+        featureApiService: FeatureApiService
+    ): EditProfileRepository = EditProfileRepositoryImpl(featureApiService)
 }

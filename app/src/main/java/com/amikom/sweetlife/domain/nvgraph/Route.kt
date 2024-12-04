@@ -36,4 +36,7 @@ sealed class Route {
 
     @Serializable
     data object SettingsScreen: Route()
+
+    @Serializable
+    data object EditProfileScreen: Route()
 }

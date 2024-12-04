@@ -44,6 +44,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.amikom.sweetlife.R
@@ -175,7 +176,7 @@ fun UserProfileScreen(
                 verticalArrangement = Arrangement.Top
             ) {
                 UserInfo(userProfile = userProfile)
-                gmailBox(text = userProfile.email, onClick = { })
+                gmailBox(text = userProfile.email)
                 UserHealthData(userProfile = userProfile)
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -183,16 +184,23 @@ fun UserProfileScreen(
                 ProfileMenuItem(
                     icon = Icons.Default.Edit,
                     text = "Edit Profile",
-                    onClick = { /* TODO: Handle Edit Profile */ }
+                    shape = RoundedCornerShape(topEnd = 16.dp, topStart = 16.dp),
+                    onClick = {
+                        navController.navigate(Route.EditProfileScreen) {
+                            launchSingleTop = true
+                        }
+                    }
                 )
                 ProfileMenuItem(
                     icon = Icons.Default.Settings,
                     text = "Edit Health Data",
+                    shape = RoundedCornerShape(0.dp),
                     onClick = { /* TODO: Handle Edit Health Data */ }
                 )
                 ProfileMenuItem(
                     icon = Icons.Default.Settings,
                     text = "Settings",
+                    shape = RoundedCornerShape(0.dp),
                     onClick = {
                         navController.navigate(Route.SettingsScreen) {
                             popUpTo<Route.ProfileScreen> { inclusive = false }
@@ -202,6 +210,7 @@ fun UserProfileScreen(
                 ProfileMenuItem(
                     icon = Icons.Default.LocationOn,
                     text = "Logout",
+                    shape = RoundedCornerShape(bottomEnd = 16.dp, bottomStart = 16.dp),
                     textColor = Color.Red,
                     onClick = { /* TODO: Handle Logout */ }
                 )
@@ -261,7 +270,6 @@ private fun UserInfo(
 @Composable
 private fun gmailBox(
     text: String,
-    onClick: () -> Unit,
     textColor: Color = MaterialTheme.colorScheme.primary,
 ) {
     Card(
@@ -273,7 +281,6 @@ private fun gmailBox(
         ),
         modifier = Modifier
             .wrapContentWidth()
-            .clickable(onClick = onClick)
             .padding(0.dp, 16.dp)
     ) {
         Row(
@@ -388,14 +395,16 @@ private fun UserHealthItem(
 fun ProfileMenuItem(
     icon: ImageVector,
     text: String,
+    shape: RoundedCornerShape,
     onClick: () -> Unit,
     textColor: Color = Color.Black,
     trailingIcon: ImageVector = Icons.Default.KeyboardArrowRight
 ) {
+
+    Spacer(modifier = Modifier.height(16.dp))
     Card(
         modifier = Modifier.fillMaxWidth(),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
-        shape = RoundedCornerShape(0.dp),
         colors = CardColors(
             containerColor = Color.White,
             contentColor = Color.Black,
@@ -441,4 +450,3 @@ data class UserProfile(
     val age: Int,
     val isDiabetesRisk: Boolean
 )
-

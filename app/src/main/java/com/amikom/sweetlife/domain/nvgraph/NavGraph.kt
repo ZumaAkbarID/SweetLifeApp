@@ -13,6 +13,8 @@ import androidx.navigation.compose.rememberNavController
 import com.amikom.sweetlife.domain.manager.SessionViewModel
 import com.amikom.sweetlife.ui.presentation.onboarding.OnBoardingScreen
 import com.amikom.sweetlife.ui.presentation.onboarding.OnBoardingViewModel
+import com.amikom.sweetlife.ui.screen.History.HistoryScreen
+import com.amikom.sweetlife.ui.screen.History.HistoryViewModel
 import com.amikom.sweetlife.ui.screen.auth.forgot_password.CheckEmailScreen
 import com.amikom.sweetlife.ui.screen.dashboard.DashboardScreen
 import com.amikom.sweetlife.ui.screen.dashboard.DashboardViewModel
@@ -26,6 +28,8 @@ import com.amikom.sweetlife.ui.screen.home.HomeScreen
 import com.amikom.sweetlife.ui.screen.profile.ProfileViewModel
 import com.amikom.sweetlife.ui.screen.profile.UserProfile
 import com.amikom.sweetlife.ui.screen.profile.UserProfileScreen
+import com.amikom.sweetlife.ui.screen.profile.editProfile.EditProfileScreen
+import com.amikom.sweetlife.ui.screen.profile.editProfile.EditProfileViewModel
 import com.amikom.sweetlife.ui.screen.profile.settings.SettingsScreen
 import com.amikom.sweetlife.ui.screen.rekomend.RekomenScreen
 import com.amikom.sweetlife.ui.screen.rekomend.RekomenViewModel
@@ -84,9 +88,15 @@ fun NavGraph(
 
         composable<Route.RekomenScreen> {
             val viewModel: RekomenViewModel = hiltViewModel()
-            RekomenScreen(
-                // dummy
+            RekomenScreen(viewModel = viewModel, navController = navController)
+        }
 
+        composable<Route.EditProfileScreen> {
+            val EditProfileViewModel: EditProfileViewModel = hiltViewModel()
+            EditProfileScreen(
+                viewModel = EditProfileViewModel,
+                onEditProfile = {},
+                navController = navController
             )
         }
 
@@ -100,6 +110,11 @@ fun NavGraph(
                 onSettingsClick = {},
                 onLogout = {}
             )
+        }
+
+        composable<Route.HistoryScreen> {
+            val viewModel: HistoryViewModel = hiltViewModel()
+            HistoryScreen(viewModel = viewModel, navController = navController)
         }
 
         composable<Route.SettingsScreen> {

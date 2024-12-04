@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.amikom.sweetlife.data.remote.dto.rekomen.Details
 import com.amikom.sweetlife.data.remote.dto.rekomen.Exercise
 import com.amikom.sweetlife.data.remote.dto.rekomen.ExerciseRecommendations
@@ -27,7 +28,8 @@ import com.amikom.sweetlife.domain.repository.RekomenRepository
 
 @Composable
 fun RekomenScreen(
-    viewModel: RekomenViewModel = hiltViewModel()
+    viewModel: RekomenViewModel = hiltViewModel(),
+    navController : NavController
 ) {
     // Observing the LiveData from the ViewModel
     val rekomend by viewModel.foodRecommendations.observeAsState(emptyList())
