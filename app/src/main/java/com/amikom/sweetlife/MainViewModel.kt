@@ -1,6 +1,7 @@
 package com.amikom.sweetlife
 
 import android.util.Log
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -15,6 +16,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -32,10 +34,19 @@ class MainViewModel @Inject constructor(
     private val _isUserLoggedIn = MutableStateFlow(false)
     private val isUserLoggedIn: StateFlow<Boolean> = _isUserLoggedIn
 
+    private val _isDarkMode = MutableStateFlow(false)
+    val isDarkMode = _isDarkMode.asStateFlow()
+
     init {
         viewModelScope.launch {
             authUseCases.readUserAllToken().collect { tokens ->
                 Log.d("B4 Refresh: ${tokens[0].first}", tokens[0].second.toString())
+            }
+        }
+
+        viewModelScope.launch {
+            appEntryUseCases.getAppThemeMode().collect { isDarkMode ->
+                _isDarkMode.value = isDarkMode
             }
         }
 

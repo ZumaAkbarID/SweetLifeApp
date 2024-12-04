@@ -10,6 +10,7 @@ import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Modifier
@@ -35,8 +36,10 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge() // Udah di handle sama ini
 
+        val isDarkMode = viewModel.isDarkMode.value
+
         setContent {
-            SweetLifeTheme {
+            SweetLifeTheme(darkTheme = isDarkMode) {
 
 //                Jangan dipake deprecated anjer
 //                val isSystemInDarkMode = isSystemInDarkTheme()

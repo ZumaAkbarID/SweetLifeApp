@@ -64,10 +64,6 @@ import com.amikom.sweetlife.util.getCurrentDate
 fun UserProfileScreen(
     profileViewModel: ProfileViewModel,
     navController: NavController,
-    onEditProfile: () -> Unit,
-    onEditHealthData: () -> Unit,
-    onSettingsClick: () -> Unit,
-    onLogout: () -> Unit
 ) {
     val profileRawData by profileViewModel.profileData.observeAsState()
     val healthRawData by profileViewModel.healthData.observeAsState()
