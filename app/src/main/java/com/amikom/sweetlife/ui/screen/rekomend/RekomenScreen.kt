@@ -83,7 +83,7 @@ fun RekomenScreen(
             BottomNavigationBar(buttons = buttons)
         },
         modifier = Modifier.fillMaxSize(),
-    ) { innerPadding ->
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
