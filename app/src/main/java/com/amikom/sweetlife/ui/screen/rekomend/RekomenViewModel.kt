@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.amikom.sweetlife.data.remote.Result.Empty.onFailure
 import com.amikom.sweetlife.data.remote.Result.Empty.onSuccess
+import com.amikom.sweetlife.data.remote.dto.rekomen.ExerciseRecommendations
 import com.amikom.sweetlife.data.remote.dto.rekomen.FoodRecommendation
 import com.amikom.sweetlife.domain.repository.RekomenRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,6 +28,9 @@ class RekomenViewModel @Inject constructor(
 
     private val _foodRecommendations = MutableLiveData<List<FoodRecommendation>>()
     val foodRecommendations: LiveData<List<FoodRecommendation>> = _foodRecommendations
+
+    private val _exerciseRecommendations = MutableLiveData<List<ExerciseRecommendations>>()
+    val exerciseRecommendations: LiveData<List<ExerciseRecommendations>> = _exerciseRecommendations
 
     fun fetchRekomend() {
         viewModelScope.launch {
