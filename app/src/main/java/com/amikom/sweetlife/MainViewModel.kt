@@ -12,6 +12,7 @@ import com.amikom.sweetlife.domain.nvgraph.Route
 import com.amikom.sweetlife.domain.usecases.app_entry.AppEntryUseCases
 import com.amikom.sweetlife.domain.usecases.auth.AuthUseCases
 import com.amikom.sweetlife.util.Constants
+import com.amikom.sweetlife.util.asLiveData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,7 +36,8 @@ class MainViewModel @Inject constructor(
     private val isUserLoggedIn: StateFlow<Boolean> = _isUserLoggedIn
 
     private val _isDarkMode = MutableStateFlow(false)
-    val isDarkMode = _isDarkMode.asStateFlow()
+//    val isDarkMode = _isDarkMode.asStateFlow()
+    val isDarkMode = _isDarkMode.asLiveData()
 
     init {
         viewModelScope.launch {

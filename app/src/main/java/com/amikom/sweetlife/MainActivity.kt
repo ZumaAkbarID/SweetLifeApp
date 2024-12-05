@@ -1,6 +1,7 @@
 package com.amikom.sweetlife
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -36,10 +37,35 @@ class MainActivity : ComponentActivity() {
 
         enableEdgeToEdge() // Udah di handle sama ini
 
-        val isDarkMode = viewModel.isDarkMode.value
+//        val isDarkMode = viewModel.isDarkMode.value
+//        val isDarkMode = remember { mutableStateOf(false) }
+//        viewModel.isDarkMode.observeForever{
+//            isDarkMode = it
+//            Log.d("BIJIX_THEME", it.toString())
+//        }
 
-        setContent {
-            SweetLifeTheme(darkTheme = isDarkMode) {
+        var isDarkMode = false
+
+        viewModel.isDarkMode.observeForever { isDark ->
+            if (isDarkMode != isDark) { // Hanya re-render jika ada perubahan
+                isDarkMode = isDark
+                Log.d("BIJIX_THEME", "Theme updated to: $isDark")
+
+                // Update UI dengan tema baru
+                setContent {
+                    SweetLifeTheme(darkTheme = isDarkMode) {
+                        Box(modifier = Modifier.background(color = MaterialTheme.colorScheme.background)) {
+                            val startDestination = viewModel.startDestination
+                            NavGraph(startDestination = startDestination)
+                        }
+                    }
+                }
+            }
+        }
+
+
+//        setContent {
+//            SweetLifeTheme(darkTheme = isDarkMode) {
 
 //                Jangan dipake deprecated anjer
 //                val isSystemInDarkMode = isSystemInDarkTheme()
@@ -52,11 +78,11 @@ class MainActivity : ComponentActivity() {
 //                    )
 //                }
 
-                Box(modifier = Modifier.background(color = MaterialTheme.colorScheme.background)) {
-                    val startDestination = viewModel.startDestination
-                    NavGraph(startDestination = startDestination)
-                }
-            }
-        }
+//                Box(modifier = Modifier.background(color = MaterialTheme.colorScheme.background)) {
+//                    val startDestination = viewModel.startDestination
+//                    NavGraph(startDestination = startDestination)
+//                }
+//            }
+//        }
     }
 }
