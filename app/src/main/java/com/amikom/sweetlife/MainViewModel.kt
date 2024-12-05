@@ -58,7 +58,7 @@ class MainViewModel @Inject constructor(
 
                 appEntryUseCases.readAppEntry().collect { shouldStartFromHomeScreen ->
                     _startDestination = when {
-                        isUserLoggedIn.value && shouldStartFromHomeScreen -> Route.DashboardScreen
+                        isUserLoggedIn.value && shouldStartFromHomeScreen -> Route.AssessmentScreen
                         !isUserLoggedIn.value && shouldStartFromHomeScreen -> Route.LoginScreen
                         isUserLoggedIn.value && !shouldStartFromHomeScreen -> Route.DashboardScreen
                         else -> Route.OnboardingScreen

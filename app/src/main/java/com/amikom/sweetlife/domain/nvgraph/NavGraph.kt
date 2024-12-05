@@ -15,6 +15,8 @@ import com.amikom.sweetlife.ui.presentation.onboarding.OnBoardingScreen
 import com.amikom.sweetlife.ui.presentation.onboarding.OnBoardingViewModel
 import com.amikom.sweetlife.ui.screen.History.HistoryScreen
 import com.amikom.sweetlife.ui.screen.History.HistoryViewModel
+import com.amikom.sweetlife.ui.screen.assesment.AssessmentScreen
+import com.amikom.sweetlife.ui.screen.assesment.AssessmentViewModel
 import com.amikom.sweetlife.ui.screen.auth.forgot_password.CheckEmailScreen
 import com.amikom.sweetlife.ui.screen.dashboard.DashboardScreen
 import com.amikom.sweetlife.ui.screen.dashboard.DashboardViewModel
@@ -61,6 +63,11 @@ fun NavGraph(
 
         composable<Route.HomeScreen> {
             HomeScreen()
+        }
+
+        composable<Route.AssessmentScreen> {
+            val assessmentViewModel: AssessmentViewModel = hiltViewModel()
+            AssessmentScreen(navController = navController, viewModel = assessmentViewModel)
         }
 
         composable<Route.LoginScreen> {
