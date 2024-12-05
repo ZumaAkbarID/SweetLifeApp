@@ -63,6 +63,7 @@ class MainViewModel @Inject constructor(
                         isUserLoggedIn.value && !shouldStartFromHomeScreen -> Route.DashboardScreen
                         else -> Route.OnboardingScreen
                     }
+                    Log.d("BIJIX_INIT", "LOGIN: ${isUserLoggedIn.value} | HOME: $shouldStartFromHomeScreen | ROUTE: $startDestination")
 
                     delay(500L)
                     splashCondition = false

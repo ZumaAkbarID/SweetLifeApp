@@ -43,26 +43,22 @@ class MainActivity : ComponentActivity() {
 //            isDarkMode = it
 //            Log.d("BIJIX_THEME", it.toString())
 //        }
-
         var isDarkMode = false
 
         viewModel.isDarkMode.observeForever { isDark ->
-            if (isDarkMode != isDark) { // Hanya re-render jika ada perubahan
-                isDarkMode = isDark
-                Log.d("BIJIX_THEME", "Theme updated to: $isDark")
+            isDarkMode = isDark
+            Log.d("BIJIX_THEME", "Theme updated to: $isDark")
 
-                // Update UI dengan tema baru
-                setContent {
-                    SweetLifeTheme(darkTheme = isDarkMode) {
-                        Box(modifier = Modifier.background(color = MaterialTheme.colorScheme.background)) {
-                            val startDestination = viewModel.startDestination
-                            NavGraph(startDestination = startDestination)
-                        }
+            // Render UI dengan tema baru
+            setContent {
+                SweetLifeTheme(darkTheme = isDarkMode) {
+                    Box(modifier = Modifier.background(color = MaterialTheme.colorScheme.background)) {
+                        val startDestination = viewModel.startDestination
+                        NavGraph(startDestination = startDestination)
                     }
                 }
             }
         }
-
 
 //        setContent {
 //            SweetLifeTheme(darkTheme = isDarkMode) {

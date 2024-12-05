@@ -1,5 +1,6 @@
 package com.amikom.sweetlife.ui.presentation.onboarding
 
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -29,13 +30,11 @@ import com.amikom.sweetlife.domain.nvgraph.Route
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun OnBoardingUI(
+fun OnBoardingScreen(
+    event: (OnBoardingEvent) -> Unit,
     navController: NavController,
-    event: (OnBoardingEvent) -> Unit
 ) {
-
     val pages: List<OnboardingModel> = listOf(
         OnboardingModel.FirstPages,
         OnboardingModel.SecondPages,
@@ -120,9 +119,9 @@ fun OnBoardingUI(
                                 pagerState.animateScrollToPage(pagerState.currentPage + 1)
                             } else {
                                 event(OnBoardingEvent.SaveAppEntry)
-//                                navController.navigate(Route.LoginScreen) {
-//                                    popUpTo(Route.OnboardingScreen) { inclusive = true }
-//                                }
+                                navController.navigate(Route.LoginScreen) {
+                                    popUpTo(Route.OnboardingScreen) { inclusive = true }
+                                }
                             }
                         }
                     }
@@ -142,13 +141,4 @@ fun OnBoardingUI(
             }
         }
     )
-}
-
-@Composable
-fun OnBoardingScreen(
-    event: (OnBoardingEvent) -> Unit,
-    navController: NavController
-) {
-    // Logic Onboarding
-    OnBoardingUI(navController = navController, event = event)
 }

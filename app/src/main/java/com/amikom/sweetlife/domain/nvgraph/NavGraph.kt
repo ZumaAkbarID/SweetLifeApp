@@ -1,5 +1,6 @@
 package com.amikom.sweetlife.domain.nvgraph
 
+import android.util.Log
 import com.amikom.sweetlife.ui.screen.profile.settings.SettingsViewModel
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -42,10 +43,12 @@ fun NavGraph(
     val isUserLoggedOut by sessionViewModel.isUserLoggedOut.collectAsState()
 
     // Pantau logout secara global
-    LaunchedEffect(isUserLoggedOut) {
-        if (isUserLoggedOut) {
-            navController.navigate(Route.LoginScreen) {
-                popUpTo(0) { inclusive = true }
+    if(startDestination !== Route.OnboardingScreen) {
+        LaunchedEffect(isUserLoggedOut) {
+            if (isUserLoggedOut) {
+                navController.navigate(Route.LoginScreen) {
+                    popUpTo(0) { inclusive = true }
+                }
             }
         }
     }
