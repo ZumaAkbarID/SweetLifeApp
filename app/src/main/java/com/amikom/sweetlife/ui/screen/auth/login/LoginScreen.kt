@@ -75,6 +75,7 @@ fun LoginScreen(
 
     val loginResult by viewModel.loginResult.collectAsState()
     val isUserLoggedIn by viewModel.isUserLoggedIn.collectAsState()
+    val isUserHasHealth by viewModel.isUserHasHealth.collectAsState()
 
     val context = LocalContext.current
     var hasShownError by remember { mutableStateOf(false) }
@@ -241,10 +242,7 @@ fun LoginScreen(
 
         when (loginResult) {
             is Result.Success -> {
-                if (!hasShownSuccess) {
-                    showToastMessage(context, "Welcome!", Toast.LENGTH_LONG)
-                    hasShownSuccess = true
-                }
+                // Do nothing
             }
 
             is Result.Error -> {
@@ -364,7 +362,16 @@ fun LoginScreen(
     }
 
     LaunchedEffect(isUserLoggedIn) {
-        if (isUserLoggedIn) {
+        if (isUserLoggedIn && !isUserHasHealth) {
+            showToastMessage(context, "Welcome!", Toast.LENGTH_LONG)
+
+            navController.navigate(Route.AssessmentScreen) {
+                popUpTo<Route.LoginScreen> { inclusive = true }
+                launchSingleTop = true
+            }
+        } else if(isUserLoggedIn && isUserHasHealth) {
+            showToastMessage(context, "Welcome back!", Toast.LENGTH_LONG)
+
             navController.navigate(Route.DashboardScreen) {
                 popUpTo<Route.LoginScreen> { inclusive = true }
                 launchSingleTop = true

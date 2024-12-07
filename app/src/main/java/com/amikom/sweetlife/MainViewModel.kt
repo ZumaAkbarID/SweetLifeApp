@@ -57,16 +57,21 @@ class MainViewModel @Inject constructor(
                 _isUserLoggedIn.value = isLoggedIn
 
                 appEntryUseCases.readAppEntry().collect { shouldStartFromHomeScreen ->
-                    _startDestination = when {
-                        isUserLoggedIn.value && shouldStartFromHomeScreen -> Route.AssessmentScreen
-                        !isUserLoggedIn.value && shouldStartFromHomeScreen -> Route.LoginScreen
-                        isUserLoggedIn.value && !shouldStartFromHomeScreen -> Route.DashboardScreen
-                        else -> Route.OnboardingScreen
-                    }
-                    Log.d("BIJIX_INIT", "LOGIN: ${isUserLoggedIn.value} | HOME: $shouldStartFromHomeScreen | ROUTE: $startDestination")
 
-                    delay(500L)
-                    splashCondition = false
+                    authUseCases.checkHasHealthProfile().collect { hasHealthProfile ->
+                        _startDestination = when {
+                            isLoggedIn && hasHealthProfile && shouldStartFromHomeScreen -> Route.DashboardScreen
+                            isLoggedIn && hasHealthProfile && !shouldStartFromHomeScreen -> Route.OnboardingScreen
+                            isLoggedIn && !hasHealthProfile && !shouldStartFromHomeScreen -> Route.OnboardingScreen
+                            isLoggedIn && !hasHealthProfile && shouldStartFromHomeScreen -> Route.AssessmentScreen
+                            !isLoggedIn && !hasHealthProfile && !shouldStartFromHomeScreen -> Route.OnboardingScreen
+                            else -> Route.LoginScreen
+                        }
+                        Log.d("BIJIX_INIT", "LOGIN: ${isUserLoggedIn.value} | HOME: $shouldStartFromHomeScreen | HEALTH: $hasHealthProfile | ROUTE: $startDestination")
+
+                        delay(500L)
+                        splashCondition = false
+                    }
                 }
             }
         }

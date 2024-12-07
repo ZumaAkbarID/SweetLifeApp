@@ -23,6 +23,9 @@ class LoginViewModel @Inject constructor(
     private val _isUserLoggedIn = MutableStateFlow(false)
     val isUserLoggedIn: StateFlow<Boolean> = _isUserLoggedIn
 
+    private val _isUserHasHealth = MutableStateFlow(false)
+    val isUserHasHealth: StateFlow<Boolean> = _isUserHasHealth
+
     fun onEvent(event: LoginEvent) {
         when (event) {
             is LoginEvent.LoginProcess -> {
@@ -45,7 +48,10 @@ class LoginViewModel @Inject constructor(
                     authUseCases.checkIsUserLogin().collect { isLoggedIn ->
                         _isUserLoggedIn.value = isLoggedIn
                         if (isLoggedIn) {
-                            _loginResult.value = result
+                            authUseCases.checkHasHealthProfile().collect { hasHealth ->
+                                _loginResult.value = result
+                                _isUserHasHealth.value = hasHealth
+                            }
                         }
                     }
                 }

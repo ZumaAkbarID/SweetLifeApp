@@ -29,6 +29,7 @@ class LocalAuthUserManagerImpl @Inject constructor(
             pref[LocalUserInfoKeys.USER_TOKEN] = userModel.token
             pref[LocalUserInfoKeys.USER_REFRESH_TOKEN] = userModel.refreshToken
             pref[LocalUserInfoKeys.USER_IS_LOGIN] = userModel.isLogin
+            pref[LocalUserInfoKeys.USER_HAS_HEALTH_PROFILE] = userModel.hasHealthProfile
         }
     }
 
@@ -36,6 +37,18 @@ class LocalAuthUserManagerImpl @Inject constructor(
         context.dataStore.edit { pref ->
             pref[LocalUserInfoKeys.USER_TOKEN] = newToken.accessToken
             pref[LocalUserInfoKeys.USER_REFRESH_TOKEN] = newToken.refreshToken
+        }
+    }
+
+    override suspend fun saveNewHasHealth(hasHealth: Boolean) {
+        context.dataStore.edit { pref ->
+            pref[LocalUserInfoKeys.USER_HAS_HEALTH_PROFILE] = hasHealth
+        }
+    }
+
+    override fun readHasHealth(): Flow<Boolean> {
+        return context.dataStore.data.map { preferences ->
+            preferences[LocalUserInfoKeys.USER_HAS_HEALTH_PROFILE] ?: false
         }
     }
 
@@ -70,4 +83,5 @@ private object LocalUserInfoKeys {
     val USER_TOKEN = stringPreferencesKey(name = Constants.USER_TOKEN)
     val USER_REFRESH_TOKEN = stringPreferencesKey(name = Constants.USER_REFRESH_TOKEN)
     val USER_IS_LOGIN = booleanPreferencesKey(name = Constants.USER_IS_LOGIN)
+    val USER_HAS_HEALTH_PROFILE = booleanPreferencesKey(name = Constants.USER_HAS_HEALTH_PROFILE)
 }
