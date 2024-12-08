@@ -11,6 +11,10 @@ interface LocalAuthUserManager {
 
     suspend fun saveNewTokenInfo(newToken: NewTokenModel)
 
+    suspend fun saveNewHasHealth(hasHealth: Boolean)
+
+    fun readHasHealth(): Flow<Boolean>
+
     fun readInfoLogin(): Flow<Boolean>
 
     suspend fun logout()

@@ -12,6 +12,7 @@ import com.amikom.sweetlife.domain.nvgraph.Route
 import com.amikom.sweetlife.domain.usecases.app_entry.AppEntryUseCases
 import com.amikom.sweetlife.domain.usecases.auth.AuthUseCases
 import com.amikom.sweetlife.util.Constants
+import com.amikom.sweetlife.util.asLiveData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -35,7 +36,8 @@ class MainViewModel @Inject constructor(
     private val isUserLoggedIn: StateFlow<Boolean> = _isUserLoggedIn
 
     private val _isDarkMode = MutableStateFlow(false)
-    val isDarkMode = _isDarkMode.asStateFlow()
+//    val isDarkMode = _isDarkMode.asStateFlow()
+    val isDarkMode = _isDarkMode.asLiveData()
 
     init {
         viewModelScope.launch {
@@ -55,15 +57,21 @@ class MainViewModel @Inject constructor(
                 _isUserLoggedIn.value = isLoggedIn
 
                 appEntryUseCases.readAppEntry().collect { shouldStartFromHomeScreen ->
-                    _startDestination = when {
-                        isUserLoggedIn.value && shouldStartFromHomeScreen -> Route.DashboardScreen
-                        !isUserLoggedIn.value && shouldStartFromHomeScreen -> Route.LoginScreen
-                        isUserLoggedIn.value && !shouldStartFromHomeScreen -> Route.DashboardScreen
-                        else -> Route.OnboardingScreen
-                    }
 
-                    delay(500L)
-                    splashCondition = false
+                    authUseCases.checkHasHealthProfile().collect { hasHealthProfile ->
+                        _startDestination = when {
+                            isLoggedIn && hasHealthProfile && shouldStartFromHomeScreen -> Route.DashboardScreen
+                            isLoggedIn && hasHealthProfile && !shouldStartFromHomeScreen -> Route.OnboardingScreen
+                            isLoggedIn && !hasHealthProfile && !shouldStartFromHomeScreen -> Route.OnboardingScreen
+                            isLoggedIn && !hasHealthProfile && shouldStartFromHomeScreen -> Route.AssessmentScreen
+                            !isLoggedIn && !hasHealthProfile && !shouldStartFromHomeScreen -> Route.OnboardingScreen
+                            else -> Route.LoginScreen
+                        }
+                        Log.d("BIJIX_INIT", "LOGIN: ${isUserLoggedIn.value} | HOME: $shouldStartFromHomeScreen | HEALTH: $hasHealthProfile | ROUTE: $startDestination")
+
+                        delay(500L)
+                        splashCondition = false
+                    }
                 }
             }
         }

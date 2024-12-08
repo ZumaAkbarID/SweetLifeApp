@@ -18,6 +18,7 @@ object Constants {
     const val USER_TOKEN = "userToken"
     const val USER_REFRESH_TOKEN = "userRefreshToken"
     const val USER_IS_LOGIN = "userIsLogin"
+    const val USER_HAS_HEALTH_PROFILE = "userHasHealthProfile"
 
     var CURRENT_TOKEN: String = ""
 
