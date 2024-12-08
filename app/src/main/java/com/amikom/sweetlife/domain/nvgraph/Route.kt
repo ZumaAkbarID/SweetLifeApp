@@ -39,4 +39,7 @@ sealed class Route {
 
     @Serializable
     data object EditProfileScreen: Route()
+
+    @Serializable
+    data object AssessmentScreen : Route()
 }

@@ -13,12 +13,14 @@ import com.amikom.sweetlife.data.model.Status
 import com.amikom.sweetlife.data.model.User
 import com.amikom.sweetlife.data.remote.Result
 import com.amikom.sweetlife.data.remote.dto.ErrorResponse
+import com.amikom.sweetlife.data.remote.dto.profile.ProfileResponse
 import com.amikom.sweetlife.data.remote.retrofit.FeatureApiService
 import com.amikom.sweetlife.domain.repository.DashboardRepository
 import com.amikom.sweetlife.domain.repository.ProfileRepository
 import com.amikom.sweetlife.util.AppExecutors
 import com.amikom.sweetlife.util.Constants
 import com.google.gson.Gson
+import okhttp3.MultipartBody
 
 class ProfileRepositoryImpl(
     private val featureApiService: FeatureApiService,
@@ -41,6 +43,7 @@ class ProfileRepositoryImpl(
 
                 val profileModel = ProfileModel(
                     id = data?.id ?: "",
+                    image = data?.photoProfile ?: defaultErrorValue,
                     email = data?.email ?: defaultErrorValue,
                     name = data?.name ?: defaultErrorValue,
                     gender = data?.gender ?: defaultErrorValue,

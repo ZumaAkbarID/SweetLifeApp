@@ -1,5 +1,6 @@
 package com.amikom.sweetlife.ui.screen.profile
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -64,6 +65,7 @@ class ProfileViewModel @Inject constructor(
 
             try {
                 val result = profileUseCases.fetchDataProfile()
+                Log.d("ProfileViewModel", "fetchProfileData: ${result}")
 
                 result.observeForever { profileResult ->
                     _profileState.postValue(profileResult)

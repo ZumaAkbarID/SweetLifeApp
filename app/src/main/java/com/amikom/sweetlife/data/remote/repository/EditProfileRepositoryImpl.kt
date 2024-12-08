@@ -6,11 +6,17 @@ import com.amikom.sweetlife.data.remote.json_request.ProfileRequest
 import com.amikom.sweetlife.data.remote.retrofit.FeatureApiService
 import com.amikom.sweetlife.domain.repository.EditProfileRepository
 import com.amikom.sweetlife.domain.repository.ProfileRepository
+import okhttp3.MultipartBody
 import javax.inject.Inject
 
 class EditProfileRepositoryImpl @Inject constructor(
     private val apiService: FeatureApiService
 ) : EditProfileRepository {
+
+    override suspend fun uploadProfileImage(imagePart: MultipartBody.Part): ProfileResponse {
+        return apiService.uploadProfileImage(imagePart)
+    }
+
     override suspend fun updateProfile(profile: ProfileRequest): ProfileResponse {
         return apiService.updateProfile(profile).body() ?: ProfileResponse()
         try {

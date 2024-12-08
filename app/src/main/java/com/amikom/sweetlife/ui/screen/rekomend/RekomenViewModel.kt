@@ -1,11 +1,12 @@
+
 package com.amikom.sweetlife.ui.screen.rekomend
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.amikom.sweetlife.data.remote.Result.Empty.onFailure
-import com.amikom.sweetlife.data.remote.Result.Empty.onSuccess
+import com.amikom.sweetlife.data.remote.dto.rekomen.Data
 import com.amikom.sweetlife.data.remote.dto.rekomen.ExerciseRecommendations
 import com.amikom.sweetlife.data.remote.dto.rekomen.FoodRecommendation
 import com.amikom.sweetlife.domain.repository.RekomenRepository
@@ -29,8 +30,12 @@ class RekomenViewModel @Inject constructor(
     private val _foodRecommendations = MutableLiveData<List<FoodRecommendation>>()
     val foodRecommendations: LiveData<List<FoodRecommendation>> = _foodRecommendations
 
-    private val _exerciseRecommendations = MutableLiveData<List<ExerciseRecommendations>>()
-    val exerciseRecommendations: LiveData<List<ExerciseRecommendations>> = _exerciseRecommendations
+    private val _exerciseRecommendations = MutableLiveData<ExerciseRecommendations?>()
+    val exerciseRecommendations: LiveData<ExerciseRecommendations?> = _exerciseRecommendations
+
+
+//    private val _exerciseRecommendations = MutableLiveData<List<ExerciseRecommendations>>()
+//    val exerciseRecommendations: LiveData<List<ExerciseRecommendations>> = _exerciseRecommendations
 
     fun fetchRekomend() {
         viewModelScope.launch {
@@ -39,16 +44,21 @@ class RekomenViewModel @Inject constructor(
 
             val result = rekomendRepository.fetchRekomend()
 
-            // Periksa jenis Result yang dikembalikan
             when (result) {
                 is ApiResult.Success -> {
-                    // Hasil sukses, ambil data dan post ke LiveData
+                    Log.d("RekomenViewModel", "Success fetching recommendations ${result.data}")
                     val foods = result.data.data?.foodRecommendation
                     _foodRecommendations.postValue(foods ?: emptyList())
+
+
+                    val exercises = result.data.data?.exerciseRecommendations
+                    _exerciseRecommendations.postValue(exercises)
+                    Log.d("RekomenViewModel", "Exercises: $exercises")
                 }
                 is ApiResult.Error -> {
                     // Hasil error, ambil pesan error dan post ke LiveData
                     _error.postValue(result.error)
+                    Log.e("RekomenViewModel", "Error fetching recommendations: ${result.error}")
                 }
                 is ApiResult.Loading -> {
                     // Loading state, bisa ditangani jika diperlukan

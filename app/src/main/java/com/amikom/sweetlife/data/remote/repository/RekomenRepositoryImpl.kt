@@ -20,6 +20,7 @@ class RekomenRepositoryImpl @Inject constructor(
     override suspend fun fetchRekomend(): Result<RekomenResponse> {
         return try {
             val response = featureApiService.getRekomendasi()
+            Log.d("RekomenRepositoryImpl", "Response: ${response.body()}")
             if (response.isSuccessful) {
                 val rekomenResponse = response.body()
                 if (rekomenResponse != null) {

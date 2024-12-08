@@ -1,5 +1,8 @@
 package com.amikom.sweetlife.domain.nvgraph
 
+import android.os.Build
+import android.util.Log
+import androidx.annotation.RequiresApi
 import com.amikom.sweetlife.ui.screen.profile.settings.SettingsViewModel
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -14,6 +17,8 @@ import com.amikom.sweetlife.ui.presentation.onboarding.OnBoardingScreen
 import com.amikom.sweetlife.ui.presentation.onboarding.OnBoardingViewModel
 import com.amikom.sweetlife.ui.screen.History.HistoryScreen
 import com.amikom.sweetlife.ui.screen.History.HistoryViewModel
+import com.amikom.sweetlife.ui.screen.assesment.AssessmentScreen
+import com.amikom.sweetlife.ui.screen.assesment.AssessmentViewModel
 import com.amikom.sweetlife.ui.screen.auth.forgot_password.CheckEmailScreen
 import com.amikom.sweetlife.ui.screen.dashboard.DashboardScreen
 import com.amikom.sweetlife.ui.screen.dashboard.DashboardViewModel
@@ -32,6 +37,7 @@ import com.amikom.sweetlife.ui.screen.profile.settings.SettingsScreen
 import com.amikom.sweetlife.ui.screen.rekomend.RekomenScreen
 import com.amikom.sweetlife.ui.screen.rekomend.RekomenViewModel
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun NavGraph(
     startDestination: Any
@@ -42,10 +48,12 @@ fun NavGraph(
     val isUserLoggedOut by sessionViewModel.isUserLoggedOut.collectAsState()
 
     // Pantau logout secara global
-    LaunchedEffect(isUserLoggedOut) {
-        if (isUserLoggedOut) {
-            navController.navigate(Route.LoginScreen) {
-                popUpTo(0) { inclusive = true }
+    if(startDestination !== Route.OnboardingScreen) {
+        LaunchedEffect(isUserLoggedOut) {
+            if (isUserLoggedOut) {
+                navController.navigate(Route.LoginScreen) {
+                    popUpTo(0) { inclusive = true }
+                }
             }
         }
     }
@@ -58,6 +66,11 @@ fun NavGraph(
 
         composable<Route.HomeScreen> {
             HomeScreen()
+        }
+
+        composable<Route.AssessmentScreen> {
+            val assessmentViewModel: AssessmentViewModel = hiltViewModel()
+            AssessmentScreen(navController = navController, viewModel = assessmentViewModel)
         }
 
         composable<Route.LoginScreen> {

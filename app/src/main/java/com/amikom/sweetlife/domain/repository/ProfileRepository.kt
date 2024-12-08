@@ -9,5 +9,4 @@ interface ProfileRepository {
 
     suspend fun fetchDataProfile(): LiveData<Result<ProfileModel>>
     suspend fun fetchHealthProfile(): LiveData<Result<HealthProfileModel>>
-
 }

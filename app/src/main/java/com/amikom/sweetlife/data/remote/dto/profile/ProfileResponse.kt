@@ -9,9 +9,13 @@ data class ProfileResponse(
 
 	@field:SerializedName("status")
 	val status: Boolean? = null
-)
+) {
+}
 
 data class Data(
+
+	@field:SerializedName("photo_profile")
+	val photoProfile: String? = "",
 
 	@field:SerializedName("gender")
 	val gender: String? = null,

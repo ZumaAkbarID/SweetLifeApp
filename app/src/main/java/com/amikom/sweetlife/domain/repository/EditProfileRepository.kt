@@ -6,7 +6,9 @@ import com.amikom.sweetlife.data.remote.Result
 import com.amikom.sweetlife.data.remote.dto.profile.ProfileResponse
 import com.amikom.sweetlife.data.remote.json_request.ProfileRequest
 import kotlinx.coroutines.flow.Flow
+import okhttp3.MultipartBody
 
 interface EditProfileRepository {
     suspend fun updateProfile(profile: ProfileRequest): ProfileResponse
+    suspend fun uploadProfileImage(imagePart: MultipartBody.Part): ProfileResponse
 }

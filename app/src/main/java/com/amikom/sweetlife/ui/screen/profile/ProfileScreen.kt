@@ -1,5 +1,6 @@
 package com.amikom.sweetlife.ui.screen.profile
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -47,6 +48,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import coil.compose.rememberAsyncImagePainter
 import com.amikom.sweetlife.R
 import com.amikom.sweetlife.data.model.DiabetesPrediction
 import com.amikom.sweetlife.data.model.HealthProfileModel
@@ -56,6 +58,7 @@ import com.amikom.sweetlife.domain.nvgraph.Route
 import com.amikom.sweetlife.ui.component.BottomNavigationBar
 import com.amikom.sweetlife.ui.component.CustomDialog
 import com.amikom.sweetlife.ui.component.getBottomNavButtons
+import com.amikom.sweetlife.ui.presentation.onboarding.OnboardingModel.FirstPages.image
 import com.amikom.sweetlife.util.Constants
 import com.amikom.sweetlife.util.countAgeFromDate
 import com.amikom.sweetlife.util.getCurrentDate
@@ -72,12 +75,13 @@ fun UserProfileScreen(
     val selectedIndex = Constants.CURRENT_BOTTOM_BAR_PAGE_ID
     val buttons = getBottomNavButtons(selectedIndex, navController)
 
-    var profileData: ProfileModel
-    var healthData: HealthProfileModel
+    val profileData: ProfileModel
+    val healthData: HealthProfileModel
 
     when (profileRawData) {
         Result.Loading -> {
             profileData = ProfileModel(
+                "Loading...",
                 "Loading...",
                 "Loading...",
                 "Loading...",
@@ -92,6 +96,7 @@ fun UserProfileScreen(
 
         else -> {
             profileData = ProfileModel(
+                Constants.DEFAULT_ERROR_TEXT,
                 Constants.DEFAULT_ERROR_TEXT,
                 Constants.DEFAULT_ERROR_TEXT,
                 Constants.DEFAULT_ERROR_TEXT,
@@ -142,6 +147,7 @@ fun UserProfileScreen(
     }
 
     val userProfile = UserProfile(
+        image = profileData.image,
         email = profileData.email,
         name = profileData.name,
         weight = healthData.weight,
@@ -156,20 +162,18 @@ fun UserProfileScreen(
         },
         modifier = Modifier.fillMaxSize(),
     ) { innerPadding ->
-
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(16.dp, 0.dp)
+                .padding(16.dp),
+            contentAlignment = Alignment.Center
         ) {
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .verticalScroll(rememberScrollState())
-                    .padding(0.dp, 0.dp, 0.dp, 16.dp),
+                    .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.Top
+                verticalArrangement = Arrangement.Center
             ) {
                 UserInfo(userProfile = userProfile)
                 gmailBox(text = userProfile.email)
@@ -236,13 +240,22 @@ fun UserProfileScreen(
 private fun UserInfo(
     userProfile: UserProfile,
 ) {
+    Log.d("UserProfileScreen", "${userProfile.image}")
+
     Column(
         modifier = Modifier.fillMaxWidth(),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
+        val imagePainter = rememberAsyncImagePainter(
+            model = userProfile.image.ifEmpty {
+                "https://www.google.com/images/branding/googlelogo/1x/googlelogo_color_272x92dp.png"
+            },
+            error = painterResource(R.drawable.bapak), // Gambar error jika gagal memuat
+            placeholder = painterResource(R.drawable.bapak) // Gambar placeholder saat loading
+        )
         Image(
-            painter = painterResource(id = R.drawable.gendut),
+            painter = imagePainter,
             contentDescription = "User Profile Image",
             modifier = Modifier
                 .size(120.dp)
@@ -259,7 +272,6 @@ private fun UserInfo(
                 fontWeight = FontWeight.Bold
             )
         }
-
     }
 }
 
@@ -435,11 +447,11 @@ fun ProfileMenuItem(
             )
         }
     }
-
 }
 
 data class UserProfile(
     val name: String,
+    val image: String,
     val email: String,
     val weight: Double,
     val height: Double,
