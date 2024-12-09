@@ -31,6 +31,7 @@ import com.amikom.sweetlife.domain.usecases.auth.LoginAction
 import com.amikom.sweetlife.domain.usecases.auth.ReadUserAllToken
 import com.amikom.sweetlife.domain.usecases.auth.RefreshNewTokenAction
 import com.amikom.sweetlife.domain.usecases.auth.RegisterAction
+import com.amikom.sweetlife.domain.usecases.auth.SaveHealthProfile
 import com.amikom.sweetlife.domain.usecases.auth.SaveNewToken
 import com.amikom.sweetlife.domain.usecases.auth.SaveUserInfoLogin
 import com.amikom.sweetlife.domain.usecases.dashboard.DashboardUseCases
@@ -167,7 +168,8 @@ object AppModule {
             forgotPassword = ForgotUserPassword(authRepository = authRepository),
             refreshNewToken = RefreshNewTokenAction(authRepository = authRepository),
             saveNewToken = SaveNewToken(localAuthUserManager = localAuthUserManager),
-            checkHasHealthProfile = CheckHasHealthProfile(localAuthUserManager = localAuthUserManager)
+            checkHasHealthProfile = CheckHasHealthProfile(localAuthUserManager = localAuthUserManager),
+            saveHealthProfile = SaveHealthProfile(localAuthUserManager = localAuthUserManager)
         )
     }
 

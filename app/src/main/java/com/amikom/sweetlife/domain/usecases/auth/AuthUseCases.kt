@@ -7,6 +7,7 @@ data class AuthUseCases(
     val saveUserInfoLogin: SaveUserInfoLogin,
 
     val checkHasHealthProfile: CheckHasHealthProfile,
+    val saveHealthProfile: SaveHealthProfile,
 
     val register: RegisterAction,
 

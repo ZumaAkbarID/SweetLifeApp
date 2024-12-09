@@ -142,7 +142,7 @@ fun PersonalData() {
             Spacer(modifier = Modifier.height(8.dp))
 
             // Gender Dropdown
-            genderDropdown()
+            genderDropdownn()
         }
 
         //Button
@@ -165,7 +165,7 @@ fun PersonalData() {
 }
 
 @Composable
-fun genderDropdown() {
+fun genderDropdownn() {
     var expanded by remember { mutableStateOf(false) }
     var selectedGender by remember { mutableStateOf("") }
 

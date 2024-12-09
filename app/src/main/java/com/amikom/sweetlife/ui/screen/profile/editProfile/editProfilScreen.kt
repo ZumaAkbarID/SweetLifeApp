@@ -38,7 +38,7 @@ import com.amikom.sweetlife.domain.nvgraph.Route
 import com.amikom.sweetlife.ui.component.ConfirmSave
 import com.amikom.sweetlife.ui.component.CustomDialog
 import com.amikom.sweetlife.ui.screen.assesment.NextDiabetesViewModel
-import com.amikom.sweetlife.ui.screen.assesment.genderDropdown
+import com.amikom.sweetlife.ui.screen.assesment.genderDropdownn
 import com.amikom.sweetlife.ui.screen.profile.UserProfile
 import com.amikom.sweetlife.util.countAgeFromDate
 import java.text.SimpleDateFormat
