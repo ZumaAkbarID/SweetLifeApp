@@ -3,6 +3,7 @@ package com.amikom.sweetlife.ui.screen.profile.editProfile
 import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
+import androidx.datastore.core.IOException
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -36,9 +37,11 @@ class EditProfileViewModel @Inject constructor(
 
     private val modifiedFields = mutableSetOf<String>()
 
+    //digunakana untuk menyimpan data profile yang diambil dari server
     private val _userProfile = MutableLiveData(ProfileModel())
     val userProfile: LiveData<ProfileModel> = _userProfile
 
+    //digunakan untuk mengambil data profile dari server
     private val _profileState = MutableLiveData<Result<ProfileModel>>()
     val profileData: LiveData<Result<ProfileModel>> = _profileState
 
@@ -57,8 +60,18 @@ class EditProfileViewModel @Inject constructor(
     private val _profileLoadState = MutableStateFlow<LoadState>(LoadState.Initial)
     val profileLoadState: StateFlow<LoadState> = _profileLoadState.asStateFlow()
 
+    private val _imageUploadState = MutableStateFlow<ImageUploadState>(ImageUploadState.Idle)
+    val imageUploadState: StateFlow<ImageUploadState> = _imageUploadState.asStateFlow()
+
     init {
         fetchProfileData()
+    }
+
+    sealed class ImageUploadState {
+        object Idle : ImageUploadState()
+        object Loading : ImageUploadState()
+        data class Success(val imageUrl: String?) : ImageUploadState()
+        data class Error(val message: String) : ImageUploadState()
     }
 
     fun fetchProfileData() {
@@ -132,7 +145,7 @@ class EditProfileViewModel @Inject constructor(
             email = _userProfile.value?.email ?: "",
             name = _userProfile.value?.name ?: "",
             dateOfBirth = _userProfile.value?.dateOfBirth ?: ""
-            )
+        )
         modifiedFields.add("gender")
     }
 
@@ -154,48 +167,105 @@ class EditProfileViewModel @Inject constructor(
         _selectedGender.value = type
     }
 
+
     fun Bitmap.toMultipartBody(
         context: Context,
-        fileName: String = "profile_image.jpg"
+        fileName: String = "profile_image_${System.currentTimeMillis()}.jpg",
+        quality: Int = 75
     ): MultipartBody.Part {
+        // Resize bitmap jika terlalu besar
+        val resizedBitmap = resize(maxWidth = 1024, maxHeight = 1024)
+
+        // Buat file sementara
         val file = File(context.cacheDir, fileName)
-        file.createNewFile()
 
-        val bos = ByteArrayOutputStream()
-        compress(Bitmap.CompressFormat.JPEG, 80, bos)
-        val bitmapData = bos.toByteArray()
+        try {
+            FileOutputStream(file).use { out ->
+                resizedBitmap.compress(Bitmap.CompressFormat.JPEG, quality, out)
+            }
 
-        val fos = FileOutputStream(file)
-        fos.write(bitmapData)
-        fos.flush()
-        fos.close()
+            // Validasi file
+            if (!file.exists() || file.length() == 0L) {
+                throw IOException("Failed to create file")
+            }
 
-        val requestBody = file.asRequestBody("image/*".toMediaTypeOrNull())
-        return MultipartBody.Part.createFormData("image", file.name, requestBody)
+            // Buat request body
+            val requestBody = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
+            return MultipartBody.Part.createFormData("image", file.name, requestBody)
+        } catch (e: Exception) {
+            Log.e("BitmapConversion", "Error converting bitmap", e)
+            throw RuntimeException("Failed to convert bitmap: ${e.message}")
+        }
+    }
+
+    // Extension function untuk resize bitmap
+    fun Bitmap.resize(maxWidth: Int, maxHeight: Int): Bitmap {
+        val width = this.width
+        val height = this.height
+
+        val ratioBitmap = width.toFloat() / height.toFloat()
+        val ratioMax = maxWidth.toFloat() / maxHeight.toFloat()
+
+        var finalWidth = maxWidth
+        var finalHeight = maxHeight
+
+        if (ratioBitmap > ratioMax) {
+            finalHeight = (maxWidth / ratioBitmap).toInt()
+        } else {
+            finalWidth = (maxHeight * ratioBitmap).toInt()
+        }
+
+        return Bitmap.createScaledBitmap(this, finalWidth, finalHeight, true)
     }
 
     fun uploadProfileImage(bitmap: Bitmap, context: Context) {
         viewModelScope.launch {
-            _imageUploadStatus.value = ImageUploadStatus.UPLOADING.toString()
             try {
-                val imagePart = bitmap.toMultipartBody(context)
-                val responsePict = featureApiService.uploadProfileImage(imagePart)
+                // Set state loading
+                _imageUploadState.value = ImageUploadState.Loading
 
-                if (responsePict.status == true) {
-                    val image = responsePict.data?.photoProfile ?: ""
-                    _userProfile.value = _userProfile.value?.copy(image = image)
-                    modifiedFields.add("image")
-                    _imageUploadStatus.value = ImageUploadStatus.SUCCESS.toString()
+                if (bitmap == null) {
+                    _imageUploadState.value = ImageUploadState.Error("Bitmap is null")
+                    return@launch
+                }
+                // Kompresi dan konversi bitmap ke multipart
+                val imagePart = bitmap.toMultipartBody(context)
+
+                // Upload gambar
+                val response = featureApiService.uploadProfileImage(imagePart)
+                Log.d("EditProfileViewModel", "Upload Response: $response")
+
+                if (response.status == true && response.data?.photoProfile != null) {
+                    Log.d("EditProfileViewModel", "uploadProfileImage: ${response.data?.photoProfile}")
+                    // Update profile image URL
+                    val imageUrl = response.data.photoProfile
+                    _userProfile.value = _userProfile.value?.copy(
+                        image = response.data.photoProfile
+                    )
+
+                    _imageUploadState.value = ImageUploadState.Success(
+                        response.data.photoProfile
+                    )
                 } else {
-                    _imageUploadStatus.value = ImageUploadStatus.ERROR.toString()
+                        Log.d("EditProfileViewModel", "uploadProfileImage: ${response.data?.photoProfile}")
+                    // Set state error dengan pesan dari response
+                    _imageUploadState.value = ImageUploadState.Error(
+                        response.data?.photoProfile ?: "Failed to upload image"
+                    )
                 }
             } catch (e: Exception) {
-                _imageUploadStatus.value = ImageUploadStatus.ERROR.toString()
-                // Optional: Log error
-                Log.e("UploadImage", "Error uploading image", e)
+                Log.e("EditProfileViewModel", "uploadProfileImage: ${e.message}")
+                // Tangani error
+                _imageUploadState.value = ImageUploadState.Error(
+                    e.localizedMessage ?: "Unexpected error occurred"
+                )
             }
         }
     }
+    fun resetImageUploadState() {
+        _imageUploadState.value = ImageUploadState.Idle
+    }
+
 
     private val _isUpdating = MutableLiveData<Boolean>()
     val isUpdating: LiveData<Boolean> = _isUpdating
@@ -230,7 +300,8 @@ class EditProfileViewModel @Inject constructor(
                 val updateFields = mutableMapOf<String, Any>()
                 if ("name" in modifiedFields) updateFields["name"] = currentProfile.name
                 if ("email" in modifiedFields) updateFields["email"] = currentProfile.email
-                if ("dateOfBirth" in modifiedFields) updateFields["dateOfBirth"] = currentProfile.dateOfBirth
+                if ("dateOfBirth" in modifiedFields) updateFields["dateOfBirth"] =
+                    currentProfile.dateOfBirth
                 if ("gender" in modifiedFields) updateFields["gender"] = currentProfile.gender
                 if ("image" in modifiedFields) updateFields["image"] = currentProfile.image
 
@@ -238,7 +309,8 @@ class EditProfileViewModel @Inject constructor(
                     val profileRequest = ProfileRequest(
                         name = updateFields["name"] as? String ?: currentProfile.name,
                         email = updateFields["email"] as? String ?: currentProfile.email,
-                        dateOfBirth = updateFields["dateOfBirth"] as? String ?: currentProfile.dateOfBirth,
+                        dateOfBirth = updateFields["dateOfBirth"] as? String
+                            ?: currentProfile.dateOfBirth,
                         gender = updateFields["gender"] as? String ?: currentProfile.gender,
                         image = updateFields["image"] as? String ?: currentProfile.image
                     )

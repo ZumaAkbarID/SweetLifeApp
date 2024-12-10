@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory
 import android.os.Build
 import android.provider.MediaStore
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.RequiresApi
@@ -25,6 +26,7 @@ import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
@@ -76,36 +78,82 @@ fun EditProfileScreen(
     val context = LocalContext.current
     val profileData: EditProfileModel
 
-
     val selectedImage by remember { mutableStateOf<Bitmap?>(null) }
 
     // Tambahkan observasi status upload
     val imageUploadStatus by viewModel.imageUploadStatus.observeAsState()
 
+    val imageUploadState by viewModel.imageUploadState.collectAsState()
+
     // Handle status upload
     imageUploadStatus?.let { status ->
         if (status == "success") {
             Log.d("Success", "Image uploaded successfully.")
+            Log.d("Success", "Image URL: ")
             viewModel.uploadProfileImage(selectedImage!!, context)
         } else {
             Log.e("Error", "Failed to upload image. Please try again.")
-            Text(
-                text = "Failed to upload image. Please try again.",
-                color = Color.Red
-            )
+            Toast.makeText(context, "Failed to upload image. Please try again.", Toast.LENGTH_SHORT)
+                .show()
         }
     }
 
+
+    // Handle state upload
+    LaunchedEffect(imageUploadState) {
+        when (val state = imageUploadState) {
+            is EditProfileViewModel.ImageUploadState.Loading -> {
+                // Tampilkan loading
+//                CircularProgressIndicator()
+                Toast.makeText(
+                    context,
+                    "Uploading image...",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+            is EditProfileViewModel.ImageUploadState.Success -> {
+                // Tampilkan toast sukses
+                Toast.makeText(
+                    context,
+                    "Image uploaded successfully",
+                    Toast.LENGTH_SHORT
+                ).show()
+
+                // Optional: Reset state
+                viewModel.resetImageUploadState()
+            }
+            is EditProfileViewModel.ImageUploadState.Error -> {
+                // Tampilkan pesan error
+                Toast.makeText(
+                    context,
+                    state.message,
+                    Toast.LENGTH_SHORT
+                ).show()
+
+                // Optional: Reset state
+                viewModel.resetImageUploadState()
+            }
+            is EditProfileViewModel.ImageUploadState.Idle -> {
+                // State awal, tidak perlu tindakan
+            }
+        }
+    }
 
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
         uri?.let {
-            val bitmap = MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
-            viewModel.uploadProfileImage(bitmap, context)
+            try {
+                val bitmap = MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
+                viewModel.uploadProfileImage(bitmap, context)
+                Log.e("Error", "Failed to load image. Please try again.${bitmap}")
+            } catch (e: Exception) {
+                Toast.makeText(context, "Failed to load image", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
+    // Launcher untuk kamera
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicturePreview()
     ) { bitmap ->
@@ -156,110 +204,109 @@ fun EditProfileScreen(
             }
         )
     }
-        Column(
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        // Avatar
+        Avatar(
+            image = (userProfile?.image ?: R.drawable.bapak),
+            onEditClick = {
+                showPickerDialog = true
+            }
+        )
+
+        // Nama Lengkap
+        EditItem(
+            icon = Icons.Default.Person,
+            label = "Full Name",
+            value = userProfile?.name ?: "",
+            onValueChange = { viewModel.onNameChange(it) }
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Email
+        EditItemEmail(
+            label = "Email",
+            value = userProfile?.email ?: "",
+            onValueChange = { viewModel.onEmailChange(it) }
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Tanggal Lahir
+        EditDate(
+            icon = Icons.Default.DateRange,
+            label = "Date of Birth",
+            value = userProfile?.dateOfBirth ?: "",
+            isDate = true,
+            onDateChange = { viewModel.onDateChange(it) }
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        //gender
+        genderDropdown(
+            viewModel = viewModel,
+            label = "Gender",
+            value = userProfile?.gender ?: "",
+            onValueChange = { viewModel.onGenderChange(it) }
+        )
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        // Button
+        Button(
+            onClick = { showDialog.value = true },
             modifier = Modifier
-                .fillMaxSize()
-                .padding(16.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+                .fillMaxWidth()
+                .height(48.dp),
+            shape = RoundedCornerShape(15.dp),
+            colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
         ) {
-            // Avatar
-            Avatar(
-                image = (userProfile?.image ?: R.drawable.bapak),
-                onEditClick = {
-                    showPickerDialog = true
-                }
-            )
-
-            // Nama Lengkap
-            EditItem(
-                icon = Icons.Default.Person,
-                label = "Full Name",
-                value = userProfile?.name ?: "",
-                onValueChange = { viewModel.onNameChange(it) }
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Email
-            EditItemEmail(
-                label = "Email",
-                value = userProfile?.email ?: "",
-                onValueChange = { viewModel.onEmailChange(it) }
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Tanggal Lahir
-            EditDate(
-                icon = Icons.Default.DateRange,
-                label = "Date of Birth",
-                value = userProfile?.dateOfBirth ?: "",
-                isDate = true,
-                onDateChange = { viewModel.onDateChange(it) }
-            )
-
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            //gender
-            genderDropdown(
-                viewModel = viewModel,
-                label = "Gender",
-                value = userProfile?.gender ?: "",
-                onValueChange = { viewModel.onGenderChange(it) }
-            )
-
-            Spacer(modifier = Modifier.height(32.dp))
-
-            // Button
-            Button(
-                onClick = { showDialog.value = true },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(48.dp),
-                shape = RoundedCornerShape(15.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary),
-            ) {
-                Text(if (isLoading) "Loading..." else "Save")
-                if (!isLoading) {
-                    Icon(Icons.Default.KeyboardArrowRight, contentDescription = "")
-                }
+            Text(if (isLoading) "Loading..." else "Save")
+            if (!isLoading) {
+                Icon(Icons.Default.KeyboardArrowRight, contentDescription = "")
             }
-            if (showDialog.value) {
-                ConfirmSave(
-                    openDialogCustom = showDialog,
-                    title = "Confirm Save",
-                    message = "Are you sure you want to save changes?",
-                    buttons = listOf(
-                        "Yes, Confirm" to {
-                            showDialog.value = false
-                            viewModel.updateProfile()
-                            showSuccessDialog.value = true
-                        },
-                        "No, Cancel" to {
-                            showDialog.value = false
-                        }
-                    )
+        }
+        if (showDialog.value) {
+            ConfirmSave(
+                openDialogCustom = showDialog,
+                title = "Confirm Save",
+                message = "Are you sure you want to save changes?",
+                buttons = listOf(
+                    "Yes, Confirm" to {
+                        showDialog.value = false
+                        viewModel.updateProfile()
+                        showSuccessDialog.value = true
+                    },
+                    "No, Cancel" to {
+                        showDialog.value = false
+                    }
                 )
-            }
+            )
+        }
 
-            if (showSuccessDialog.value) {
-                CustomDialog(
-                    openDialogCustom = showSuccessDialog,
-                    icon = R.drawable.baseline_check_circle_outline_24,
-                    title = "Success!",
-                    message = "Your data has been successfully saved.",
-                    buttons = listOf(
-                        "Okay" to {
-                            showSuccessDialog.value = false
-                            navController.navigate(Route.DashboardScreen) {
-                                popUpTo<Route.EditProfileScreen> { inclusive = false }
-                            }
+        if (showSuccessDialog.value) {
+            CustomDialog(
+                openDialogCustom = showSuccessDialog,
+                icon = R.drawable.baseline_check_circle_outline_24,
+                title = "Success!",
+                message = "Your data has been successfully saved.",
+                buttons = listOf(
+                    "Okay" to {
+                        showSuccessDialog.value = false
+                        navController.navigate(Route.DashboardScreen) {
+                            popUpTo<Route.EditProfileScreen> { inclusive = false }
                         }
-                    )
+                    }
                 )
-            }
+            )
+        }
 
     }
 
@@ -468,7 +515,7 @@ fun genderDropdown(
             )
             Spacer(modifier = Modifier.width(16.dp))
             Text(
-                text = if (selectedGender.isNotEmpty()) selectedGender else label,
+                text = if (selectedGender.isNotEmpty()) selectedGender else value,
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurface
             )

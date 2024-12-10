@@ -29,6 +29,8 @@ import com.amikom.sweetlife.ui.screen.auth.login.LoginViewModel
 import com.amikom.sweetlife.ui.screen.auth.signup.SignUpViewModel
 import com.amikom.sweetlife.ui.screen.auth.signup.SignupScreen
 import com.amikom.sweetlife.ui.screen.home.HomeScreen
+import com.amikom.sweetlife.ui.screen.profile.EditHealthData.EditDataScreen
+import com.amikom.sweetlife.ui.screen.profile.EditHealthData.EditDataScreenViewModel
 import com.amikom.sweetlife.ui.screen.profile.ProfileViewModel
 import com.amikom.sweetlife.ui.screen.profile.UserProfileScreen
 import com.amikom.sweetlife.ui.screen.profile.editProfile.EditProfileScreen
@@ -127,6 +129,14 @@ fun NavGraph(
         composable<Route.SettingsScreen> {
             val settingsViewModel: SettingsViewModel = hiltViewModel()
             SettingsScreen(settingsViewModel)
+        }
+
+        composable<Route.EditHealthScreen> {
+            val viewModel: EditDataScreenViewModel = hiltViewModel()
+            EditDataScreen(
+                viewModel = viewModel,
+                navController = navController
+            )
         }
     }
 }

@@ -113,6 +113,9 @@ fun UserProfileScreen(
                 0.0,
                 0.0,
                 false,
+                diabeticType = "Loading...",
+                insulinLevel = 0,
+                bloodPressure = 0,
                 "Loading...",
                 false,
                 "Loading...",
@@ -135,6 +138,9 @@ fun UserProfileScreen(
                 0.0,
                 false,
                 Constants.DEFAULT_ERROR_TEXT,
+                0,
+                0,
+                Constants.DEFAULT_ERROR_TEXT,
                 false,
                 Constants.DEFAULT_ERROR_TEXT,
                 DiabetesPrediction(
@@ -151,7 +157,7 @@ fun UserProfileScreen(
         email = profileData.email,
         name = profileData.name,
         weight = healthData.weight,
-        height = healthData.weight,
+        height = healthData.height,
         age = countAgeFromDate(profileData.dateOfBirth),
         isDiabetesRisk = healthData.isDiabetic
     )
@@ -195,7 +201,11 @@ fun UserProfileScreen(
                     icon = Icons.Default.Settings,
                     text = "Edit Health Data",
                     shape = RoundedCornerShape(0.dp),
-                    onClick = { /* TODO: Handle Edit Health Data */ }
+                    onClick = {
+                        navController.navigate(Route.EditHealthScreen) {
+                            launchSingleTop = true
+                        }
+                    }
                 )
                 ProfileMenuItem(
                     icon = Icons.Default.Settings,
@@ -359,11 +369,11 @@ private fun UserHealthData(userProfile: UserProfile) {
         ) {
             UserHealthItem(
                 label = "Weight",
-                value = "${userProfile.weight} kg"
+                value = "${userProfile.weight.toInt()} kg"
             )
             UserHealthItem(
                 label = "Height",
-                value = "${userProfile.height} cm"
+                value = "${userProfile.height.toInt()} cm"
             )
             UserHealthItem(
                 label = "Age",

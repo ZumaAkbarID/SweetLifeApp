@@ -30,6 +30,5 @@ class EditProfileRepositoryImpl @Inject constructor(
             Log.e("API", "Error: ${e.localizedMessage}")
             throw e
         }
-
     }
 }

@@ -7,6 +7,7 @@ import com.amikom.sweetlife.data.manager.LocalUserManagerImpl
 import com.amikom.sweetlife.data.remote.interceptor.AuthInterceptor
 import com.amikom.sweetlife.data.remote.repository.AuthRepositoryImpl
 import com.amikom.sweetlife.data.remote.repository.DashboardRepositoryImpl
+import com.amikom.sweetlife.data.remote.repository.EditHealthRepositoryImpl
 import com.amikom.sweetlife.data.remote.repository.EditProfileRepositoryImpl
 import com.amikom.sweetlife.data.remote.repository.ProfileRepositoryImpl
 import com.amikom.sweetlife.data.remote.retrofit.AuthApiService
@@ -16,6 +17,7 @@ import com.amikom.sweetlife.domain.manager.LocalUserManager
 import com.amikom.sweetlife.domain.manager.SessionManager
 import com.amikom.sweetlife.domain.repository.AuthRepository
 import com.amikom.sweetlife.domain.repository.DashboardRepository
+import com.amikom.sweetlife.domain.repository.EditHealthDataRepository
 import com.amikom.sweetlife.domain.repository.EditProfileRepository
 import com.amikom.sweetlife.domain.repository.ProfileRepository
 import com.amikom.sweetlife.domain.usecases.app_entry.AppEntryUseCases
@@ -197,4 +199,10 @@ object AppModule {
     fun provideEditProfileRepository(
         featureApiService: FeatureApiService
     ): EditProfileRepository = EditProfileRepositoryImpl(featureApiService)
+
+    @Provides
+    @Singleton
+    fun provideEditHealthDataRepository(
+        featureApiService: FeatureApiService
+    ): EditHealthDataRepository = EditHealthRepositoryImpl(featureApiService)
 }

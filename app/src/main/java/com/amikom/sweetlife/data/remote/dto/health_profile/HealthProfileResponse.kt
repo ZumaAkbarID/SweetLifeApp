@@ -34,6 +34,15 @@ data class Data(
 	@field:SerializedName("is_diabetic")
 	val isDiabetic: Boolean? = null,
 
+	@field:SerializedName("diabetic_type")
+	val diabeticType: String? = null,
+
+	@field:SerializedName("insulin_level")
+	val insulinLevel: Int? = null,
+
+	@field:SerializedName("blood_pressure")
+	val bloodPressure: Int? = null,
+
 	@field:SerializedName("has_heart_disease")
 	val hasHeartDisease: Boolean? = null,
 
