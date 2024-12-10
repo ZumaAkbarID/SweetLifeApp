@@ -32,7 +32,10 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.amikom.sweetlife.BuildConfig
+import com.amikom.sweetlife.R
+import com.amikom.sweetlife.data.remote.Result
 import com.amikom.sweetlife.domain.nvgraph.Route
+import com.amikom.sweetlife.ui.component.CustomDialog
 import com.amikom.sweetlife.ui.theme.MainBlue
 import java.util.Calendar
 
@@ -123,30 +126,37 @@ fun AssessmentScreen(navController: NavController, viewModel: AssessmentViewMode
         { DayGoalsScreen(viewModel) }
     )
 
-    val isPersonalDataValid by remember { derivedStateOf { viewModel.isPersonalDataValid } }
-    val isDiabetesStatusValid by remember { derivedStateOf { viewModel.isDiabetesStatusValid } }
-    val isNextDiabetesStatusValid by remember { derivedStateOf { viewModel.isNextDiabetesStatusValid } }
-    val isActivityData1Valid by remember { derivedStateOf { viewModel.isActivityDataValid } }
-    val isActivityData2Valid by remember { derivedStateOf { viewModel.isHealthHistoryValid } }
-    val isDayGoalsValid by remember { derivedStateOf { viewModel.isDayGoalsValid } }
+    val showDialog = remember { mutableStateOf(false) }
+    var icon by remember { mutableStateOf(R.drawable.baseline_info_outline_24) }
+    var title by remember { mutableStateOf("Failed!") }
+    var message by remember { mutableStateOf("Please fill all field!") }
+    var buttons by remember { mutableStateOf(emptyList<Pair<String, () -> Unit>>()) }
 
     val result by viewModel.result.collectAsState(initial = false)
+    val showError by viewModel.showError.collectAsState(initial = false)
+    val isUserLoggedIn by viewModel.isUserLoggedIn.collectAsState()
+    val updateProfileResult by viewModel.updateProfileResult.collectAsState()
+    val createHealth by viewModel.createHealth.collectAsState()
+    val errorMessage by viewModel.errorMessage.collectAsState()
 
     var currentPage by remember { mutableStateOf(0) }
     val isLastPage = currentPage == pages.lastIndex
 
-    val isButtonEnabled by remember {
-        derivedStateOf {
-            when (currentPage) {
-                0 -> isPersonalDataValid
-                1 -> isDiabetesStatusValid
-                2 -> isNextDiabetesStatusValid
-                3 -> isActivityData1Valid
-                4 -> isActivityData2Valid
-                5 -> isDayGoalsValid
-                else -> false
-            }
-        }
+    if (!isUserLoggedIn) {
+        CustomDialog(
+            icon = R.drawable.baseline_info_outline_24,
+            title = "Info",
+            message = "You'r session is ended. Please login again",
+            openDialogCustom = remember { mutableStateOf(true) },
+            buttons = listOf(
+                "Ok" to {
+                    navController.navigate(Route.LoginScreen) {
+                        launchSingleTop = true
+                    }
+                }
+            ),
+            dismissOnBackdropClick = false
+        )
     }
 
 // Trigger validation when page changes
@@ -168,6 +178,9 @@ fun AssessmentScreen(navController: NavController, viewModel: AssessmentViewMode
             )
         },
         bottomBar = {
+
+            val isNotLoading = updateProfileResult !is Result.Loading && createHealth !is Result.Loading
+
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -176,20 +189,21 @@ fun AssessmentScreen(navController: NavController, viewModel: AssessmentViewMode
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 if (currentPage > 0) {
-                    Button(onClick = {
-                        if (currentPage == 3 && !viewModel.diabetesStatus.isDiabetic) {
-                            currentPage -= 2
-                        } else {
-                            currentPage--
-                        }
-                    }) {
+                    Button(
+                        onClick = {
+                            if (currentPage == 3 && !viewModel.diabetesStatus.isDiabetic) {
+                                currentPage -= 2
+                            } else {
+                                currentPage--
+                            }
+                        },
+                        enabled = isNotLoading
+                    ) {
                         Text(text = "Back")
                     }
                 } else {
                     Button(
-                        onClick = {
-
-                        },
+                        onClick = { /* No Action */ },
                         colors = ButtonColors(
                             Color.Transparent,
                             Color.Transparent,
@@ -214,9 +228,17 @@ fun AssessmentScreen(navController: NavController, viewModel: AssessmentViewMode
                                 }
                         }
                     },
-                    enabled = isButtonEnabled
+                    enabled = isNotLoading
                 ) {
-                    Text(text = if (isLastPage) "Save" else "Continue")
+                    if (!isNotLoading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(24.dp),
+                            color = Color.White,
+                            strokeWidth = 2.dp
+                        )
+                    } else {
+                        Text(text = if (isLastPage) "Save" else "Continue")
+                    }
                 }
             }
         },
@@ -251,10 +273,31 @@ fun AssessmentScreen(navController: NavController, viewModel: AssessmentViewMode
         }
     )
 
+    LaunchedEffect(showError) {
+        if (showError) {
+            showDialog.value = true
+        }
+    }
+
+    if (showDialog.value) {
+        CustomDialog(
+            openDialogCustom = showDialog,
+            icon = icon,
+            title = title,
+            message = errorMessage.ifEmpty { message },
+            buttons = listOf("Ok" to {
+                // do nothing
+                showDialog.value = false
+                viewModel.dismissError()
+            }),
+            dismissOnBackdropClick = false
+        )
+    }
+
     LaunchedEffect(result) {
         if (result) {
             navController.navigate(Route.DashboardScreen) {
-                popUpTo<Route.AssessmentScreen>() { inclusive = true }
+                popUpTo<Route.AssessmentScreen> { inclusive = true }
                 launchSingleTop = true
             }
         }
@@ -694,11 +737,10 @@ fun ActivityScreen2(viewModel: AssessmentViewModel) {
         Spacer(modifier = Modifier.height(16.dp))
         Activity2Select(
             typeOptions = listOf(
-                "Never",
-                "Former smoker",
-                "Light smoker",
-                "Moderate smoker",
-                "Heavy smoker"
+                "never",
+                "current",
+                "former",
+                "ever"
             ),
             title = "Select your smoking history",
             selectedType = viewModel.activityData2.smokingHistory,

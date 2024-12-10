@@ -1,6 +1,7 @@
 package com.amikom.sweetlife.di
 
 import android.app.Application
+import android.content.Context
 import com.amikom.sweetlife.BuildConfig
 import com.amikom.sweetlife.data.manager.LocalAuthUserManagerImpl
 import com.amikom.sweetlife.data.manager.LocalUserManagerImpl
@@ -38,14 +39,17 @@ import com.amikom.sweetlife.domain.usecases.auth.SaveNewToken
 import com.amikom.sweetlife.domain.usecases.auth.SaveUserInfoLogin
 import com.amikom.sweetlife.domain.usecases.dashboard.DashboardUseCases
 import com.amikom.sweetlife.domain.usecases.dashboard.FetchData
+import com.amikom.sweetlife.domain.usecases.profile.CreateHealthProfile
 import com.amikom.sweetlife.domain.usecases.profile.FetchDataHealthProfile
 import com.amikom.sweetlife.domain.usecases.profile.FetchDataProfile
 import com.amikom.sweetlife.domain.usecases.profile.ProfileUseCases
+import com.amikom.sweetlife.domain.usecases.profile.UpdateDataProfile
 import com.amikom.sweetlife.util.AppExecutors
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.components.ViewModelComponent
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -151,9 +155,10 @@ object AppModule {
     @Provides
     @Singleton
     fun provideProfileRepository(
+        @ApplicationContext context: Context,
         featureApiService: FeatureApiService,
         appExecutors: AppExecutors
-    ): ProfileRepository = ProfileRepositoryImpl(featureApiService, appExecutors)
+    ): ProfileRepository = ProfileRepositoryImpl(context, featureApiService, appExecutors)
 
     @Provides
     @Singleton
@@ -192,7 +197,9 @@ object AppModule {
     ) : ProfileUseCases {
         return ProfileUseCases(
             fetchDataProfile = FetchDataProfile(profileRepository = profileRepository),
-            fetchDataHealthProfile = FetchDataHealthProfile(profileRepository = profileRepository)
+            fetchDataHealthProfile = FetchDataHealthProfile(profileRepository = profileRepository),
+            updateDataProfile = UpdateDataProfile(profileRepository = profileRepository),
+            createHealthProfile = CreateHealthProfile(profileRepository = profileRepository)
         )
     }
 

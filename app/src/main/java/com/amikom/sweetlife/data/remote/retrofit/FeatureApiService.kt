@@ -2,13 +2,17 @@ package com.amikom.sweetlife.data.remote.retrofit
 
 import com.amikom.sweetlife.data.remote.dto.EditHealth.EditHealthResponse
 import com.amikom.sweetlife.data.remote.dto.dashboard.DashboardResponse
+import com.amikom.sweetlife.data.remote.dto.health_profile.CreateHealthResponse
 import com.amikom.sweetlife.data.remote.dto.health_profile.HealthProfileResponse
 import com.amikom.sweetlife.data.remote.dto.profile.ProfileResponse
+import com.amikom.sweetlife.data.remote.dto.profile.UpdateProfileResponse
 import com.amikom.sweetlife.data.remote.dto.rekomen.RekomenResponse
 import com.amikom.sweetlife.data.remote.json_request.EditHealthRequest
+import com.amikom.sweetlife.data.remote.json_request.HealthRequest
 import com.amikom.sweetlife.data.remote.json_request.ProfileRequest
 import com.amikom.sweetlife.util.Constants
 import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -28,6 +32,9 @@ interface FeatureApiService {
     @PUT("${Constants.API_VERSION}users/profile")
     suspend fun updateProfile(@Body profile: ProfileRequest): Response<ProfileResponse>
 
+    @POST("${Constants.API_VERSION}users/health")
+    suspend fun createHealth(@Body health: HealthRequest): Response<CreateHealthResponse>
+
     @GET("${Constants.API_VERSION}users/health")
     suspend fun getHealth(): Response<HealthProfileResponse>
 
@@ -40,4 +47,13 @@ interface FeatureApiService {
     @Multipart
     @PUT("${Constants.API_VERSION}users/profile")
     suspend fun uploadProfileImage(@Part image: MultipartBody.Part): ProfileResponse
+
+    @Multipart
+    @PUT("${Constants.API_VERSION}users/profile")
+    suspend fun updateProfile(
+        @Part("name") name: RequestBody,
+        @Part("date_of_birth") dateOfBirth: RequestBody,
+        @Part("gender") gender: RequestBody,
+        @Part profilePicture: MultipartBody.Part? = null
+    ): Response<UpdateProfileResponse>
 }

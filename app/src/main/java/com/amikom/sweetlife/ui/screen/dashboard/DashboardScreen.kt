@@ -89,7 +89,7 @@ fun DashboardScreen(
                 text = (dashboardData as Result.Error).error,
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.fillMaxSize().padding(16.dp),
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
             )
         }
 
