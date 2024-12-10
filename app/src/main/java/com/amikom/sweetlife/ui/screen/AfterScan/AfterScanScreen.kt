@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
@@ -42,17 +43,19 @@ fun AfterScanScreen(
             .padding(16.dp)
     ) {
         Text("Nutrition Facts", style = MaterialTheme.typography.bodyLarge)
-        Column {
-           // ExpandableCard(
-//                title = foodItem?.name ?: "",
-//                calories = foodItem?.calories.toString(),
-//                unit = foodItem?.unit.toString(),
-//                fat = foodItem?.fat.toString(),
-//                carbs = foodItem?.carbohydrate.toString(),
-//                sugar = foodItem?.sugar.toString(),
-//                protein = foodItem?.protein.toString()
-     //       )
-        }
+        Spacer(modifier = Modifier.height(8.dp))
+
+//        foodItem.forEach { foodItem ->
+//            ExpandableCard(
+//                title = foodItem.name,
+//                unit = "${foodItem.unit} unit",
+//                calories = "${foodItem.calories} kcal",
+//                fat = "${foodItem.fat} g",
+//                carbs = "${foodItem.carbohydrate} g",
+//                sugar = "${foodItem.sugar} g",
+//                protein = "${foodItem.protein} g"
+//            )
+//        }
     }
 }
 
@@ -73,6 +76,7 @@ fun ExpandableCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
+            .background(Color.White, shape = RoundedCornerShape(15.dp))
             .background(Color.White)
     ) {
         Column(
@@ -120,6 +124,21 @@ fun ExpandableCard(
             }
         }
     }
+}
+
+
+@Preview
+@Composable
+fun PreviewExpandableCard() {
+    ExpandableCard(
+        title = "Nasi Goreng",
+        unit = "100g",
+        calories = "200",
+        fat = "10",
+        carbs = "20",
+        sugar = "5",
+        protein = "5"
+    )
 }
 
 
