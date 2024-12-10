@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -112,9 +113,9 @@ fun DashboardScreenUI(data: Data, navController: NavController) {
 
     Scaffold(
         bottomBar = {
-            BottomNavigationBar(buttons = buttons)
+            BottomNavigationBar(buttons = buttons, navController = navController, currentScreen = Route.DashboardScreen)
         },
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().navigationBarsPadding(),
     ) { innerPadding ->
         Column(
             modifier = Modifier

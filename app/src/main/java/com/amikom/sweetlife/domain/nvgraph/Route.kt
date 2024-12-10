@@ -45,4 +45,7 @@ sealed class Route {
 
     @Serializable
     data object EditHealthScreen : Route()
+
+    @Serializable
+    data object CameraScreen : Route()
 }

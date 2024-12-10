@@ -38,6 +38,7 @@ import com.amikom.sweetlife.ui.screen.profile.editProfile.EditProfileViewModel
 import com.amikom.sweetlife.ui.screen.profile.settings.SettingsScreen
 import com.amikom.sweetlife.ui.screen.rekomend.RekomenScreen
 import com.amikom.sweetlife.ui.screen.rekomend.RekomenViewModel
+import com.amikom.sweetlife.ui.screen.scan.CameraScreen
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -137,6 +138,10 @@ fun NavGraph(
                 viewModel = viewModel,
                 navController = navController
             )
+        }
+
+        composable<Route.CameraScreen> {
+            CameraScreen(onBackPressed = { navController.popBackStack() })
         }
     }
 }

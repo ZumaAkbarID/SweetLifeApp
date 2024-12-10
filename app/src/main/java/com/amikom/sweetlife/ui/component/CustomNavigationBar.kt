@@ -73,7 +73,9 @@ fun BottomNavigationBar(
     fabSize: Dp = 70.dp,
     barHeight: Dp = 70.dp,
     selectedItemColor: Color = MaterialTheme.colorScheme.primary,
-    fabBackgroundColor: Color = MaterialTheme.colorScheme.primary
+    fabBackgroundColor: Color = MaterialTheme.colorScheme.primary,
+    navController: NavController,
+    currentScreen: Any
 ) {
     RioBottomNavigation(
         fabIcon = fabIcon,
@@ -81,6 +83,11 @@ fun BottomNavigationBar(
         fabSize = fabSize,
         barHeight = barHeight,
         selectedItemColor = selectedItemColor,
-        fabBackgroundColor = fabBackgroundColor
+        fabBackgroundColor = fabBackgroundColor,
+        onFabClick = {
+            navController.navigate(Route.CameraScreen) {
+                popUpTo(currentScreen) { inclusive = false }
+            }
+        }
     )
 }

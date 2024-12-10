@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -43,6 +44,7 @@ import coil.compose.rememberAsyncImagePainter
 import com.amikom.sweetlife.data.remote.dto.rekomen.Exercise
 import com.amikom.sweetlife.data.remote.dto.rekomen.ExerciseRecommendations
 import com.amikom.sweetlife.data.remote.dto.rekomen.FoodRecommendation
+import com.amikom.sweetlife.domain.nvgraph.Route
 import com.amikom.sweetlife.ui.component.BottomNavigationBar
 import com.amikom.sweetlife.ui.component.getBottomNavButtons
 import com.amikom.sweetlife.util.Constants
@@ -71,9 +73,9 @@ fun RekomenScreen(
 
     Scaffold(
         bottomBar = {
-            BottomNavigationBar(buttons = buttons)
+            BottomNavigationBar(buttons = buttons, navController = navController, currentScreen = Route.RekomenScreen)
         },
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().navigationBarsPadding(),
     ) { innerPadding ->
         Column(
             modifier = Modifier

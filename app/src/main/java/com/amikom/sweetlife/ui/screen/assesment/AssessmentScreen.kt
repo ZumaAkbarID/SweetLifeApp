@@ -611,7 +611,7 @@ fun NextDiabetesStatusScreen(viewModel: AssessmentViewModel) {
         Column(modifier = Modifier.fillMaxWidth()) {
             DropdownSelector(
                 selectedValue = viewModel.nextDiabetesStatus.type,
-                options = listOf("Type 1", "Type 2"),
+                options = listOf("Type 1", "Type 2", "Type 3", "Gestational"),
                 onValueSelected = {
                     viewModel.nextDiabetesStatus = viewModel.nextDiabetesStatus.copy(type = it)
                 },
@@ -694,7 +694,7 @@ fun ActivityScreen1(viewModel: AssessmentViewModel) {
         Spacer(modifier = Modifier.height(16.dp))
         DropdownSelector(
             selectedValue = viewModel.activityData1.physicalActivity,
-            options = listOf("Very Vigorous", "Vigorous", "Moderate", "Light", "Very Light"),
+            options = listOf("Extremely", "Active", "Moderate", "Light", "Never"),
             onValueSelected = {
                 viewModel.activityData1 = viewModel.activityData1.copy(physicalActivity = it)
             },
@@ -737,10 +737,10 @@ fun ActivityScreen2(viewModel: AssessmentViewModel) {
         Spacer(modifier = Modifier.height(16.dp))
         Activity2Select(
             typeOptions = listOf(
-                "never",
-                "current",
-                "former",
-                "ever"
+                "Never",
+                "Current",
+                "Former",
+                "Ever"
             ),
             title = "Select your smoking history",
             selectedType = viewModel.activityData2.smokingHistory,

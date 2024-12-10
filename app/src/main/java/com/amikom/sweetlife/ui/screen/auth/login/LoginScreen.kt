@@ -2,6 +2,7 @@ package com.amikom.sweetlife.ui.screen.auth.login
 
 import android.content.Intent
 import android.net.Uri
+import android.util.Log
 import android.util.Patterns
 import android.widget.Toast
 import androidx.compose.foundation.clickable
@@ -362,6 +363,7 @@ fun LoginScreen(
     }
 
     LaunchedEffect(isUserLoggedIn) {
+        Log.d("BIJIX", "User Login: $isUserLoggedIn, Health: $isUserHasHealth")
         if (isUserLoggedIn && !isUserHasHealth) {
             showToastMessage(context, "Welcome!", Toast.LENGTH_LONG)
 

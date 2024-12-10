@@ -1,5 +1,6 @@
 package com.amikom.sweetlife.ui.screen.auth.login
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.amikom.sweetlife.data.model.UserModel
@@ -7,8 +8,10 @@ import com.amikom.sweetlife.data.remote.Result
 import com.amikom.sweetlife.domain.usecases.auth.AuthUseCases
 import com.amikom.sweetlife.util.Constants
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -41,17 +44,16 @@ class LoginViewModel @Inject constructor(
 
         authUseCases.login(email, password).observeForever { result ->
             if (result is Result.Success<UserModel>) {
+                Log.d("BIJIX_K", result.data.toString())
                 viewModelScope.launch {
                     authUseCases.saveUserInfoLogin(result.data)
-//                    Constants.CURRENT_TOKEN = result.data.token
                     // Pastikan data tersimpan sek bolo
                     authUseCases.checkIsUserLogin().collect { isLoggedIn ->
                         _isUserLoggedIn.value = isLoggedIn
                         if (isLoggedIn) {
-                            authUseCases.checkHasHealthProfile().collect { hasHealth ->
-                                _loginResult.value = result
-                                _isUserHasHealth.value = hasHealth
-                            }
+                            _isUserHasHealth.value = result.data.hasHealthProfile
+                            delay(150)
+                            _loginResult.value = result
                         }
                     }
                 }

@@ -159,10 +159,10 @@ class AssessmentViewModel @Inject constructor(
                 height = activityData1.height.toDouble(),
                 weight = activityData1.weight.toDouble(),
                 is_diabetic = diabetesStatus.isDiabetic,
-                smoking_history = activityData2.smokingHistory,
+                smoking_history = activityData2.smokingHistory.lowercase(),
                 has_heart_disease = activityData2.heartDiseaseHistory == "Yes",
-                activity_level = activityData1.physicalActivity,
-                diabetic_type = if (diabetesStatus.isDiabetic) nextDiabetesStatus.type else null,
+                activity_level = activityData1.physicalActivity.lowercase(),
+                diabetic_type = if (diabetesStatus.isDiabetic) nextDiabetesStatus.type.trim().lowercase() else null,
                 insulin_level = if (diabetesStatus.isDiabetic) nextDiabetesStatus.insulinLevel else null,
                 blood_pressure = if (diabetesStatus.isDiabetic) nextDiabetesStatus.bloodPressure else null
             )
