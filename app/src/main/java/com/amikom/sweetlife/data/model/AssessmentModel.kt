@@ -8,12 +8,18 @@ data class PersonalData(
 )
 
 data class DiabetesStatus(
-    var isDiabetic: String = ""
+    var isDiabetic: Boolean = false
+)
+
+data class NextDiabetesStatus(
+    var type: String = "",
+    var insulinLevel: Double = 0.0,
+    var bloodPressure: Int = 0
 )
 
 data class ActivityData(
-    var height: String = "",
-    var weight: String = "",
+    var height: Int = 0,
+    var weight: Int = 0,
     var physicalActivity: String = ""
 )
 
@@ -23,6 +29,6 @@ data class HealthHistory(
 )
 
 data class DayGoals(
-    var calories: String = "",
-    var sugarIntake: String = ""
+    var calories: Int = 0,
+    var sugarIntake: Int = 0
 )

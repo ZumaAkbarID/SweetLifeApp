@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
@@ -48,8 +49,8 @@ fun OnBoardingScreen(
     val buttonState: State<List<String>> = remember {
         derivedStateOf {
             when (pagerState.currentPage) {
-                0 -> listOf("", "Continue")
-                1 -> listOf("Back", "Continue")
+                0 -> listOf("", "Next")
+                1 -> listOf("Back", "Next")
                 2 -> listOf("Back", "Start")
                 else -> listOf("", "")
             }
@@ -76,7 +77,8 @@ fun OnBoardingScreen(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp, 24.dp),
+                    .padding(16.dp, 24.dp)
+                    .navigationBarsPadding(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
