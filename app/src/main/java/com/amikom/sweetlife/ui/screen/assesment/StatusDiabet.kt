@@ -18,6 +18,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Button
@@ -157,7 +158,7 @@ fun StatusDiabet() {
             )
         ) {
             Text("Continue")
-            Icon(imageVector = Icons.Default.PlayArrow, contentDescription = "")
+            Icon(imageVector = Icons.Default.KeyboardArrowRight, contentDescription = "")
         }
     }
 }

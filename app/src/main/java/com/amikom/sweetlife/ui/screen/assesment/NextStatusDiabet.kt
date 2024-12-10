@@ -27,6 +27,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -93,38 +94,20 @@ fun NextDiabetes() {
             modifier = Modifier
                 .fillMaxWidth()
         ) {
-            // Gender Dropdown
             var expanded by remember { mutableStateOf(false) }
-            var selectedGender by remember { mutableStateOf("") }
+            var selectedDiabet by remember { mutableStateOf("") }
 
-            Text(text = "Diabetes Status?", style = MaterialTheme.typography.bodyMedium, color = Color.Gray)
+            Text(
+                text = "Diabetes Status?",
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.Gray
+            )
             Box(modifier = Modifier.fillMaxWidth()) {
-                OutlinedTextField(
-                    value = selectedGender,
-                    onValueChange = {},
-                    label = {
-                        Text(
-                            text = "Type",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = Color.Gray
-                        )
-                    },
-                    readOnly = true,
-                    trailingIcon = {
-                        Icon(
-                            imageVector = Icons.Default.ArrowDropDown,
-                            contentDescription = "Dropdown Icon",
-                            modifier = Modifier.clickable { expanded = !expanded }
-                        )
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(15.dp),
-                )
+                inputDiabet(viewModel = NextDiabetesViewModel())
             }
 
             Spacer(modifier = Modifier.height(8.dp))
 
-            // Full Name
             OutlinedTextField(
                 value = "",
                 onValueChange = { },
@@ -177,7 +160,54 @@ fun NextDiabetes() {
     }
 }
 
-@Preview(showBackground = true)
+@Composable
+fun inputDiabet(viewModel: NextDiabetesViewModel) {
+    var expanded by remember { mutableStateOf(false) }
+    val selectedType by viewModel.selectedDiabetType.collectAsState()
+    val diabetesTypes by viewModel.diabetType.collectAsState()
+
+    Box(modifier = Modifier.fillMaxWidth()) {
+        OutlinedTextField(
+            value = selectedType,
+            onValueChange = {},
+            readOnly = true,
+            label = {
+                Text(
+                    "Type",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.Gray
+                )
+            },
+            trailingIcon = {
+                Icon(
+                    imageVector = Icons.Default.ArrowDropDown,
+                    contentDescription = "Dropdown",
+                    modifier = Modifier.clickable { expanded = true }
+                )
+            },
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(15.dp)
+        )
+
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false },
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            diabetesTypes.forEach { type ->
+                DropdownMenuItem(
+                    text = { Text(type) },
+                    onClick = {
+                        viewModel.updateSelectedType(type)
+                        expanded = false
+                    }
+                )
+            }
+        }
+    }
+}
+
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun NextDiabetPreview() {
     MaterialTheme {

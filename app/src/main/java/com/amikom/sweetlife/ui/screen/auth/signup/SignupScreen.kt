@@ -5,6 +5,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -14,6 +15,7 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Email
+import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Button
@@ -34,6 +36,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -76,7 +79,7 @@ fun SignupScreen(
 
     Column(
         modifier = Modifier
-            .fillMaxWidth()
+            .fillMaxSize()
             .padding(16.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
@@ -148,7 +151,7 @@ fun SignupScreen(
             trailingIcon = {
                 IconButton(onClick = { isPasswordVisible = !isPasswordVisible }) {
                     Icon(
-                        imageVector = if (isPasswordVisible) Icons.Default.Lock else Icons.Default.Lock,
+                       painter = painterResource(id = if (isPasswordVisible) R.drawable.eye else R.drawable.eyeslash),
                         contentDescription = if (isPasswordVisible) "Hide Password" else "Show Password"
                     )
                 }
@@ -187,7 +190,7 @@ fun SignupScreen(
             trailingIcon = {
                 IconButton(onClick = { isConfirmPasswordVisible = !isConfirmPasswordVisible }) {
                     Icon(
-                        imageVector = if (isConfirmPasswordVisible) Icons.Default.Lock else Icons.Default.Lock,
+                        painter = painterResource(id = if (isConfirmPasswordVisible) R.drawable.eye else R.drawable.eyeslash),
                         contentDescription = if (isConfirmPasswordVisible) "Hide Confirm Password" else "Show Confirm Password"
                     )
                 }
@@ -232,25 +235,25 @@ fun SignupScreen(
                 )
             } else {
                 Text("Sign Up")
-                Icon(imageVector = Icons.Default.PlayArrow, contentDescription = "")
+                Icon(imageVector = Icons.Default.KeyboardArrowRight, contentDescription = "")
             }
         }
 
         // google sign up
-        Button(
-            onClick = { },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 10.dp)
-                .height(48.dp),
-            shape = RoundedCornerShape(15.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = MainBlue
-            )
-        ) {
-            Icon(imageVector = Icons.Default.AccountCircle, contentDescription = "")
-            Text("  Sign Up with Google Account")
-        }
+//        Button(
+//            onClick = { },
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .padding(top = 10.dp)
+//                .height(48.dp),
+//            shape = RoundedCornerShape(15.dp),
+//            colors = ButtonDefaults.buttonColors(
+//                containerColor = MainBlue
+//            )
+//        ) {
+//            Icon(imageVector = Icons.Default.AccountCircle, contentDescription = "")
+//            Text("  Sign Up with Google Account")
+//        }
         Row(
             modifier = Modifier.padding(top = 16.dp)
         ) {
@@ -306,6 +309,8 @@ fun SignupScreen(
                         )
                     } else if (errorMessage == "email already registered") {
                         showDialog.value = true
+                        icon = R.drawable.baseline_info_outline_24
+                        title = "Failed!"
                         message = "Email already registered!"
                         buttons = listOf(
                             "Ok" to { showDialog.value = false },

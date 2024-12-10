@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import com.amikom.sweetlife.data.model.NewTokenModel
 import com.amikom.sweetlife.data.model.UserModel
 import com.amikom.sweetlife.domain.manager.LocalAuthUserManager
 import com.amikom.sweetlife.util.Constants
@@ -28,12 +29,38 @@ class LocalAuthUserManagerImpl @Inject constructor(
             pref[LocalUserInfoKeys.USER_TOKEN] = userModel.token
             pref[LocalUserInfoKeys.USER_REFRESH_TOKEN] = userModel.refreshToken
             pref[LocalUserInfoKeys.USER_IS_LOGIN] = userModel.isLogin
+            pref[LocalUserInfoKeys.USER_HAS_HEALTH_PROFILE] = userModel.hasHealthProfile
+        }
+    }
+
+    override suspend fun saveNewTokenInfo(newToken: NewTokenModel) {
+        context.dataStore.edit { pref ->
+            pref[LocalUserInfoKeys.USER_TOKEN] = newToken.accessToken
+            pref[LocalUserInfoKeys.USER_REFRESH_TOKEN] = newToken.refreshToken
+        }
+    }
+
+    override suspend fun saveNewHasHealth(hasHealth: Boolean) {
+        context.dataStore.edit { pref ->
+            pref[LocalUserInfoKeys.USER_HAS_HEALTH_PROFILE] = hasHealth
+        }
+    }
+
+    override fun readHasHealth(): Flow<Boolean> {
+        return context.dataStore.data.map { preferences ->
+            preferences[LocalUserInfoKeys.USER_HAS_HEALTH_PROFILE] ?: false
         }
     }
 
     override fun readInfoLogin(): Flow<Boolean> {
         return context.dataStore.data.map { preferences ->
             preferences[LocalUserInfoKeys.USER_IS_LOGIN] ?: false
+        }
+    }
+
+    override suspend fun logout() {
+        context.dataStore.edit { pref ->
+            pref.clear()
         }
     }
 
@@ -56,4 +83,5 @@ private object LocalUserInfoKeys {
     val USER_TOKEN = stringPreferencesKey(name = Constants.USER_TOKEN)
     val USER_REFRESH_TOKEN = stringPreferencesKey(name = Constants.USER_REFRESH_TOKEN)
     val USER_IS_LOGIN = booleanPreferencesKey(name = Constants.USER_IS_LOGIN)
+    val USER_HAS_HEALTH_PROFILE = booleanPreferencesKey(name = Constants.USER_HAS_HEALTH_PROFILE)
 }

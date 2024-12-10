@@ -1,37 +1,35 @@
-package com.amikom.sweetlife.ui.screen
+package com.amikom.sweetlife.ui.screen.auth.forgot_password
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
+import com.amikom.sweetlife.domain.nvgraph.Route
 import com.amikom.sweetlife.ui.theme.MainBlue
 
-
 @Composable
-fun CheckEmailScreen() {
+fun CheckEmailScreen(
+    navController: NavController
+) {
+    val context = LocalContext.current
+
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -56,7 +54,22 @@ fun CheckEmailScreen() {
 
         // Continue Button
         Button(
-            onClick = { },
+            onClick = {
+                val emailIntent = Intent(Intent.ACTION_MAIN).apply {
+                    addCategory(Intent.CATEGORY_APP_EMAIL)
+                }
+
+                if (emailIntent.resolveActivity(context.packageManager) != null) {
+                    context.startActivity(emailIntent)
+                } else {
+                    context.startActivity(
+                        Intent(
+                            Intent.ACTION_VIEW,
+                            Uri.parse("https://gmail.com")
+                        )
+                    )
+                }
+            },
             modifier = Modifier.padding(top = 16.dp),
             shape = RoundedCornerShape(15.dp),
             colors = ButtonDefaults.buttonColors(
@@ -65,19 +78,18 @@ fun CheckEmailScreen() {
         ) {
             Text("Open Email App")
         }
-            Text(
-                modifier = Modifier.padding(top = 10.dp)
-                    .clickable(onClick = { }),
-                text = "Skip, I’ll confirm later",
-                color = Color.Gray,
-                style = MaterialTheme.typography.bodySmall
-            )
-        }
+        Text(
+            modifier = Modifier
+                .padding(top = 10.dp)
+                .clickable(onClick = {
+                    navController.navigate(Route.LoginScreen) {
+                        popUpTo<Route.LoginScreen> { inclusive = true }
+                        launchSingleTop = true
+                    }
+                }),
+            text = "Skip, I’ll confirm later",
+            color = Color.Gray,
+            style = MaterialTheme.typography.bodySmall
+        )
     }
-
-
-@Preview(showBackground = true)
-@Composable
-fun CheckEmailScreenPreview() {
-    CheckEmailScreen()
 }

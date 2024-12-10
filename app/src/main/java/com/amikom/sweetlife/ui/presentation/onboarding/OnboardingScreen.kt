@@ -1,5 +1,6 @@
 package com.amikom.sweetlife.ui.presentation.onboarding
 
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -7,6 +8,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
@@ -29,13 +31,11 @@ import com.amikom.sweetlife.domain.nvgraph.Route
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun OnBoardingUI(
+fun OnBoardingScreen(
+    event: (OnBoardingEvent) -> Unit,
     navController: NavController,
-    event: (OnBoardingEvent) -> Unit
 ) {
-
     val pages: List<OnboardingModel> = listOf(
         OnboardingModel.FirstPages,
         OnboardingModel.SecondPages,
@@ -49,8 +49,8 @@ fun OnBoardingUI(
     val buttonState: State<List<String>> = remember {
         derivedStateOf {
             when (pagerState.currentPage) {
-                0 -> listOf("", "Continue")
-                1 -> listOf("Back", "Continue")
+                0 -> listOf("", "Next")
+                1 -> listOf("Back", "Next")
                 2 -> listOf("Back", "Start")
                 else -> listOf("", "")
             }
@@ -77,7 +77,8 @@ fun OnBoardingUI(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(16.dp, 24.dp),
+                    .padding(16.dp, 24.dp)
+                    .navigationBarsPadding(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
@@ -120,9 +121,9 @@ fun OnBoardingUI(
                                 pagerState.animateScrollToPage(pagerState.currentPage + 1)
                             } else {
                                 event(OnBoardingEvent.SaveAppEntry)
-//                                navController.navigate(Route.LoginScreen) {
-//                                    popUpTo(Route.OnboardingScreen) { inclusive = true }
-//                                }
+                                navController.navigate(Route.LoginScreen) {
+                                    popUpTo(Route.OnboardingScreen) { inclusive = true }
+                                }
                             }
                         }
                     }
@@ -142,13 +143,4 @@ fun OnBoardingUI(
             }
         }
     )
-}
-
-@Composable
-fun OnBoardingScreen(
-    event: (OnBoardingEvent) -> Unit,
-    navController: NavController
-) {
-    // Logic Onboarding
-    OnBoardingUI(navController = navController, event = event)
 }

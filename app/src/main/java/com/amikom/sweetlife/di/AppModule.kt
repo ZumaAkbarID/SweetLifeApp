@@ -1,36 +1,56 @@
 package com.amikom.sweetlife.di
 
 import android.app.Application
+import android.content.Context
 import com.amikom.sweetlife.BuildConfig
 import com.amikom.sweetlife.data.manager.LocalAuthUserManagerImpl
 import com.amikom.sweetlife.data.manager.LocalUserManagerImpl
+import com.amikom.sweetlife.data.remote.interceptor.AuthInterceptor
 import com.amikom.sweetlife.data.remote.repository.AuthRepositoryImpl
 import com.amikom.sweetlife.data.remote.repository.DashboardRepositoryImpl
+import com.amikom.sweetlife.data.remote.repository.EditHealthRepositoryImpl
+import com.amikom.sweetlife.data.remote.repository.EditProfileRepositoryImpl
+import com.amikom.sweetlife.data.remote.repository.ProfileRepositoryImpl
 import com.amikom.sweetlife.data.remote.retrofit.AuthApiService
 import com.amikom.sweetlife.data.remote.retrofit.FeatureApiService
 import com.amikom.sweetlife.domain.manager.LocalAuthUserManager
 import com.amikom.sweetlife.domain.manager.LocalUserManager
+import com.amikom.sweetlife.domain.manager.SessionManager
 import com.amikom.sweetlife.domain.repository.AuthRepository
 import com.amikom.sweetlife.domain.repository.DashboardRepository
+import com.amikom.sweetlife.domain.repository.EditHealthDataRepository
+import com.amikom.sweetlife.domain.repository.EditProfileRepository
+import com.amikom.sweetlife.domain.repository.ProfileRepository
 import com.amikom.sweetlife.domain.usecases.app_entry.AppEntryUseCases
+import com.amikom.sweetlife.domain.usecases.app_entry.GetAppThemeMode
 import com.amikom.sweetlife.domain.usecases.app_entry.ReadAppEntry
 import com.amikom.sweetlife.domain.usecases.app_entry.SaveAppEntry
-import com.amikom.sweetlife.domain.usecases.auth.LoginAction
+import com.amikom.sweetlife.domain.usecases.app_entry.UpdateAppThemeMode
 import com.amikom.sweetlife.domain.usecases.auth.AuthUseCases
+import com.amikom.sweetlife.domain.usecases.auth.CheckHasHealthProfile
 import com.amikom.sweetlife.domain.usecases.auth.CheckIsUserLogin
 import com.amikom.sweetlife.domain.usecases.auth.ForgotUserPassword
+import com.amikom.sweetlife.domain.usecases.auth.LoginAction
 import com.amikom.sweetlife.domain.usecases.auth.ReadUserAllToken
+import com.amikom.sweetlife.domain.usecases.auth.RefreshNewTokenAction
 import com.amikom.sweetlife.domain.usecases.auth.RegisterAction
+import com.amikom.sweetlife.domain.usecases.auth.SaveHealthProfile
+import com.amikom.sweetlife.domain.usecases.auth.SaveNewToken
 import com.amikom.sweetlife.domain.usecases.auth.SaveUserInfoLogin
 import com.amikom.sweetlife.domain.usecases.dashboard.DashboardUseCases
 import com.amikom.sweetlife.domain.usecases.dashboard.FetchData
+import com.amikom.sweetlife.domain.usecases.profile.CreateHealthProfile
+import com.amikom.sweetlife.domain.usecases.profile.FetchDataHealthProfile
+import com.amikom.sweetlife.domain.usecases.profile.FetchDataProfile
+import com.amikom.sweetlife.domain.usecases.profile.ProfileUseCases
+import com.amikom.sweetlife.domain.usecases.profile.UpdateDataProfile
 import com.amikom.sweetlife.util.AppExecutors
-import com.amikom.sweetlife.util.Constants
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.components.ViewModelComponent
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -43,10 +63,8 @@ object AppModule {
 
     private val baseUrl: String = if(BuildConfig.DEBUG) BuildConfig.BASE_URL_DEV else BuildConfig.BASE_URL_PROD
 
-    private val loggingInterceptor = if (BuildConfig.DEBUG) {
-        HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
-    } else {
-        HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.NONE)
+    private val loggingInterceptor = HttpLoggingInterceptor().apply {
+        level = if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY else HttpLoggingInterceptor.Level.NONE
     }
 
     @Provides
@@ -61,8 +79,11 @@ object AppModule {
         localUserManager: LocalUserManager
     ) = AppEntryUseCases(
         readAppEntry = ReadAppEntry(localUserManager),
-        saveAppEntry = SaveAppEntry(localUserManager)
+        saveAppEntry = SaveAppEntry(localUserManager),
+        updateAppThemeMode = UpdateAppThemeMode(localUserManager),
+        getAppThemeMode = GetAppThemeMode(localUserManager)
     )
+
 
     @Provides
     @Singleton
@@ -89,15 +110,9 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideFeatureApi() : FeatureApiService {
-        val authInterceptor = Interceptor { chain ->
-            val req = chain.request()
-            val requestHeaders = req.newBuilder()
-                .addHeader("Authorization", "Bearer ${Constants.CURRENT_TOKEN}")
-                .build()
-            chain.proceed(requestHeaders)
-        }
-
+    fun provideFeatureApi(
+        authInterceptor: AuthInterceptor,
+    ) : FeatureApiService {
         val client: OkHttpClient = OkHttpClient.Builder()
             .addInterceptor(loggingInterceptor)
             .addInterceptor(authInterceptor)
@@ -117,6 +132,14 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideSessionManager(
+        localAuthUserManager: LocalAuthUserManager
+    ): SessionManager {
+        return SessionManager(localAuthUserManager)
+    }
+
+    @Provides
+    @Singleton
     fun provideAuthRepository(
         authApi: AuthApiService,
         appExecutors: AppExecutors
@@ -131,6 +154,14 @@ object AppModule {
 
     @Provides
     @Singleton
+    fun provideProfileRepository(
+        @ApplicationContext context: Context,
+        featureApiService: FeatureApiService,
+        appExecutors: AppExecutors
+    ): ProfileRepository = ProfileRepositoryImpl(context, featureApiService, appExecutors)
+
+    @Provides
+    @Singleton
     fun provideLoginUseCases(
         authRepository: AuthRepository,
         localAuthUserManager: LocalAuthUserManager
@@ -141,7 +172,11 @@ object AppModule {
             saveUserInfoLogin = SaveUserInfoLogin(localAuthUserManager = localAuthUserManager),
             readUserAllToken = ReadUserAllToken(localAuthUserManager = localAuthUserManager),
             register = RegisterAction(authRepository = authRepository),
-            forgotPassword = ForgotUserPassword(authRepository = authRepository)
+            forgotPassword = ForgotUserPassword(authRepository = authRepository),
+            refreshNewToken = RefreshNewTokenAction(authRepository = authRepository),
+            saveNewToken = SaveNewToken(localAuthUserManager = localAuthUserManager),
+            checkHasHealthProfile = CheckHasHealthProfile(localAuthUserManager = localAuthUserManager),
+            saveHealthProfile = SaveHealthProfile(localAuthUserManager = localAuthUserManager)
         )
     }
 
@@ -151,8 +186,32 @@ object AppModule {
         dashboardRepository: DashboardRepository,
     ) : DashboardUseCases {
         return DashboardUseCases(
-            fetchData = FetchData(dashboardRepository = dashboardRepository),
+            fetchData = FetchData(dashboardRepository = dashboardRepository)
         )
     }
 
+    @Provides
+    @Singleton
+    fun provideProfileUseCases(
+        profileRepository: ProfileRepository,
+    ) : ProfileUseCases {
+        return ProfileUseCases(
+            fetchDataProfile = FetchDataProfile(profileRepository = profileRepository),
+            fetchDataHealthProfile = FetchDataHealthProfile(profileRepository = profileRepository),
+            updateDataProfile = UpdateDataProfile(profileRepository = profileRepository),
+            createHealthProfile = CreateHealthProfile(profileRepository = profileRepository)
+        )
+    }
+
+    @Provides
+    @Singleton
+    fun provideEditProfileRepository(
+        featureApiService: FeatureApiService
+    ): EditProfileRepository = EditProfileRepositoryImpl(featureApiService)
+
+    @Provides
+    @Singleton
+    fun provideEditHealthDataRepository(
+        featureApiService: FeatureApiService
+    ): EditHealthDataRepository = EditHealthRepositoryImpl(featureApiService)
 }

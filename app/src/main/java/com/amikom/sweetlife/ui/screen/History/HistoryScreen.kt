@@ -32,13 +32,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import coil.compose.AsyncImage
 import coil.compose.rememberImagePainter
 import dagger.hilt.android.AndroidEntryPoint
 
 @Composable
 fun HistoryScreen(
-    viewModel: HistoryViewModel = hiltViewModel()
+    viewModel: HistoryViewModel = hiltViewModel(),
+    navController: NavController
 ) {
     val foodLogs by viewModel.foodLogs.observeAsState(emptyList())
     val isLoading by viewModel.isLoading.observeAsState(false)

@@ -7,5 +7,9 @@ interface LocalUserManager {
 
     suspend fun saveAppEntry()
 
+    suspend fun updateAppThemeMode(isDarkMode: Boolean)
+
     fun readAppEntry(): Flow<Boolean>
+
+    fun getAppThemeMode(): Flow<Boolean>
 }

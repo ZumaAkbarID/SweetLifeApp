@@ -1,13 +1,16 @@
 package com.amikom.sweetlife.data.remote.repository
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import com.amikom.sweetlife.data.model.ForgotPasswordModel
+import com.amikom.sweetlife.data.model.NewTokenModel
 import com.amikom.sweetlife.data.model.UserModel
 import com.amikom.sweetlife.data.remote.Result
 import com.amikom.sweetlife.data.remote.dto.ErrorResponse
 import com.amikom.sweetlife.data.remote.json_request.ForgotPasswordRequest
 import com.amikom.sweetlife.data.remote.json_request.LoginRequest
+import com.amikom.sweetlife.data.remote.json_request.RefreshTokenRequest
 import com.amikom.sweetlife.data.remote.json_request.RegisterRequest
 import com.amikom.sweetlife.data.remote.retrofit.AuthApiService
 import com.amikom.sweetlife.domain.repository.AuthRepository
@@ -39,7 +42,8 @@ class AuthRepositoryImpl(
                     gender = loginUser.user?.gender ?: "",
                     token = token.accessToken ?: throw Exception("Token is null"),
                     refreshToken = token.refreshToken ?: throw Exception("Refresh Token is null"),
-                    isLogin = true
+                    isLogin = true,
+                    hasHealthProfile = loginUser.user?.hasHealthProfile ?: false
                 )
                 // Update result on main thread
                 appExecutors.mainThread.execute {
@@ -163,8 +167,33 @@ class AuthRepositoryImpl(
         TODO("Not yet implemented")
     }
 
-    override suspend fun refreshToken(refreshToken: String) {
-        TODO("Not yet implemented")
-    }
+    override suspend fun refreshToken(refreshToken: String): Result<NewTokenModel> {
+        return try {
+            val refreshTokenRequest = RefreshTokenRequest(refresh_token = refreshToken)
 
+            val response = authApiService.refreshToken(refreshTokenRequest)
+
+            if (response.isSuccessful) {
+                val mainResponse = response.body()
+                val dataResponse = response.body()?.data
+
+                if (mainResponse?.status == true && mainResponse.message == "action success") {
+                    Result.Success(
+                        NewTokenModel(
+                            accessToken = dataResponse?.accessToken.orEmpty(),
+                            refreshToken = dataResponse?.refreshToken.orEmpty(),
+                            type = dataResponse?.type.orEmpty()
+                        )
+                    )
+                } else {
+                    Result.Error(mainResponse?.message ?: "Unknown error")
+                }
+            } else {
+                val errorBody = Gson().fromJson(response.errorBody()?.string(), ErrorResponse::class.java)
+                Result.Error(errorBody?.error ?: response.message())
+            }
+        } catch (e: Exception) {
+            Result.Error(e.message ?: "Unexpected error occurred")
+        }
+    }
 }

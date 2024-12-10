@@ -6,5 +6,6 @@ data class UserModel(
     val gender: String,
     val token: String,
     val refreshToken: String,
-    val isLogin: Boolean
+    val isLogin: Boolean,
+    val hasHealthProfile: Boolean
 )
