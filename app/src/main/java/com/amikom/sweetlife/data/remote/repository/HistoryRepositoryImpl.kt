@@ -13,25 +13,17 @@ class HistoryRepositoryImpl @Inject constructor(
     override suspend fun fetchHistory(): Result<HistoryResponse> {
         return try {
             val response = featureApiService.getHistory()
-            Log.d("HistoryRepositoryImpl", "Response: $response")
 
             if (response.isSuccessful) {
                 val historyResponse = response.body()
-                when {
-                    historyResponse == null -> {
-                        Log.e("HistoryRepositoryImpl", "Response body is null")
-                        Result.Error("Data not found")
-                    }
-                    historyResponse.foodLogs == null || historyResponse.foodLogs.isEmpty() -> {
-                        Log.d("HistoryRepositoryImpl", "No food logs found")
-                        Result.Empty
-                    }
-                    else -> {
-                        Log.d("HistoryRepositoryImpl", "Success: ${historyResponse.foodLogs.size} food logs")
-                        Result.Success(historyResponse)
-                    }
+                Log.d("HistoryRepositoryImpl", "Response body: $historyResponse")
+                if (historyResponse != null) {
+                    Result.Success(historyResponse)
+                } else {
+                    Result.Error("Data not found")
                 }
             } else {
+                val errorBody = response.errorBody()?.string()
                 Log.e("HistoryRepositoryImpl", "Error code: ${response.code()}")
                 Result.Error("Failed to load history: ${response.code()}")
             }

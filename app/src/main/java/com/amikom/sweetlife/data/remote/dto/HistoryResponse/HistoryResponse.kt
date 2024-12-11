@@ -1,18 +1,17 @@
 package com.amikom.sweetlife.data.remote.dto.HistoryResponse
 
-
 import com.google.gson.annotations.SerializedName
 
+// HistoryResponse class
 data class HistoryResponse(
-    @SerializedName("status") val status: String,
-    @SerializedName("data") val data: HistoryData,
-    @SerializedName("food_logs") val foodLogs: List<FoodLog>? = null
+    @SerializedName("status") val status: String = "",
+    @SerializedName("data") val data: HistoryData? = null
 )
 
 // Data class with pagination and food history
 data class HistoryData(
-    @SerializedName("pagination") val pagination: Pagination,
-
+    @SerializedName("pagination") val pagination: Pagination = Pagination(),
+    @SerializedName("food_history") val foodHistory: List<FoodHistory> = emptyList()
 )
 
 // Pagination class
@@ -23,11 +22,18 @@ data class Pagination(
     @SerializedName("itemsPerPage") val itemsPerPage: Int = 10
 )
 
-// Food Log class
+// FoodHistory class
+data class FoodHistory(
+    @SerializedName("date") val date: String = "",
+    @SerializedName("totalCalories") val totalCalories: Int = 0,
+    @SerializedName("entries") val entries: List<FoodLog> = emptyList()
+)
+
+// Entry class
 data class FoodLog(
     @SerializedName("id") val id: String = "",
-    @SerializedName("name") val name: String = "",
+    @SerializedName("food_name") val foodName: String = "",
     @SerializedName("calories") val calories: Int = 0,
     @SerializedName("time") val time: String = "",
-    @SerializedName("category") val category: String = ""
+    @SerializedName("totalUnits") val totalUnits: Int? = null
 )

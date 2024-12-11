@@ -44,6 +44,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -167,7 +168,9 @@ fun UserProfileScreen(
         bottomBar = {
             BottomNavigationBar(buttons = buttons, navController = navController, currentScreen = Route.ProfileScreen)
         },
-        modifier = Modifier.fillMaxSize().navigationBarsPadding(),
+        modifier = Modifier
+            .fillMaxSize()
+            .navigationBarsPadding(),
     ) { innerPadding ->
         Box(
             modifier = Modifier
@@ -199,7 +202,8 @@ fun UserProfileScreen(
                     }
                 )
                 ProfileMenuItem(
-                    icon = Icons.Default.Settings,
+                    icon = ImageVector.vectorResource(id = R.drawable.firstaidkit),
+
                     text = "Edit Health Data",
                     shape = RoundedCornerShape(0.dp),
                     onClick = {
@@ -219,11 +223,13 @@ fun UserProfileScreen(
                     }
                 )
                 ProfileMenuItem(
-                    icon = Icons.Default.LocationOn,
+                    icon = ImageVector.vectorResource(id = R.drawable.logout),
                     text = "Logout",
                     shape = RoundedCornerShape(bottomEnd = 16.dp, bottomStart = 16.dp),
                     textColor = Color.Red,
-                    onClick = { /* TODO: Handle Logout */ }
+                    onClick = {
+                       //
+                    }
                 )
             }
         }

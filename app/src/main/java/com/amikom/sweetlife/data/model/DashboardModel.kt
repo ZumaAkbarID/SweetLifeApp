@@ -31,5 +31,6 @@ data class Status(
 
 data class User(
     val name: String,
-    val diabetes: Boolean
+    val diabetes: Boolean,
+    val diabetesType : String
 )

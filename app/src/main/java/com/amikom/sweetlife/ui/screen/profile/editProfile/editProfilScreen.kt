@@ -41,6 +41,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
@@ -111,6 +112,7 @@ fun EditProfileScreen(
                     Toast.LENGTH_SHORT
                 ).show()
             }
+
             is EditProfileViewModel.ImageUploadState.Success -> {
                 // Tampilkan toast sukses
                 Toast.makeText(
@@ -122,6 +124,7 @@ fun EditProfileScreen(
                 // Optional: Reset state
                 viewModel.resetImageUploadState()
             }
+
             is EditProfileViewModel.ImageUploadState.Error -> {
                 // Tampilkan pesan error
                 Toast.makeText(
@@ -133,6 +136,7 @@ fun EditProfileScreen(
                 // Optional: Reset state
                 viewModel.resetImageUploadState()
             }
+
             is EditProfileViewModel.ImageUploadState.Idle -> {
                 // State awal, tidak perlu tindakan
             }
@@ -327,31 +331,35 @@ private fun Avatar(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(0.dp, 16.dp),
+            .padding(0.dp, 32.dp),
         contentAlignment = Alignment.Center
     ) {
-        // Avatar Image
-        AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(image)
-                .placeholder(R.drawable.bapak)
-                .error(R.drawable.bapak)
-                .build(),
-            contentDescription = "User Profile Image",
-            modifier = Modifier
-                .size(120.dp)
-                .clip(CircleShape)
-        )
-
-        // Edit Icon
-        IconButton(
-            onClick = onEditClick,
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .size(24.dp)
-                .background(Color.White, CircleShape)
+        Box(
+            modifier = Modifier.size(120.dp), // Ukuran gambar sebagai batas luar
+            contentAlignment = Alignment.BottomEnd // Posisi relatif IconButton
         ) {
-            Icon(Icons.Default.Edit, contentDescription = "Edit Avatar", tint = Color.Gray)
+            // Avatar Image
+            AsyncImage(
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(image)
+                    .placeholder(R.drawable.bapak)
+                    .error(R.drawable.bapak)
+                    .build(),
+                contentDescription = "User Profile Image",
+                modifier = Modifier
+                    .size(120.dp)
+                    .clip(CircleShape)
+            )
+            // Edit Icon
+            IconButton(
+                onClick = onEditClick,
+                modifier = Modifier
+                    .size(24.dp) // Ukuran tombol ikon
+                    .offset(x = (-8).dp, y = (-8).dp) // Menggeser tombol sedikit ke dalam gambar
+                    .background(Color.White, CircleShape)
+            ) {
+                Icon(Icons.Default.Edit, contentDescription = "Edit Avatar", tint = Color.Gray)
+            }
         }
     }
 }

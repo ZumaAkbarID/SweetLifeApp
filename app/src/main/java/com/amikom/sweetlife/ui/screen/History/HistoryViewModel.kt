@@ -5,12 +5,13 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.amikom.sweetlife.data.remote.dto.HistoryResponse.FoodLog
+import com.amikom.sweetlife.data.remote.dto.HistoryResponse.FoodHistory // Use the correct class
 import com.amikom.sweetlife.data.remote.dto.HistoryResponse.HistoryResponse
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 import com.amikom.sweetlife.data.remote.Result
+import com.amikom.sweetlife.data.remote.dto.HistoryResponse.FoodLog
 
 @HiltViewModel
 class HistoryViewModel @Inject constructor(
@@ -23,8 +24,8 @@ class HistoryViewModel @Inject constructor(
     private val _error = MutableLiveData<String?>()
     val error: LiveData<String?> = _error
 
-    private val _foodHistory = MutableLiveData<List<FoodLog>?>()
-    val foodLogs: MutableLiveData<List<FoodLog>?> = _foodHistory
+    private val _foodHistory = MutableLiveData<List<FoodHistory>?>()
+    val foodHistory: MutableLiveData<List<FoodHistory>?> = _foodHistory
 
     fun fetchHistory() {
         viewModelScope.launch {
@@ -35,7 +36,7 @@ class HistoryViewModel @Inject constructor(
 
             when (apiResult) {
                 is Result.Success -> {
-                    val logs = apiResult.data.foodLogs?.toList() ?: emptyList()
+                    val logs = apiResult.data.data?.foodHistory // Ensure the correct field is used
                     _foodHistory.postValue(logs)
                     _isLoading.postValue(false)
                 }
@@ -58,5 +59,4 @@ class HistoryViewModel @Inject constructor(
             }
         }
     }
-
 }
