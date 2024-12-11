@@ -79,7 +79,7 @@ fun HistoryScreen(
                         )
                     }
                     items(foodLogs.orEmpty()) { foodHistory -> // Loop over FoodHistory
-                        foodHistory.entries.forEach { foodLog -> // Loop over FoodLog entries inside each FoodHistory
+                        foodHistory.entries.reversed().forEach { foodLog -> // Loop over FoodLog entries inside each FoodHistory
                             FoodLogItem(foodLog = foodLog)
                         }
                     }

@@ -281,23 +281,28 @@ fun ResultAndAdditionalScreen(
 
                             Text(
                                 text = "Calorie\n${foodListItem?.calories?.let { ceil(it).toInt() }} kcal",
-                                style = MaterialTheme.typography.bodySmall
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSecondary
                             )
                             Text(
                                 text = "Fat\n${foodListItem?.fat?.let { ceil(it).toInt() }} g",
-                                style = MaterialTheme.typography.bodySmall
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSecondary
                             )
                             Text(
                                 text = "Carbs\n${foodListItem?.carbohydrates?.let { ceil(it).toInt() }} g",
-                                style = MaterialTheme.typography.bodySmall
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSecondary
                             )
                             Text(
                                 text = "Sugar\n${foodListItem?.sugar?.let { ceil(it).toInt() }} g",
-                                style = MaterialTheme.typography.bodySmall
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSecondary
                             )
                             Text(
                                 text = "Protein\n${foodListItem?.protein?.let { ceil(it).toInt() }} g",
-                                style = MaterialTheme.typography.bodySmall
+                                style = MaterialTheme.typography.bodySmall,
+                                color = MaterialTheme.colorScheme.onSecondary
                             )
                         } else if (findFoodData is Result.Loading) {
                             Text(text = "Loading...", style = MaterialTheme.typography.bodySmall)
@@ -308,10 +313,10 @@ fun ResultAndAdditionalScreen(
                                 text = "Calorie\n0 kcal",
                                 style = MaterialTheme.typography.bodySmall
                             )
-                            Text(text = "Fat\n0 g", style = MaterialTheme.typography.bodySmall)
-                            Text(text = "Carbs\n0 g", style = MaterialTheme.typography.bodySmall)
-                            Text(text = "Sugar\n0 g", style = MaterialTheme.typography.bodySmall)
-                            Text(text = "Protein\n0 g", style = MaterialTheme.typography.bodySmall)
+                            Text(text = "Fat\n0 g", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSecondary)
+                            Text(text = "Carbs\n0 g", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSecondary)
+                            Text(text = "Sugar\n0 g", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSecondary)
+                            Text(text = "Protein\n0 g", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSecondary)
                         }
                     }
                 }
@@ -410,23 +415,28 @@ fun ExpandableItem(foodListItem: FoodListItem) {
             ) {
                 Text(
                     text = "Calorie\n${foodListItem.calories?.let { ceil(it).toInt() }} kcal",
-                    style = MaterialTheme.typography.bodySmall
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSecondary
                 )
                 Text(
                     text = "Fat\n${foodListItem.fat?.let { ceil(it).toInt() }} g",
-                    style = MaterialTheme.typography.bodySmall
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSecondary
                 )
                 Text(
                     text = "Carbs\n${foodListItem.carbohydrate?.let { ceil(it).toInt() }} g",
-                    style = MaterialTheme.typography.bodySmall
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSecondary
                 )
                 Text(
                     text = "Sugar\n${foodListItem.sugar?.let { ceil(it).toInt() }} g",
-                    style = MaterialTheme.typography.bodySmall
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSecondary
                 )
                 Text(
                     text = "Protein\n${foodListItem.protein?.let { ceil(it).toInt() }} g",
-                    style = MaterialTheme.typography.bodySmall
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSecondary
                 )
             }
         }
@@ -479,23 +489,28 @@ fun ExpandableAdditionalItem(additionalItem: AdditionalItem) {
                 ) {
                     Text(
                         text = "Calorie\n${additionalItem.info.calories.let { ceil(it).toInt() }} kcal",
-                        style = MaterialTheme.typography.bodySmall
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSecondary
                     )
                     Text(
                         text = "Fat\n${additionalItem.info.fat.let { ceil(it).toInt() }} g",
-                        style = MaterialTheme.typography.bodySmall
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSecondary
                     )
                     Text(
                         text = "Carbs\n${additionalItem.info.carbohydrates.let { ceil(it).toInt() }} g",
-                        style = MaterialTheme.typography.bodySmall
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSecondary
                     )
                     Text(
                         text = "Sugar\n${additionalItem.info.sugar.let { ceil(it).toInt() }} g",
-                        style = MaterialTheme.typography.bodySmall
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSecondary
                     )
                     Text(
                         text = "Protein\n${additionalItem.info.protein.let { ceil(it).toInt() }} g",
-                        style = MaterialTheme.typography.bodySmall
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSecondary
                     )
                 }
             }

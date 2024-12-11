@@ -266,8 +266,8 @@ private fun ProgressItem(
         progress = percentage / 100f,
         //belom tau nilai satisfactionya apa
         color = when (satisfaction) {
-            "PASS" -> MaterialTheme.colorScheme.onBackground
-            "OVER" -> MaterialTheme.colorScheme.onBackground
+            "PASS" -> Color.Green
+            "OVER" -> Color.Red
             else -> Color.Yellow
         }
     )
