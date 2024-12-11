@@ -63,6 +63,7 @@ class AuthInterceptor @Inject constructor(
                                 oldResponse
                             }
                         } finally {
+                            runBlocking { localAuthUserManager.logout() }
                             isRefreshing = false
                         }
                     } else {

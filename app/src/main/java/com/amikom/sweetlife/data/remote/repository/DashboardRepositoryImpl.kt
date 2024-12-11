@@ -33,30 +33,35 @@ class DashboardRepositoryImpl(
                 val data = response.body()?.data
 
                 val dashboardModel = DashboardModel(
-                    message = rawData?.message ?: "",
                     status = rawData?.status ?: false,
                     data = Data(
                         dailyProgress = DailyProgress(
-                            calorie = ProgressDetail(
-                                current = data?.dailyProgress?.calorie?.current ?: 0,
-                                percentage = data?.dailyProgress?.calorie?.percentage ?: 0.0,
-                                satisfaction = data?.dailyProgress?.calorie?.satisfaction ?: "",
-                                target = data?.dailyProgress?.calorie?.target ?: 0
+                            calories = ProgressDetail(
+                                current = data?.dailyProgress?.calories?.current ?: 0.0,
+                                percent = data?.dailyProgress?.calories?.percent ?: 0.0,
+                                satisfaction = data?.dailyProgress?.calories?.satisfication ?: "",
+                                target = data?.dailyProgress?.calories?.target ?: 0.0
                             ),
-                            glucose = ProgressDetail(
-                                current = data?.dailyProgress?.glucose?.current ?: 0,
-                                percentage = data?.dailyProgress?.glucose?.percentage ?: 0.0,
-                                satisfaction = data?.dailyProgress?.glucose?.satisfaction ?: "",
-                                target = data?.dailyProgress?.glucose?.target ?: 0
-                            )
+                            carbs = ProgressDetail(
+                                current = data?.dailyProgress?.carbs?.current ?: 0.0,
+                                percent = data?.dailyProgress?.carbs?.percent ?: 0.0,
+                                satisfaction = data?.dailyProgress?.carbs?.satisfication ?: "",
+                                target = data?.dailyProgress?.carbs?.target ?: 0.0
+                            ),
+                            sugar = ProgressDetail(
+                                current = data?.dailyProgress?.sugar?.current ?: 0.0,
+                                percent = data?.dailyProgress?.sugar?.percent ?: 0.0,
+                                satisfaction = data?.dailyProgress?.sugar?.satisfication ?: "",
+                                target = data?.dailyProgress?.sugar?.target ?: 0.0
+                            ),
                         ),
                         status = Status(
                             message = data?.status?.message ?: "",
-                            satisfaction = data?.status?.satisfaction ?: ""
+                            satisfaction = data?.status?.satisfication ?: ""
                         ),
                         user = User(
                             name = data?.user?.name ?: "",
-                            diabetesType = data?.user?.diabetesType ?: ""
+                            diabetes = data?.user?.diabetes ?: false
                         )
                     )
                 )

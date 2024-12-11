@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -44,6 +46,8 @@ import com.amikom.sweetlife.ui.component.CustomDialog
 import com.amikom.sweetlife.ui.component.getBottomNavButtons
 import com.amikom.sweetlife.ui.component.rememberSelectedIndex
 import com.amikom.sweetlife.util.Constants
+import java.util.Locale
+import kotlin.math.ceil
 
 @Composable
 fun DashboardScreen(
@@ -121,21 +125,24 @@ fun DashboardScreenUI(data: Data, navController: NavController) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(16.dp),
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             UserHeader(
                 name = data.user.name,
-                diabetesType = data.user.diabetesType
+                isDiabetes = data.user.diabetes
             )
 
             DailyProgressCard(
-                glucose = data.dailyProgress.glucose,
-                calorie = data.dailyProgress.calorie
+                calories = data.dailyProgress.calories,
+                carbs = data.dailyProgress.carbs,
+                sugar = data.dailyProgress.sugar,
             )
 
             StatusCard(
-                satisfaction = data.status.satisfaction
+                satisfaction = data.status.satisfaction,
+                message = data.status.message
             )
         }
     }
@@ -146,7 +153,7 @@ fun DashboardScreenUI(data: Data, navController: NavController) {
 @Composable
 private fun UserHeader(
     name: String,
-    diabetesType: String
+    isDiabetes: Boolean
 ) {
     Row(
         modifier = Modifier
@@ -160,18 +167,21 @@ private fun UserHeader(
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold
         )
-        Text(
-            text = "Diabetes $diabetesType",
-            style = MaterialTheme.typography.titleMedium
-        )
+        if(isDiabetes) {
+            Text(
+                text = "Has Diabetes",
+                style = MaterialTheme.typography.titleMedium
+            )
+        }
     }
 }
 
 // daily progress
 @Composable
 private fun DailyProgressCard(
-    glucose: ProgressDetail,
-    calorie: ProgressDetail
+    calories: ProgressDetail,
+    carbs: ProgressDetail,
+    sugar: ProgressDetail,
 ) {
     Card(
         modifier = Modifier
@@ -189,17 +199,24 @@ private fun DailyProgressCard(
             )
             ProgressItem(
                 title = "🔥 Calorie",
-                current = calorie.current,
-                target = calorie.target,
-                percentage = calorie.percentage.toInt(),
-                satisfaction = calorie.satisfaction
+                current = ceil(calories.current).toInt(),
+                target = ceil(calories.target).toInt(),
+                percentage = ceil(calories.percent).toInt(),
+                satisfaction = calories.satisfaction
             )
             ProgressItem(
-                title = "🧋 Glucose",
-                current = glucose.current,
-                target = glucose.target,
-                percentage = glucose.percentage.toInt(),
-                satisfaction = glucose.satisfaction
+                title = "🍚 Carb",
+                current = ceil(carbs.current).toInt(),
+                target = ceil(carbs.target).toInt(),
+                percentage = ceil(carbs.percent).toInt(),
+                satisfaction = carbs.satisfaction
+            )
+            ProgressItem(
+                title = "🧋 Sugar",
+                current = ceil(sugar.current).toInt(),
+                target = ceil(sugar.target).toInt(),
+                percentage = ceil(sugar.percent).toInt(),
+                satisfaction = sugar.satisfaction
             )
         }
     }
@@ -226,13 +243,13 @@ private fun ProgressItem(
         )
     }
     LinearProgressIndicator(
-        modifier = Modifier.fillMaxWidth().height(8.dp),
+        modifier = Modifier.fillMaxWidth().height(16.dp),
         progress = percentage / 100f,
         //belom tau nilai satisfactionya apa
         color = when (satisfaction) {
-            "UNDER" -> Color.Green
-            "Satisfactory" -> Color.Yellow
-            else -> Color.Red
+            "PASS" -> Color.Green
+            "OVER" -> Color.Red
+            else -> Color.Yellow
         }
     )
 }
@@ -241,7 +258,16 @@ private fun ProgressItem(
 @Composable
 private fun StatusCard(
     satisfaction: String,
+    message: String
 ) {
+    Text(
+        text = message,
+        textAlign = TextAlign.Center,
+        modifier = Modifier.fillMaxWidth().
+        padding(16.dp),
+        color = MaterialTheme.colorScheme.primary,
+        style = MaterialTheme.typography.titleMedium
+    )
     Image(
         modifier = Modifier
             .fillMaxWidth()
@@ -250,8 +276,8 @@ private fun StatusCard(
         painter = painterResource(
             //belom tau nilai satisfac apa
             id = when (satisfaction) {
-                "UNDER" -> R.drawable.idle
-                "Improving" -> R.drawable.gendut
+                "PASS" -> R.drawable.idle
+                "OVER" -> R.drawable.gendut
                 else -> R.drawable.kurus
             }
         ),

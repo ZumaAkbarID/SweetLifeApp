@@ -7,11 +7,23 @@ data class DashboardResponse(
 	@field:SerializedName("data")
 	val data: Data? = null,
 
-	@field:SerializedName("message")
-	val message: String? = null,
-
 	@field:SerializedName("status")
 	val status: Boolean? = null
+)
+
+data class Sugar(
+
+	@field:SerializedName("current")
+	val current: Double? = null,
+
+	@field:SerializedName("satisfication")
+	val satisfication: String? = null,
+
+	@field:SerializedName("percent")
+	val percent: Double? = null,
+
+	@field:SerializedName("target")
+	val target: Double? = null
 )
 
 data class User(
@@ -19,23 +31,20 @@ data class User(
 	@field:SerializedName("name")
 	val name: String? = null,
 
-	@field:SerializedName("diabetesType")
-	val diabetesType: String? = null
+	@field:SerializedName("diabetes")
+	val diabetes: Boolean? = null
 )
 
-data class Glucose(
+data class DailyProgress(
 
-	@field:SerializedName("current")
-	val current: Int? = null,
+	@field:SerializedName("carbs")
+	val carbs: Carbs? = null,
 
-	@field:SerializedName("percentage")
-	val percentage: Double? = null,
+	@field:SerializedName("calories")
+	val calories: Calories? = null,
 
-	@field:SerializedName("satisfaction")
-	val satisfaction: String? = null,
-
-	@field:SerializedName("target")
-	val target: Int? = null
+	@field:SerializedName("sugar")
+	val sugar: Sugar? = null
 )
 
 data class Data(
@@ -50,35 +59,41 @@ data class Data(
 	val status: Status? = null
 )
 
-data class DailyProgress(
+data class Carbs(
 
-	@field:SerializedName("glucose")
-	val glucose: Glucose? = null,
+	@field:SerializedName("current")
+	val current: Double? = null,
 
-	@field:SerializedName("calorie")
-	val calorie: Calorie? = null
+	@field:SerializedName("satisfication")
+	val satisfication: String? = null,
+
+	@field:SerializedName("percent")
+	val percent: Double? = null,
+
+	@field:SerializedName("target")
+	val target: Double? = null
+)
+
+data class Calories(
+
+	@field:SerializedName("current")
+	val current: Double? = null,
+
+	@field:SerializedName("satisfication")
+	val satisfication: String? = null,
+
+	@field:SerializedName("percent")
+	val percent: Double? = null,
+
+	@field:SerializedName("target")
+	val target: Double? = null
 )
 
 data class Status(
 
+	@field:SerializedName("satisfication")
+	val satisfication: String? = null,
+
 	@field:SerializedName("message")
-	val message: String? = null,
-
-	@field:SerializedName("satisfaction")
-	val satisfaction: String? = null
-)
-
-data class Calorie(
-
-	@field:SerializedName("current")
-	val current: Int? = null,
-
-	@field:SerializedName("percentage")
-	val percentage: Double? = null,
-
-	@field:SerializedName("satisfaction")
-	val satisfaction: String? = null,
-
-	@field:SerializedName("target")
-	val target: Int? = null
+	val message: String? = null
 )
