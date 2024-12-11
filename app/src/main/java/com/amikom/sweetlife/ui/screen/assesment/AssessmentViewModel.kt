@@ -17,6 +17,7 @@ import com.amikom.sweetlife.data.remote.Result
 import com.amikom.sweetlife.data.remote.json_request.HealthRequest
 import com.amikom.sweetlife.domain.usecases.auth.AuthUseCases
 import com.amikom.sweetlife.domain.usecases.profile.ProfileUseCases
+import com.amikom.sweetlife.util.countAgeFromDate
 import com.amikom.sweetlife.util.showToastMessage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -140,6 +141,10 @@ class AssessmentViewModel @Inject constructor(
 
             if (!validateAll()) {
                 _showError.value = true
+                return@launch
+            } else if (countAgeFromDate(personalData.dateOfBirth) < 1 || activityData1.weight < 1 || activityData1.height < 1) {
+                _showError.value = true
+                _errorMessage.value = "Invalid date of birth or weight or height"
                 return@launch
             }
 

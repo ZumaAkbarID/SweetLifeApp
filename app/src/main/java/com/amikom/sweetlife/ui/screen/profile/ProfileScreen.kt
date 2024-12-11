@@ -3,6 +3,7 @@ package com.amikom.sweetlife.ui.screen.profile
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -176,7 +177,8 @@ fun UserProfileScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(16.dp),
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState()),
             contentAlignment = Alignment.Center
         ) {
             Column(
@@ -231,6 +233,8 @@ fun UserProfileScreen(
                        //
                     }
                 )
+                Spacer(modifier = Modifier.height(16.dp))
+
             }
         }
     }

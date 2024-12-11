@@ -44,7 +44,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -52,12 +51,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.LocalLifecycleOwner
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import com.amikom.sweetlife.R
 import com.amikom.sweetlife.data.remote.Result
 import com.amikom.sweetlife.domain.nvgraph.Route
 import com.amikom.sweetlife.ui.component.CustomDialog
 import com.amikom.sweetlife.util.showToastMessage
+import com.google.gson.Gson
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.concurrent.Executors
 
 @Composable
@@ -99,7 +103,14 @@ fun CameraScreen(
             if (result.foodList.isNullOrEmpty()) {
                 showDialog = true
             } else {
-                showDialog = true
+                val jsonData = Gson().toJson(result.foodList)
+//                sharedViewModel.setFoodList(result.foodList)
+                viewModel.resetResult()
+                cameraExecutor.shutdown()
+                navController.navigate(Route.ResultScanScreen(jsonData)) {
+                    popUpTo<Route.DashboardScreen> { inclusive = false }
+                }
+
             }
         }
 
@@ -129,7 +140,7 @@ fun CameraScreen(
                     if (scanData is Result.Success && (scanData as Result.Success).data.foodList.isNullOrEmpty()) {
                         "No food detected on this image, try capture with better light"
                     } else if (scanData is Result.Error) {
-                        "Something went wrong."
+                        (scanData as Result.Error).error
                     } else {
                         (scanData as? Result.Success)?.data?.foodList.toString()
                     }
@@ -225,13 +236,12 @@ fun CameraScreen(
         contract = ActivityResultContracts.GetContent(),
         onResult = { uri ->
             uri?.let {
-                try {
-                    capturedImageBitmap = MediaStore.Images.Media.getBitmap(context.contentResolver, it)
-                    Log.d("UPLOAD_IMEK", capturedImageBitmap!!.byteCount.div(1000).toString())
+                lifecycleOwner.lifecycleScope.launch {
+                    val imageBitmap = withContext(Dispatchers.IO) {
+                        MediaStore.Images.Media.getBitmap(context.contentResolver, it)
+                    }
+                    capturedImageBitmap = imageBitmap
                     showDialogAwal = true
-                } catch (e: Exception) {
-                    Log.e("CameraScreen", "Error loading image from gallery", e)
-                    showToastMessage(context, "Error loading image", 0)
                 }
             }
         }

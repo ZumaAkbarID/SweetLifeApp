@@ -12,6 +12,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.amikom.sweetlife.domain.manager.SessionViewModel
 import com.amikom.sweetlife.ui.presentation.onboarding.OnBoardingScreen
 import com.amikom.sweetlife.ui.presentation.onboarding.OnBoardingViewModel
@@ -149,9 +150,10 @@ fun NavGraph(
         }
 
         composable<Route.ResultScanScreen> {
+            val args = it.toRoute<Route.ResultScanScreen>()
             val viewModel: ResultScanViewModel = hiltViewModel()
 
-            ResultAndAdditionalScreen(viewModel, navController)
+            ResultAndAdditionalScreen(args.listFood, viewModel, navController)
         }
     }
 }
