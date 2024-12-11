@@ -13,13 +13,15 @@ import com.amikom.sweetlife.data.remote.json_request.LoginRequest
 import com.amikom.sweetlife.data.remote.json_request.RefreshTokenRequest
 import com.amikom.sweetlife.data.remote.json_request.RegisterRequest
 import com.amikom.sweetlife.data.remote.retrofit.AuthApiService
+import com.amikom.sweetlife.domain.manager.LocalAuthUserManager
 import com.amikom.sweetlife.domain.repository.AuthRepository
 import com.amikom.sweetlife.util.AppExecutors
 import com.google.gson.Gson
 
 class AuthRepositoryImpl(
     private val authApiService: AuthApiService,
-    private val appExecutors: AppExecutors
+    private val appExecutors: AppExecutors,
+    private val localAuthUserManager: LocalAuthUserManager
 ) : AuthRepository {
     override suspend fun login(email: String, password: String): LiveData<Result<UserModel>> {
         val result = MediatorLiveData<Result<UserModel>>()
@@ -163,8 +165,45 @@ class AuthRepositoryImpl(
         return result
     }
 
-    override suspend fun logout() {
-        TODO("Not yet implemented")
+    override suspend fun logout(): LiveData<Result<Boolean>> {
+        val result = MediatorLiveData<Result<Boolean>>()
+        result.value = Result.Loading
+
+        try {
+            // Perform API call
+            val response = authApiService.logout()
+
+            if (response.isSuccessful) {
+                // Parse response body
+                val registerStatus = response.body()?.status ?: false
+                val messageBody = response.body()?.message ?: "Server Error"
+
+                if(registerStatus && messageBody == "action success") {
+                    localAuthUserManager.logout()
+
+                    // Update result on main thread
+                    appExecutors.mainThread.execute {
+                        result.value = Result.Success(data = true)
+                    }
+                } else {
+                    throw Exception(messageBody)
+                }
+            } else {
+                // Handle error response
+                val errorBody = Gson().fromJson(response.errorBody()?.string(), ErrorResponse::class.java)
+                val message = errorBody?.error ?: response.message()
+                appExecutors.mainThread.execute {
+                    result.value = Result.Error(message)
+                }
+            }
+        } catch (e: Exception) {
+            // Handle exceptions
+            appExecutors.mainThread.execute {
+                result.value = e.message?.let { Result.Error(it) }
+            }
+        }
+
+        return result
     }
 
     override suspend fun refreshToken(refreshToken: String): Result<NewTokenModel> {

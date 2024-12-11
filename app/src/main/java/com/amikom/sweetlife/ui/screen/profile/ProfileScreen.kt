@@ -225,7 +225,12 @@ fun UserProfileScreen(
                     text = "Logout",
                     shape = RoundedCornerShape(bottomEnd = 16.dp, bottomStart = 16.dp),
                     textColor = Color.Red,
-                    onClick = { /* TODO: Handle Logout */ }
+                    onClick = {
+                        navController.navigate(Route.LoginScreen) {
+                            profileViewModel.logout()
+                            launchSingleTop = true
+                        }
+                    }
                 )
                 Spacer(modifier = Modifier.height(16.dp))
 
