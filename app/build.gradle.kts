@@ -143,6 +143,16 @@ dependencies {
     //multipart
     implementation("com.squareup.retrofit2:converter-moshi:2.9.0")
     implementation("com.squareup.retrofit2:retrofit:2.9.0")
+
+    // camerax
+    implementation("androidx.camera:camera-core:1.4.0")
+    implementation("androidx.camera:camera-lifecycle:1.4.0")
+    implementation("androidx.camera:camera-view:1.4.0")
+    implementation("androidx.camera:camera-extensions:1.4.0")
+    implementation("androidx.camera:camera-camera2:1.4.0")
+    implementation("androidx.compose.ui:ui:1.7.5")
+    implementation("androidx.compose.ui:ui-tooling:1.7.5")
+    implementation("com.google.accompanist:accompanist-permissions:0.36.0")
 }
 
 kapt {

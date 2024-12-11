@@ -1,6 +1,7 @@
 package com.amikom.sweetlife.ui.component
 
 import android.annotation.SuppressLint
+import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -70,7 +71,7 @@ fun CustomDialogUI(
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
     ) {
         Column(
-            modifier.background(Color.White)
+            modifier.background(MaterialTheme.colorScheme.background)
         ) {
             // Ikon opsional
             icon?.let {
@@ -90,6 +91,7 @@ fun CustomDialogUI(
                 // Judul opsional
                 title?.let {
                     Text(
+                        color = MaterialTheme.colorScheme.onBackground,
                         text = it,
                         textAlign = TextAlign.Center,
                         fontWeight = FontWeight.SemiBold,
@@ -105,6 +107,7 @@ fun CustomDialogUI(
                 // Pesan opsional
                 message?.let {
                     Text(
+                        color = MaterialTheme.colorScheme.onBackground,
                         text = it,
                         textAlign = TextAlign.Center,
                         modifier = Modifier
@@ -155,6 +158,22 @@ fun CustomDialogUI(
 @Preview(name = "Dynamic Dialog Preview")
 @Composable
 fun CustomDialogPreview() {
+    CustomDialog(
+        openDialogCustom = mutableStateOf(true),
+        icon = R.drawable.baseline_notifications_none_24,
+        title = "Get Updates",
+        message = "Allow Permission to send you notifications when new art styles added.",
+        buttons = listOf(
+            "Not Now" to { /* Handle Not Now */ },
+            "Allow" to { /* Handle Allow */ }
+        )
+    )
+}
+
+@SuppressLint("UnrememberedMutableState")
+@Preview(name = "Dynamic Dialog Preview Dark", uiMode = UI_MODE_NIGHT_YES)
+@Composable
+fun CustomDialogPreviewDark() {
     CustomDialog(
         openDialogCustom = mutableStateOf(true),
         icon = R.drawable.baseline_notifications_none_24,

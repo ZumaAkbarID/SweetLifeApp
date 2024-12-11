@@ -8,20 +8,20 @@ data class DashboardModel(
 data class Data(
     val dailyProgress: DailyProgress,
     val status: Status,
-    val user: User,
+    val user: User
 )
 
 data class DailyProgress(
-    val calorie: ProgressDetail,
-    val glucose: ProgressDetail,
+    val calories: ProgressDetail,
     val carbs: ProgressDetail,
+    val sugar: ProgressDetail
 )
 
 data class ProgressDetail(
-    val current: Double = 0.0,
-    val percentage: Double = 0.0,
-    val satisfaction: String = "",
-    val target: Double = 0.0
+    val current: Double,
+    val percent: Double,
+    val satisfaction: String,
+    val target: Double
 )
 
 data class Status(
@@ -30,7 +30,6 @@ data class Status(
 )
 
 data class User(
-    val diabetesType: Boolean,
     val name: String,
-    val diabetes: String
+    val diabetes: Boolean
 )

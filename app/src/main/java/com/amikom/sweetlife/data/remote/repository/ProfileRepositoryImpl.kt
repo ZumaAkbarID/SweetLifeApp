@@ -1,5 +1,8 @@
 package com.amikom.sweetlife.data.remote.repository
 
+import android.content.Context
+import android.graphics.Bitmap
+import android.os.Build
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import com.amikom.sweetlife.data.model.DailyProgress
@@ -10,19 +13,31 @@ import com.amikom.sweetlife.data.model.HealthProfileModel
 import com.amikom.sweetlife.data.model.ProfileModel
 import com.amikom.sweetlife.data.model.ProgressDetail
 import com.amikom.sweetlife.data.model.Status
+import com.amikom.sweetlife.data.model.UpdateProfileModel
 import com.amikom.sweetlife.data.model.User
 import com.amikom.sweetlife.data.remote.Result
 import com.amikom.sweetlife.data.remote.dto.ErrorResponse
 import com.amikom.sweetlife.data.remote.dto.profile.ProfileResponse
+import com.amikom.sweetlife.data.remote.json_request.HealthRequest
 import com.amikom.sweetlife.data.remote.retrofit.FeatureApiService
 import com.amikom.sweetlife.domain.repository.DashboardRepository
 import com.amikom.sweetlife.domain.repository.ProfileRepository
+import com.amikom.sweetlife.domain.usecases.profile.UpdateDataProfile
 import com.amikom.sweetlife.util.AppExecutors
 import com.amikom.sweetlife.util.Constants
 import com.google.gson.Gson
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.File
+import java.io.OutputStream
 
 class ProfileRepositoryImpl(
+    private val context: Context,
     private val featureApiService: FeatureApiService,
     private val appExecutors: AppExecutors
 ) : ProfileRepository {
@@ -123,5 +138,60 @@ class ProfileRepositoryImpl(
         }
 
         return result
+    }
+
+    override suspend fun updateDataProfile(dataProfile: UpdateProfileModel): Flow<Result<Boolean>> = flow {
+        emit(Result.Loading)
+
+        try {
+            val name = dataProfile.name.toRequestBody("text/plain".toMediaType())
+            val dateOfBirth = dataProfile.dateOfBirth.toRequestBody("text/plain".toMediaType())
+            val gender = dataProfile.gender.toRequestBody("text/plain".toMediaType())
+
+            val profilePicturePart = dataProfile.profilePicture?.let { bitmap ->
+                val file = File(context.cacheDir, "profile_picture.jpg").apply {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        OutputStream.nullOutputStream().use { bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it) }
+                    }
+                }
+                val requestFile = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
+                MultipartBody.Part.createFormData("profile_picture", file.name, requestFile)
+            }
+
+            // Panggil API
+            val response = featureApiService.updateProfile(
+                name = name,
+                dateOfBirth = dateOfBirth,
+                gender = gender,
+                profilePicture = profilePicturePart
+            )
+
+            if (response.isSuccessful) {
+                emit(Result.Success(true))
+            } else {
+                val errorBody = response.errorBody()?.string()
+                emit(Result.Error(errorBody ?: "Unknown error"))
+            }
+        } catch (e: Exception) {
+            emit(Result.Error(e.localizedMessage ?: "An unexpected error occurred"))
+        }
+    }
+
+    override suspend fun createHealthProfile(dataHealth: HealthRequest): Flow<Result<Boolean>> = flow {
+        emit(Result.Loading)
+
+        try {
+            // Panggil API
+            val response = featureApiService.createHealth(dataHealth)
+
+            if (response.isSuccessful) {
+                emit(Result.Success(true))
+            } else {
+                val errorBody = response.errorBody()?.string()
+                emit(Result.Error(errorBody ?: "Unknown error"))
+            }
+        } catch (e: Exception) {
+            emit(Result.Error(e.localizedMessage ?: "An unexpected error occurred"))
+        }
     }
 }

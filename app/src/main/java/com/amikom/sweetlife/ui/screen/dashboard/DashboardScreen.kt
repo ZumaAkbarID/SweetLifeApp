@@ -1,6 +1,5 @@
 package com.amikom.sweetlife.ui.screen.dashboard
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -9,7 +8,10 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -20,9 +22,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -44,20 +46,22 @@ import com.amikom.sweetlife.ui.component.CustomDialog
 import com.amikom.sweetlife.ui.component.getBottomNavButtons
 import com.amikom.sweetlife.ui.component.rememberSelectedIndex
 import com.amikom.sweetlife.util.Constants
+import java.util.Locale
+import kotlin.math.ceil
 
 @Composable
 fun DashboardScreen(
     viewModel: DashboardViewModel = hiltViewModel(),
     navController: NavHostController,
 ) {
-    val dashboardData by viewModel.dashboardState.collectAsState()
+    val dashboardData by viewModel.dashboardData.observeAsState()
     val isUserLoggedIn by viewModel.isUserLoggedIn.collectAsState()
 
     if (!isUserLoggedIn) {
         CustomDialog(
             icon = R.drawable.baseline_info_outline_24,
             title = "Info",
-            message = "You'r session is ended. Please login again",
+            message = "Your session is ended. Please login again",
             openDialogCustom = remember { mutableStateOf(true) },
             buttons = listOf(
                 "Ok" to {
@@ -90,7 +94,7 @@ fun DashboardScreen(
                 text = (dashboardData as Result.Error).error,
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.fillMaxSize().padding(16.dp),
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
             )
         }
 
@@ -113,32 +117,32 @@ fun DashboardScreenUI(data: Data, navController: NavController) {
 
     Scaffold(
         bottomBar = {
-            BottomNavigationBar(buttons = buttons)
+            BottomNavigationBar(buttons = buttons, navController = navController, currentScreen = Route.DashboardScreen)
         },
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxSize().navigationBarsPadding(),
     ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(16.dp),
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Log.d("DashboardScreenUI", "data: $data")
             UserHeader(
                 name = data.user.name,
-                diabetesType = data.user.diabetesType.toString(),
-                isDiabete = data.user.diabetes
+                isDiabetes = data.user.diabetes
             )
 
             DailyProgressCard(
-                glucose = data.dailyProgress.glucose,
-                calorie = data.dailyProgress.calorie,
-                carbohydrate = data.dailyProgress.carbs
+                calories = data.dailyProgress.calories,
+                carbs = data.dailyProgress.carbs,
+                sugar = data.dailyProgress.sugar,
             )
 
             StatusCard(
-                satisfaction = data.status.satisfaction
+                satisfaction = data.status.satisfaction,
+                message = data.status.message
             )
         }
     }
@@ -149,11 +153,8 @@ fun DashboardScreenUI(data: Data, navController: NavController) {
 @Composable
 private fun UserHeader(
     name: String,
-    diabetesType: String,
-    isDiabete: String
+    isDiabetes: Boolean
 ) {
-    var expanded by remember { mutableStateOf(false) }
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -166,10 +167,9 @@ private fun UserHeader(
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold
         )
-        if (isDiabete == "true") {
-            expanded = true
+        if(isDiabetes) {
             Text(
-                text = "Diabetes Type: $diabetesType",
+                text = "Has Diabetes",
                 style = MaterialTheme.typography.titleMedium
             )
         }
@@ -179,11 +179,10 @@ private fun UserHeader(
 // daily progress
 @Composable
 private fun DailyProgressCard(
-    glucose: ProgressDetail,
-    calorie: ProgressDetail,
-    carbohydrate: ProgressDetail,
+    calories: ProgressDetail,
+    carbs: ProgressDetail,
+    sugar: ProgressDetail,
 ) {
-    Log.d("DailyProgressCard", "glucose: $glucose, calorie: $calorie, carbohydrate: $carbohydrate")
     Card(
         modifier = Modifier
             .fillMaxWidth(),
@@ -200,24 +199,24 @@ private fun DailyProgressCard(
             )
             ProgressItem(
                 title = "🔥 Calorie",
-                current = calorie.current,
-                target = calorie.target,
-                percentage = calorie.percentage,
-                satisfaction = calorie.satisfaction
+                current = ceil(calories.current).toInt(),
+                target = ceil(calories.target).toInt(),
+                percentage = ceil(calories.percent).toInt(),
+                satisfaction = calories.satisfaction
             )
             ProgressItem(
-                title = "🧋 Glucose",
-                current = glucose.current,
-                target = glucose.target,
-                percentage = glucose.percentage,
-                satisfaction = glucose.satisfaction
+                title = "🍚 Carb",
+                current = ceil(carbs.current).toInt(),
+                target = ceil(carbs.target).toInt(),
+                percentage = ceil(carbs.percent).toInt(),
+                satisfaction = carbs.satisfaction
             )
             ProgressItem(
-                title = "🍚 Carbohydrate",
-                current = carbohydrate.current,
-                target = carbohydrate.target,
-                percentage = carbohydrate.percentage,
-                satisfaction = carbohydrate.satisfaction
+                title = "🧋 Sugar",
+                current = ceil(sugar.current).toInt(),
+                target = ceil(sugar.target).toInt(),
+                percentage = ceil(sugar.percent).toInt(),
+                satisfaction = sugar.satisfaction
             )
         }
     }
@@ -227,9 +226,9 @@ private fun DailyProgressCard(
 @Composable
 private fun ProgressItem(
     title: String,
-    current: Double,
-    target: Double,
-    percentage: Double,
+    current: Int,
+    target: Int,
+    percentage: Int,
     satisfaction: String
 ) {
     Row(
@@ -237,21 +236,20 @@ private fun ProgressItem(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
-        Log.d("ProgressItem", "satisfaction: ${ProgressDetail(current, percentage, satisfaction, target)}")
         Text(text = title, style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold)
         Text(
-            text = if (title == "🔥 Calorie") "$current / $target Kcal" else if (title == "🧋 Glucose") "$current / $target mg" else "$current / $target g",
+            text = "$current / $target Ccal",
             style = MaterialTheme.typography.bodyMedium
         )
     }
     LinearProgressIndicator(
-        modifier = Modifier.fillMaxWidth().height(8.dp),
-        progress = percentage.toFloat() / 100,
+        modifier = Modifier.fillMaxWidth().height(16.dp),
+        progress = percentage / 100f,
         //belom tau nilai satisfactionya apa
         color = when (satisfaction) {
-            "PAS" -> Color.Green
-            "UNDER" -> Color.Yellow
-            else -> Color.Red
+            "PASS" -> Color.Green
+            "OVER" -> Color.Red
+            else -> Color.Yellow
         }
     )
 }
@@ -260,7 +258,20 @@ private fun ProgressItem(
 @Composable
 private fun StatusCard(
     satisfaction: String,
+    message: String
 ) {
+    Text(
+        text = message,
+        textAlign = TextAlign.Center,
+        modifier = Modifier.fillMaxWidth().
+        padding(16.dp, 16.dp, 16.dp, 0.dp),
+        color = when(satisfaction) {
+            "PASS" -> Color.Green
+            "UNDER" -> Color.Yellow
+            else -> Color.Red
+        },
+        style = MaterialTheme.typography.titleMedium
+    )
     Image(
         modifier = Modifier
             .fillMaxWidth()
@@ -269,10 +280,9 @@ private fun StatusCard(
         painter = painterResource(
             //belom tau nilai satisfac apa
             id = when (satisfaction) {
-                "PAS" -> R.drawable.idle
+                "PASS" -> R.drawable.idle
                 "OVER" -> R.drawable.gendut
-                "MODERATE"-> R.drawable.kurus
-                else -> R.drawable.idle
+                else -> R.drawable.kurus
             }
         ),
         contentDescription = "Status Icon",

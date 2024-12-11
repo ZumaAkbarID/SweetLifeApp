@@ -1,6 +1,7 @@
 package com.amikom.sweetlife.ui.screen.assesment
 
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.runtime.*
 import androidx.lifecycle.ViewModel
@@ -11,7 +12,11 @@ import com.amikom.sweetlife.data.model.DiabetesStatus
 import com.amikom.sweetlife.data.model.HealthHistory
 import com.amikom.sweetlife.data.model.NextDiabetesStatus
 import com.amikom.sweetlife.data.model.PersonalData
+import com.amikom.sweetlife.data.model.UpdateProfileModel
+import com.amikom.sweetlife.data.remote.Result
+import com.amikom.sweetlife.data.remote.json_request.HealthRequest
 import com.amikom.sweetlife.domain.usecases.auth.AuthUseCases
+import com.amikom.sweetlife.domain.usecases.profile.ProfileUseCases
 import com.amikom.sweetlife.util.showToastMessage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -24,11 +29,35 @@ import javax.inject.Inject
 @HiltViewModel
 class AssessmentViewModel @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val authUseCases: AuthUseCases
+    private val authUseCases: AuthUseCases,
+    private val profileUseCases: ProfileUseCases
 ) : ViewModel() {
 
     private val _result = MutableStateFlow(false)
     val result: StateFlow<Boolean> = _result
+
+    private val _showError = MutableStateFlow(false)
+    val showError: StateFlow<Boolean> = _showError
+
+    private val _errorMessage = MutableStateFlow("")
+    val errorMessage: StateFlow<String> = _errorMessage
+
+    private val _updateProfileResult = MutableStateFlow<Result<Boolean>>(Result.Empty)
+    val updateProfileResult: StateFlow<Result<Boolean>> = _updateProfileResult
+
+    private val _createHealth = MutableStateFlow<Result<Boolean>>(Result.Empty)
+    val createHealth: StateFlow<Result<Boolean>> = _createHealth
+
+    private val _isUserLoggedIn = MutableStateFlow(true)
+    val isUserLoggedIn: StateFlow<Boolean> = _isUserLoggedIn
+
+    init {
+        viewModelScope.launch {
+            authUseCases.checkIsUserLogin().collect { isLoggedIn ->
+                _isUserLoggedIn.value = isLoggedIn
+            }
+        }
+    }
 
     // Track current data for each screen
     var personalData by mutableStateOf(PersonalData())
@@ -84,7 +113,7 @@ class AssessmentViewModel @Inject constructor(
     }
 
     // Call all validations before submitting data
-    fun validateAll(): Boolean {
+    private fun validateAll(): Boolean {
         validatePersonalData()
         validateDiabetesStatus()
         validateNextDiabetesStatus()
@@ -99,41 +128,62 @@ class AssessmentViewModel @Inject constructor(
                 isDayGoalsValid
     }
 
+    fun dismissError() {
+        _showError.value = false
+    }
+
     // Function to submit data to the server
     fun submitDataToServer() {
         viewModelScope.launch {
+            _showError.value = false
+            _errorMessage.value = ""
+
             if (!validateAll()) {
-                // Handle validation failure
+                _showError.value = true
                 return@launch
             }
 
-            val dataReadyToSend = DataReadyToSend(
-                height = activityData1.height.toDouble(),
-                weight = activityData1.weight.toDouble(),
-                isDiabetic = diabetesStatus.isDiabetic,
-                smokingHistory = activityData2.smokingHistory,
-                hasHeartDisease = activityData2.heartDiseaseHistory == "Yes",
-                activityLevel = activityData1.physicalActivity,
-                diabeticType = if (diabetesStatus.isDiabetic) nextDiabetesStatus.type else null,
-                insulinLevel = if (diabetesStatus.isDiabetic) nextDiabetesStatus.insulinLevel else null,
-                bloodPressure = if (diabetesStatus.isDiabetic) nextDiabetesStatus.bloodPressure else null
+            val dataProfileUpdate = UpdateProfileModel(
+                name = personalData.fullName,
+                dateOfBirth = personalData.dateOfBirth,
+                gender = personalData.gender,
             )
 
-            // Simulate API request
-            _result.emit(true)
+            Log.d("BIJIX_ASS", dataProfileUpdate.toString())
+
+            profileUseCases.updateDataProfile(dataProfileUpdate).collect { result ->
+                _updateProfileResult.value = result
+            }
+
+            val dataReadyToSend = HealthRequest(
+                height = activityData1.height.toDouble(),
+                weight = activityData1.weight.toDouble(),
+                is_diabetic = diabetesStatus.isDiabetic,
+                smoking_history = activityData2.smokingHistory.lowercase(),
+                has_heart_disease = activityData2.heartDiseaseHistory == "Yes",
+                activity_level = activityData1.physicalActivity.lowercase(),
+                diabetic_type = if (diabetesStatus.isDiabetic) nextDiabetesStatus.type.trim().lowercase() else null,
+                insulin_level = if (diabetesStatus.isDiabetic) nextDiabetesStatus.insulinLevel else null,
+                blood_pressure = if (diabetesStatus.isDiabetic) nextDiabetesStatus.bloodPressure else null
+            )
+
+            Log.d("BIJIX_ASS", dataReadyToSend.toString())
+
+            profileUseCases.createHealthProfile(dataReadyToSend).collect { result ->
+                _createHealth.value = result
+            }
+
+            if (updateProfileResult.value is Result.Error) {
+                _showError.value = true
+                _errorMessage.value = "Can't update your profile, try again!"
+            } else if (createHealth.value is Result.Error) {
+                _showError.value = true
+                _errorMessage.value = "Can't save your health data, please try again!"
+            } else if (updateProfileResult.value is Result.Success && createHealth.value is Result.Success) {
+                showToastMessage(context, "Saved!", Toast.LENGTH_LONG)
+                authUseCases.saveHealthProfile(true)
+                _result.emit(true)
+            }
         }
     }
 }
-
-data class DataReadyToSend(
-    val height: Double,
-    val weight: Double,
-    val isDiabetic: Boolean,
-    val smokingHistory: String,
-    val hasHeartDisease: Boolean,
-    val activityLevel: String,
-
-    val diabeticType: String?,
-    val insulinLevel: Double?,
-    val bloodPressure: Int?
-)

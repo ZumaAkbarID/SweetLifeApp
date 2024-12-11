@@ -38,6 +38,10 @@ import com.amikom.sweetlife.ui.screen.profile.editProfile.EditProfileViewModel
 import com.amikom.sweetlife.ui.screen.profile.settings.SettingsScreen
 import com.amikom.sweetlife.ui.screen.rekomend.RekomenScreen
 import com.amikom.sweetlife.ui.screen.rekomend.RekomenViewModel
+import com.amikom.sweetlife.ui.screen.scan.CameraScanViewModel
+import com.amikom.sweetlife.ui.screen.scan.CameraScreen
+import com.amikom.sweetlife.ui.screen.scan.ResultAndAdditionalScreen
+import com.amikom.sweetlife.ui.screen.scan.ResultScanViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -137,6 +141,17 @@ fun NavGraph(
                 viewModel = viewModel,
                 navController = navController
             )
+        }
+
+        composable<Route.CameraScreen> {
+            val viewModel: CameraScanViewModel = hiltViewModel()
+            CameraScreen(viewModel = viewModel, onBackPressed = { navController.popBackStack() }, navController = navController)
+        }
+
+        composable<Route.ResultScanScreen> {
+            val viewModel: ResultScanViewModel = hiltViewModel()
+
+            ResultAndAdditionalScreen(viewModel, navController)
         }
     }
 }

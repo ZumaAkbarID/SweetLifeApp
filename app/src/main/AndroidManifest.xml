@@ -3,7 +3,13 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <!--  Permission  -->
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="false" />
+
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
     <application
         android:name=".SweetLifeApplication"
@@ -16,6 +22,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SweetLife.SplashScreen"
         tools:targetApi="31">
+        <meta-data
+            android:name="androidx.camera.core.CameraXConfig.Provider"
+            android:value="androidx.camera.camera2.Camera2Config" />
         <activity
             android:name=".MainActivity"
             android:exported="true"
