@@ -2,6 +2,7 @@ package com.amikom.sweetlife.data.remote.retrofit
 
 import com.amikom.sweetlife.data.remote.dto.forgot_password.ForgotPasswordResponse
 import com.amikom.sweetlife.data.remote.dto.login.LoginResponse
+import com.amikom.sweetlife.data.remote.dto.logout.LogoutResponse
 import com.amikom.sweetlife.data.remote.dto.refresh_token.RefreshTokenResponse
 import com.amikom.sweetlife.data.remote.dto.register.RegisterResponse
 import com.amikom.sweetlife.data.remote.json_request.ForgotPasswordRequest
@@ -42,5 +43,8 @@ interface AuthApiService {
         @Body request: RefreshTokenRequest
 
     ) : Response<RefreshTokenResponse>
+
+    @POST("${Constants.API_VERSION}auth/logout")
+    suspend fun logout() : Response<LogoutResponse>
 
 }

@@ -180,19 +180,19 @@ fun EditDataScreen(
                 Spacer(modifier = Modifier.height(4.dp))
                 CustomDropdown(
                     label = "Diabetic Type",
-                    options = listOf("Type 1", "Type 2", "Gestational"),
+                    options = listOf("Type 1", "Type 2", "Type 3", "Gestational"),
                     value = diabetesType,
                     onValueChange = { diabetesType = it }
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(16.dp),
+                    modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     // Insulin Level
                     Column(
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier.weight(0.5f).fillMaxWidth(),
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.Start
                     ) {
@@ -203,7 +203,7 @@ fun EditDataScreen(
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         InsulinLevel(
-                            label = "Insulin Level",
+                            label = "",
                             value = insulinLevel.toString(),
                             onValueChange = { insulinLevel = insulinLevel }
                         )
@@ -224,7 +224,7 @@ fun EditDataScreen(
                         )
                         Spacer(modifier = Modifier.height(4.dp))
                         BloodSugarLevel(
-                            label = "Blood Pressure",
+                            label = "",
                             value = bloodPressure.toString(),
                             onValueChange = { bloodPressure = bloodPressure }
                         )
@@ -271,7 +271,7 @@ fun EditDataScreen(
         Spacer(modifier = Modifier.height(4.dp))
         CustomDropdown(
             label = "Activity Level",
-            options = listOf("Sedentary", "Light", "Moderate", "Active", "Ex"),
+            options = listOf("sedentary", "light", "moderate", "active", "extremely"),
             value = activityLevel,
             onValueChange = { activityLevel = it }
         )
@@ -429,6 +429,7 @@ fun HeightWeightSection(
         // Weight
         OutlinedTextField(
             value = weight,
+            shape = RoundedCornerShape(15.dp),
             onValueChange = onWeightChange,
             label = { Text("Weight (kg)") },
             keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -507,7 +508,7 @@ fun CustomDropdown(
             modifier = modifier
                 .fillMaxWidth()
                 .clickable { expanded = !expanded }
-                .padding(8.dp)
+//                .padding(8.dp)
                 .border(0.5.dp, MaterialTheme.colorScheme.onSurface, RoundedCornerShape(15.dp))
         ) {
             Box(

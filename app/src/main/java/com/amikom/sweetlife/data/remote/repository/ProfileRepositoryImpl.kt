@@ -2,26 +2,18 @@ package com.amikom.sweetlife.data.remote.repository
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.os.Build
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
-import com.amikom.sweetlife.data.model.DailyProgress
-import com.amikom.sweetlife.data.model.DashboardModel
-import com.amikom.sweetlife.data.model.Data
 import com.amikom.sweetlife.data.model.DiabetesPrediction
 import com.amikom.sweetlife.data.model.HealthProfileModel
 import com.amikom.sweetlife.data.model.ProfileModel
-import com.amikom.sweetlife.data.model.ProgressDetail
-import com.amikom.sweetlife.data.model.Status
 import com.amikom.sweetlife.data.model.UpdateProfileModel
-import com.amikom.sweetlife.data.model.User
 import com.amikom.sweetlife.data.remote.Result
 import com.amikom.sweetlife.data.remote.dto.ErrorResponse
-import com.amikom.sweetlife.data.remote.dto.profile.ProfileResponse
 import com.amikom.sweetlife.data.remote.json_request.HealthRequest
 import com.amikom.sweetlife.data.remote.retrofit.FeatureApiService
-import com.amikom.sweetlife.domain.repository.DashboardRepository
 import com.amikom.sweetlife.domain.repository.ProfileRepository
-import com.amikom.sweetlife.domain.usecases.profile.UpdateDataProfile
 import com.amikom.sweetlife.util.AppExecutors
 import com.amikom.sweetlife.util.Constants
 import com.google.gson.Gson
@@ -111,7 +103,7 @@ class ProfileRepositoryImpl(
                     hasHeartDisease = data?.hasHeartDisease ?: false,
                     activityLevel = data?.activityLevel ?: defaultErrorValue,
                     diabetesPrediction = DiabetesPrediction(
-                        riskPercentage = data?.diabetesPrediction?.riskPercentage ?: 0,
+                        riskPercentage = data?.diabetesPrediction?.riskPercentage ?: 0.0,
                         riskLevel = data?.diabetesPrediction?.riskLevel ?: defaultErrorValue,
                         note = data?.diabetesPrediction?.note ?: defaultErrorValue
                     )
@@ -149,7 +141,9 @@ class ProfileRepositoryImpl(
 
             val profilePicturePart = dataProfile.profilePicture?.let { bitmap ->
                 val file = File(context.cacheDir, "profile_picture.jpg").apply {
-                    OutputStream.nullOutputStream().use { bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it) }
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        OutputStream.nullOutputStream().use { bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it) }
+                    }
                 }
                 val requestFile = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
                 MultipartBody.Part.createFormData("profile_picture", file.name, requestFile)

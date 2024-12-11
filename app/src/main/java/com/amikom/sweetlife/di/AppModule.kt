@@ -31,6 +31,7 @@ import com.amikom.sweetlife.domain.usecases.auth.CheckHasHealthProfile
 import com.amikom.sweetlife.domain.usecases.auth.CheckIsUserLogin
 import com.amikom.sweetlife.domain.usecases.auth.ForgotUserPassword
 import com.amikom.sweetlife.domain.usecases.auth.LoginAction
+import com.amikom.sweetlife.domain.usecases.auth.LogoutAction
 import com.amikom.sweetlife.domain.usecases.auth.ReadUserAllToken
 import com.amikom.sweetlife.domain.usecases.auth.RefreshNewTokenAction
 import com.amikom.sweetlife.domain.usecases.auth.RegisterAction
@@ -39,6 +40,9 @@ import com.amikom.sweetlife.domain.usecases.auth.SaveNewToken
 import com.amikom.sweetlife.domain.usecases.auth.SaveUserInfoLogin
 import com.amikom.sweetlife.domain.usecases.dashboard.DashboardUseCases
 import com.amikom.sweetlife.domain.usecases.dashboard.FetchData
+import com.amikom.sweetlife.domain.usecases.dashboard.FindFood
+import com.amikom.sweetlife.domain.usecases.dashboard.SaveFood
+import com.amikom.sweetlife.domain.usecases.dashboard.ScanFood
 import com.amikom.sweetlife.domain.usecases.profile.CreateHealthProfile
 import com.amikom.sweetlife.domain.usecases.profile.FetchDataHealthProfile
 import com.amikom.sweetlife.domain.usecases.profile.FetchDataProfile
@@ -48,13 +52,13 @@ import com.amikom.sweetlife.util.AppExecutors
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ViewModelComponent
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 @Module
@@ -116,9 +120,13 @@ object AppModule {
         val client: OkHttpClient = OkHttpClient.Builder()
             .addInterceptor(loggingInterceptor)
             .addInterceptor(authInterceptor)
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
             .build()
 
         return Retrofit.Builder()
+//            .baseUrl("http://192.168.100.191:3000/")
             .baseUrl(baseUrl)
             .addConverterFactory(GsonConverterFactory.create())
             .client(client)
@@ -142,8 +150,9 @@ object AppModule {
     @Singleton
     fun provideAuthRepository(
         authApi: AuthApiService,
-        appExecutors: AppExecutors
-    ): AuthRepository = AuthRepositoryImpl(authApi, appExecutors)
+        appExecutors: AppExecutors,
+        authUserManager: LocalAuthUserManager
+    ): AuthRepository = AuthRepositoryImpl(authApi, appExecutors, authUserManager)
 
     @Provides
     @Singleton
@@ -176,7 +185,8 @@ object AppModule {
             refreshNewToken = RefreshNewTokenAction(authRepository = authRepository),
             saveNewToken = SaveNewToken(localAuthUserManager = localAuthUserManager),
             checkHasHealthProfile = CheckHasHealthProfile(localAuthUserManager = localAuthUserManager),
-            saveHealthProfile = SaveHealthProfile(localAuthUserManager = localAuthUserManager)
+            saveHealthProfile = SaveHealthProfile(localAuthUserManager = localAuthUserManager),
+            logout = LogoutAction(authRepository = authRepository)
         )
     }
 
@@ -186,7 +196,10 @@ object AppModule {
         dashboardRepository: DashboardRepository,
     ) : DashboardUseCases {
         return DashboardUseCases(
-            fetchData = FetchData(dashboardRepository = dashboardRepository)
+            fetchData = FetchData(dashboardRepository = dashboardRepository),
+            scanFood = ScanFood(dashboardRepository = dashboardRepository),
+            findFood = FindFood(dashboardRepository = dashboardRepository),
+            saveFood = SaveFood(dashboardRepository = dashboardRepository)
         )
     }
 

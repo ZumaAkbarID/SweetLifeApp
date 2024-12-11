@@ -5,6 +5,7 @@ import com.amikom.sweetlife.data.model.ForgotPasswordModel
 import com.amikom.sweetlife.data.model.NewTokenModel
 import com.amikom.sweetlife.data.model.UserModel
 import com.amikom.sweetlife.data.remote.Result
+import kotlinx.coroutines.flow.Flow
 
 interface AuthRepository {
 
@@ -16,7 +17,7 @@ interface AuthRepository {
 
     suspend fun forgotPassword(email: String) : LiveData<Result<ForgotPasswordModel>>
 
-    suspend fun logout()
+    suspend fun logout() : LiveData<Result<Boolean>>
 
     suspend fun refreshToken(refreshToken: String) : Result<NewTokenModel>
 

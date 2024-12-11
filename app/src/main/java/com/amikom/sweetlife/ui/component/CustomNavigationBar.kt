@@ -1,5 +1,6 @@
 package com.amikom.sweetlife.ui.component
 
+import android.Manifest
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
@@ -15,6 +16,9 @@ import com.amikom.sweetlife.R
 import com.amikom.sweetlife.domain.nvgraph.Route
 import com.rahad.riobottomnavigation.composables.RioBottomNavItemData
 import com.rahad.riobottomnavigation.composables.RioBottomNavigation
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 
 object BottomNavItems {
     val items = listOf(
@@ -66,6 +70,7 @@ fun getBottomNavButtons(
     }
 }
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun BottomNavigationBar(
     buttons: List<RioBottomNavItemData>,
@@ -77,6 +82,17 @@ fun BottomNavigationBar(
     navController: NavController,
     currentScreen: Any
 ) {
+
+    val cameraPermissionState = rememberPermissionState(permission = Manifest.permission.CAMERA)
+
+    fun openCamera() {
+        if (cameraPermissionState.status.isGranted) {
+            navController.navigate(Route.CameraScreen) {
+                popUpTo(currentScreen) { inclusive = false }
+            }
+        }
+    }
+
     RioBottomNavigation(
         fabIcon = fabIcon,
         buttons = buttons,
@@ -85,8 +101,11 @@ fun BottomNavigationBar(
         selectedItemColor = selectedItemColor,
         fabBackgroundColor = fabBackgroundColor,
         onFabClick = {
-            navController.navigate(Route.CameraScreen) {
-                popUpTo(currentScreen) { inclusive = false }
+            if (cameraPermissionState.status.isGranted) {
+                openCamera()
+            } else {
+                cameraPermissionState.launchPermissionRequest()
+                openCamera()
             }
         }
     )

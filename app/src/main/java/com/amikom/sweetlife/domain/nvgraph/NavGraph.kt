@@ -12,6 +12,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.toRoute
 import com.amikom.sweetlife.domain.manager.SessionViewModel
 import com.amikom.sweetlife.ui.presentation.onboarding.OnBoardingScreen
 import com.amikom.sweetlife.ui.presentation.onboarding.OnBoardingViewModel
@@ -38,7 +39,10 @@ import com.amikom.sweetlife.ui.screen.profile.editProfile.EditProfileViewModel
 import com.amikom.sweetlife.ui.screen.profile.settings.SettingsScreen
 import com.amikom.sweetlife.ui.screen.rekomend.RekomenScreen
 import com.amikom.sweetlife.ui.screen.rekomend.RekomenViewModel
+import com.amikom.sweetlife.ui.screen.scan.CameraScanViewModel
 import com.amikom.sweetlife.ui.screen.scan.CameraScreen
+import com.amikom.sweetlife.ui.screen.scan.ResultAndAdditionalScreen
+import com.amikom.sweetlife.ui.screen.scan.ResultScanViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -141,7 +145,15 @@ fun NavGraph(
         }
 
         composable<Route.CameraScreen> {
-            CameraScreen(onBackPressed = { navController.popBackStack() })
+            val viewModel: CameraScanViewModel = hiltViewModel()
+            CameraScreen(viewModel = viewModel, onBackPressed = { navController.popBackStack() }, navController = navController)
+        }
+
+        composable<Route.ResultScanScreen> {
+            val args = it.toRoute<Route.ResultScanScreen>()
+            val viewModel: ResultScanViewModel = hiltViewModel()
+
+            ResultAndAdditionalScreen(args.listFood, viewModel, navController)
         }
     }
 }

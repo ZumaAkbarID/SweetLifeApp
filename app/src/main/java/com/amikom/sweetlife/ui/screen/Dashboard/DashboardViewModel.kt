@@ -1,10 +1,16 @@
 package com.amikom.sweetlife.ui.screen.dashboard
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.amikom.sweetlife.data.model.DailyProgress
 import com.amikom.sweetlife.data.model.DashboardModel
+import com.amikom.sweetlife.data.model.Data
+import com.amikom.sweetlife.data.model.ProgressDetail
+import com.amikom.sweetlife.data.model.Status
+import com.amikom.sweetlife.data.model.User
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -14,6 +20,7 @@ import com.amikom.sweetlife.domain.usecases.dashboard.DashboardUseCases
 import com.amikom.sweetlife.domain.usecases.profile.ProfileUseCases
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
@@ -24,8 +31,8 @@ class DashboardViewModel @Inject constructor(
     private val _isUserLoggedIn = MutableStateFlow(true)
     val isUserLoggedIn: StateFlow<Boolean> = _isUserLoggedIn
 
-    private val _dashboardState = MutableLiveData<Result<DashboardModel>>()
-    val dashboardData: LiveData<Result<DashboardModel>> = _dashboardState
+    private val _dashboardState = MutableStateFlow<Result<DashboardModel>>(Result.Loading)
+    val dashboardState = _dashboardState.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -38,18 +45,55 @@ class DashboardViewModel @Inject constructor(
 
     private fun fetchDashboard() {
         viewModelScope.launch {
-            _dashboardState.postValue(Result.Loading)
-
             try {
-                val result = dashboardUseCases.fetchData()
-
+                val result = dashboardUseCases.fetchData.invoke()
                 result.observeForever { dashboardResult ->
-                    _dashboardState.postValue(dashboardResult)
+                    _dashboardState.value = dashboardResult
                 }
             } catch (e: Exception) {
-                _dashboardState.postValue(Result.Error(e.message ?: "Unexpected Error"))
+                Log.e("DashboardViewModel", "fetchDashboard: ${e.message}")
+//                _dashboardState.value = Result.Error(e.message ?: "Unexpected Error")
+                fetchMockDashboard()
             }
         }
     }
-}
 
+
+    private fun fetchMockDashboard() {
+        val mockdata = DashboardModel(
+            status = true,
+            data = Data(
+                dailyProgress = DailyProgress(
+                    calories = ProgressDetail(
+                        current = 100.0,
+                        percent = 50.0,
+                        satisfaction = "Good",
+                        target = 200.0
+                    ),
+                    carbs = ProgressDetail(
+                        current = 100.0,
+                        percent = 50.0,
+                        satisfaction = "Good",
+                        target = 200.0
+                    ),
+                    sugar = ProgressDetail(
+                        current = 100.0,
+                        percent = 50.0,
+                        satisfaction = "Good",
+                        target = 200.0
+                    )
+                ),
+                status = Status(
+                    message = "Good",
+                    satisfaction = "Good"
+                ),
+                user = User(
+                    name = "John Doe",
+                    diabetes = true,
+                    diabetesType = "Type 1"
+                )
+            )
+        )
+        _dashboardState.value = Result.Success(mockdata)
+    }
+}

@@ -10,6 +10,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -44,20 +47,22 @@ import com.amikom.sweetlife.ui.component.CustomDialog
 import com.amikom.sweetlife.ui.component.getBottomNavButtons
 import com.amikom.sweetlife.ui.component.rememberSelectedIndex
 import com.amikom.sweetlife.util.Constants
+import java.util.Locale
+import kotlin.math.ceil
 
 @Composable
 fun DashboardScreen(
     viewModel: DashboardViewModel = hiltViewModel(),
     navController: NavHostController,
 ) {
-    val dashboardData by viewModel.dashboardData.observeAsState()
+    val dashboardData by viewModel.dashboardState.collectAsState()
     val isUserLoggedIn by viewModel.isUserLoggedIn.collectAsState()
 
     if (!isUserLoggedIn) {
         CustomDialog(
             icon = R.drawable.baseline_info_outline_24,
             title = "Info",
-            message = "You'r session is ended. Please login again",
+            message = "Your session is ended. Please login again",
             openDialogCustom = remember { mutableStateOf(true) },
             buttons = listOf(
                 "Ok" to {
@@ -86,8 +91,17 @@ fun DashboardScreen(
         }
 
         is Result.Error -> {
+//            val data = (dashboardData as Result.Success<DashboardModel>).data
+//            DashboardScreenUI(data.data, navController)
+            val errorText = (dashboardData as Result.Error).error
+            if(errorText == "Unauthorized") {
+                navController.navigate(Route.LoginScreen) {
+                    launchSingleTop = true
+                }
+            }
+
             Text(
-                text = (dashboardData as Result.Error).error,
+                text = errorText,
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.fillMaxSize().padding(16.dp),
                 textAlign = TextAlign.Center,
@@ -121,21 +135,25 @@ fun DashboardScreenUI(data: Data, navController: NavController) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(16.dp),
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             UserHeader(
                 name = data.user.name,
+                isDiabetes = data.user.diabetes,
                 diabetesType = data.user.diabetesType
             )
 
             DailyProgressCard(
-                glucose = data.dailyProgress.glucose,
-                calorie = data.dailyProgress.calorie
+                calories = data.dailyProgress.calories,
+                carbs = data.dailyProgress.carbs,
+                sugar = data.dailyProgress.sugar,
             )
 
             StatusCard(
-                satisfaction = data.status.satisfaction
+                satisfaction = data.status.satisfaction,
+                message = data.status.message
             )
         }
     }
@@ -146,6 +164,7 @@ fun DashboardScreenUI(data: Data, navController: NavController) {
 @Composable
 private fun UserHeader(
     name: String,
+    isDiabetes: Boolean,
     diabetesType: String
 ) {
     Row(
@@ -160,18 +179,21 @@ private fun UserHeader(
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold
         )
-        Text(
-            text = "Diabetes $diabetesType",
-            style = MaterialTheme.typography.titleMedium
-        )
+        if(isDiabetes) {
+            Text(
+                text = "Diabetes $diabetesType",
+                style = MaterialTheme.typography.titleMedium
+            )
+        }
     }
 }
 
 // daily progress
 @Composable
 private fun DailyProgressCard(
-    glucose: ProgressDetail,
-    calorie: ProgressDetail
+    calories: ProgressDetail,
+    carbs: ProgressDetail,
+    sugar: ProgressDetail,
 ) {
     Card(
         modifier = Modifier
@@ -189,17 +211,24 @@ private fun DailyProgressCard(
             )
             ProgressItem(
                 title = "🔥 Calorie",
-                current = calorie.current,
-                target = calorie.target,
-                percentage = calorie.percentage.toInt(),
-                satisfaction = calorie.satisfaction
+                current = ceil(calories.current).toInt(),
+                target = ceil(calories.target).toInt(),
+                percentage = ceil(calories.percent).toInt(),
+                satisfaction = calories.satisfaction
             )
             ProgressItem(
-                title = "🧋 Glucose",
-                current = glucose.current,
-                target = glucose.target,
-                percentage = glucose.percentage.toInt(),
-                satisfaction = glucose.satisfaction
+                title = "🍚 Carb",
+                current = ceil(carbs.current).toInt(),
+                target = ceil(carbs.target).toInt(),
+                percentage = ceil(carbs.percent).toInt(),
+                satisfaction = carbs.satisfaction
+            )
+            ProgressItem(
+                title = "🧋 Sugar",
+                current = ceil(sugar.current).toInt(),
+                target = ceil(sugar.target).toInt(),
+                percentage = ceil(sugar.percent).toInt(),
+                satisfaction = sugar.satisfaction
             )
         }
     }
@@ -219,20 +248,27 @@ private fun ProgressItem(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
+        val displayText = when (title) {
+            "calories" -> "$current / $target kcal"
+            "protein" -> "$current g dari $target g"
+            "carbs" -> "$current g dari $target g"
+            else -> "$current / $target"
+        }
+
         Text(text = title, style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold)
         Text(
-            text = "$current / $target Ccal",
+            text = displayText,
             style = MaterialTheme.typography.bodyMedium
         )
     }
     LinearProgressIndicator(
-        modifier = Modifier.fillMaxWidth().height(8.dp),
+        modifier = Modifier.fillMaxWidth().height(16.dp),
         progress = percentage / 100f,
         //belom tau nilai satisfactionya apa
         color = when (satisfaction) {
-            "UNDER" -> Color.Green
-            "Satisfactory" -> Color.Yellow
-            else -> Color.Red
+            "PASS" -> Color.Green
+            "OVER" -> Color.Red
+            else -> Color.Yellow
         }
     )
 }
@@ -241,17 +277,32 @@ private fun ProgressItem(
 @Composable
 private fun StatusCard(
     satisfaction: String,
+    message: String
 ) {
+    Text(
+        text = message,
+        textAlign = TextAlign.Center,
+        modifier = Modifier.fillMaxWidth().
+        padding(16.dp, 16.dp, 16.dp, 0.dp),
+        color = when(satisfaction) {
+            "PASS" -> MaterialTheme.colorScheme.onBackground
+            "UNDER" -> MaterialTheme.colorScheme.onBackground
+            else -> Color.Red
+        },
+        style = MaterialTheme.typography.titleMedium
+    )
     Image(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp)
+            .height(300.dp)
+            .width(300.dp)
             .fillMaxSize(),
         painter = painterResource(
             //belom tau nilai satisfac apa
             id = when (satisfaction) {
-                "UNDER" -> R.drawable.idle
-                "Improving" -> R.drawable.gendut
+                "PASS" -> R.drawable.idle
+                "OVER" -> R.drawable.gendut
                 else -> R.drawable.kurus
             }
         ),

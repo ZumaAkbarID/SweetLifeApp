@@ -65,9 +65,7 @@ fun RekomenScreen(
     val exerciseRecommendations = viewModel.exerciseRecommendations.observeAsState()
     val isLoading by viewModel.isLoading.observeAsState(false)
     val error by viewModel.error.observeAsState(null)
-
     var selectedTabIndex by remember { mutableStateOf(0) }
-
     val tabTitles = listOf("Foods", "Exercises")
 
 
@@ -76,11 +74,10 @@ fun RekomenScreen(
             BottomNavigationBar(buttons = buttons, navController = navController, currentScreen = Route.RekomenScreen)
         },
         modifier = Modifier.fillMaxSize().navigationBarsPadding(),
-    ) { innerPadding ->
+    ) { fillMaxSize ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
                 .padding(16.dp)
         ) {
             TabRow(selectedTabIndex = selectedTabIndex) {
@@ -114,7 +111,7 @@ fun RekomenScreen(
                         modifier = Modifier.align(Alignment.Center)
                     )
 
-                    else -> LazyColumn(modifier = Modifier.fillMaxSize()) {
+                    else -> LazyColumn(modifier = Modifier.fillMaxSize().padding(bottom = 70.dp)) {
                         if (selectedTabIndex == 0) {
                             items(foodRecommendations) { food ->
                                 RekomendItemFood(food)
@@ -139,7 +136,7 @@ fun RekomendItemFood(item: FoodRecommendation) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color.White, RoundedCornerShape(15.dp))
+            .background(MaterialTheme.colorScheme.surfaceContainerHighest, RoundedCornerShape(15.dp))
             .padding(vertical = 12.dp, horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -167,11 +164,11 @@ fun RekomendItemFood(item: FoodRecommendation) {
 }
 @Composable
 fun RekomendItemExec(exercise: Exercise) {
-    Spacer(modifier = Modifier.height(16.dp))
+    Spacer(modifier = Modifier.height(10.dp))
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color.White, RoundedCornerShape(15.dp))
+            .background(MaterialTheme.colorScheme.surfaceContainerHighest, RoundedCornerShape(15.dp))
             .padding(vertical = 12.dp, horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -203,6 +200,4 @@ fun RekomendItemExec(exercise: Exercise) {
         }
     }
 }
-
-
 

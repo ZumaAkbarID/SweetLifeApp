@@ -1,13 +1,19 @@
 package com.amikom.sweetlife.data.remote.retrofit
 
+import com.amikom.sweetlife.data.model.FoodRequest
 import com.amikom.sweetlife.data.remote.dto.EditHealth.EditHealthResponse
+import com.amikom.sweetlife.data.remote.dto.HistoryResponse.HistoryResponse
 import com.amikom.sweetlife.data.remote.dto.dashboard.DashboardResponse
 import com.amikom.sweetlife.data.remote.dto.health_profile.CreateHealthResponse
 import com.amikom.sweetlife.data.remote.dto.health_profile.HealthProfileResponse
 import com.amikom.sweetlife.data.remote.dto.profile.ProfileResponse
 import com.amikom.sweetlife.data.remote.dto.profile.UpdateProfileResponse
 import com.amikom.sweetlife.data.remote.dto.rekomen.RekomenResponse
+import com.amikom.sweetlife.data.remote.dto.scan.FindFoodResponse
+import com.amikom.sweetlife.data.remote.dto.scan.SaveFoodResponse
+import com.amikom.sweetlife.data.remote.dto.scan.ScanResponse
 import com.amikom.sweetlife.data.remote.json_request.EditHealthRequest
+import com.amikom.sweetlife.data.remote.json_request.FindFoodRequest
 import com.amikom.sweetlife.data.remote.json_request.HealthRequest
 import com.amikom.sweetlife.data.remote.json_request.ProfileRequest
 import com.amikom.sweetlife.util.Constants
@@ -35,6 +41,12 @@ interface FeatureApiService {
     @POST("${Constants.API_VERSION}users/health")
     suspend fun createHealth(@Body health: HealthRequest): Response<CreateHealthResponse>
 
+    @POST("${Constants.API_VERSION}food/find")
+    suspend fun findFood(@Body find: FindFoodRequest): Response<FindFoodResponse>
+
+    @POST("${Constants.API_VERSION}food/save")
+    suspend fun saveFood(@Body save: FoodRequest): Response<SaveFoodResponse>
+
     @GET("${Constants.API_VERSION}users/health")
     suspend fun getHealth(): Response<HealthProfileResponse>
 
@@ -44,9 +56,20 @@ interface FeatureApiService {
     @PUT("${Constants.API_VERSION}users/health")
     suspend fun updateHealth(@Body health: EditHealthRequest): Response<EditHealthResponse>
 
+    @GET("${Constants.API_VERSION}users/history")
+    suspend fun getHistory(): Response<HistoryResponse>
+
     @Multipart
     @PUT("${Constants.API_VERSION}users/profile")
     suspend fun uploadProfileImage(@Part image: MultipartBody.Part): ProfileResponse
+
+    @Multipart
+    @POST("${Constants.API_VERSION}food/scan")
+    suspend fun foodScan(@Part image: MultipartBody.Part): Response<ScanResponse>
+
+//    @Multipart
+//    @POST("upload")
+//    suspend fun foodScan(@Part image: MultipartBody.Part): Response<ScanResponse>
 
     @Multipart
     @PUT("${Constants.API_VERSION}users/profile")

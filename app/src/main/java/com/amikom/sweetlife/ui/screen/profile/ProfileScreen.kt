@@ -3,6 +3,7 @@ package com.amikom.sweetlife.ui.screen.profile
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,6 +26,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.ExitToApp
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
@@ -121,7 +123,7 @@ fun UserProfileScreen(
                 false,
                 "Loading...",
                 DiabetesPrediction(
-                    0,
+                    0.0,
                     "Loading...",
                     "Loading..."
                 ),
@@ -145,7 +147,7 @@ fun UserProfileScreen(
                 false,
                 Constants.DEFAULT_ERROR_TEXT,
                 DiabetesPrediction(
-                    0,
+                    0.0,
                     Constants.DEFAULT_ERROR_TEXT,
                     Constants.DEFAULT_ERROR_TEXT
                 ),
@@ -173,7 +175,8 @@ fun UserProfileScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(16.dp),
+                .padding(16.dp)
+                .verticalScroll(rememberScrollState()),
             contentAlignment = Alignment.Center
         ) {
             Column(
@@ -219,12 +222,20 @@ fun UserProfileScreen(
                     }
                 )
                 ProfileMenuItem(
-                    icon = Icons.Default.LocationOn,
+                    icon = Icons.Outlined.ExitToApp,
                     text = "Logout",
                     shape = RoundedCornerShape(bottomEnd = 16.dp, bottomStart = 16.dp),
                     textColor = Color.Red,
-                    onClick = { /* TODO: Handle Logout */ }
+                    onClick = {
+                        navController.navigate(Route.LoginScreen) {
+                            profileViewModel.logout()
+                            popUpTo<Route.LoginScreen>() {inclusive=true}
+                            launchSingleTop = true
+                        }
+                    }
                 )
+                Spacer(modifier = Modifier.height(16.dp))
+
             }
         }
     }

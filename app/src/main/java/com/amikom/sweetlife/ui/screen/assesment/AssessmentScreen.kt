@@ -86,7 +86,7 @@ fun DropdownSelector(
         shape = RoundedCornerShape(15.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = Color.Transparent,
-            contentColor = Color.Black
+            contentColor = MaterialTheme.colorScheme.onBackground
         ),
         border = BorderStroke(1.dp, Color.Gray)
     ) {
@@ -94,6 +94,7 @@ fun DropdownSelector(
             text = selectedValue.ifEmpty { placeholder },
             style = MaterialTheme.typography.bodyMedium,
             textAlign = TextAlign.Start,
+            color = MaterialTheme.colorScheme.onBackground,
         )
     }
 
