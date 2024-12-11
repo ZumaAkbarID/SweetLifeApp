@@ -97,7 +97,7 @@ class ProfileRepositoryImpl(
                     hasHeartDisease = data?.hasHeartDisease ?: false,
                     activityLevel = data?.activityLevel ?: defaultErrorValue,
                     diabetesPrediction = DiabetesPrediction(
-                        riskPercentage = data?.diabetesPrediction?.riskPercentage ?: 0,
+                        riskPercentage = data?.diabetesPrediction?.riskPercentage ?: 0.0,
                         riskLevel = data?.diabetesPrediction?.riskLevel ?: defaultErrorValue,
                         note = data?.diabetesPrediction?.note ?: defaultErrorValue
                     )

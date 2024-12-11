@@ -47,7 +47,10 @@ data class Data(
 	val hasHeartDisease: Boolean? = null,
 
 	@field:SerializedName("height")
-	val height: Double? = null
+	val height: Double? = null,
+
+	@field:SerializedName("diabetes")
+	val diabetes: String = ""
 )
 
 data class DiabetesPrediction(
@@ -59,5 +62,5 @@ data class DiabetesPrediction(
 	val note: String? = null,
 
 	@field:SerializedName("risk_percentage")
-	val riskPercentage: Int? = null
+	val riskPercentage: Double? = null
 )

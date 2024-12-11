@@ -165,7 +165,7 @@ fun RekomendItemFood(item: FoodRecommendation) {
 }
 @Composable
 fun RekomendItemExec(exercise: Exercise) {
-    Spacer(modifier = Modifier.height(16.dp))
+    Spacer(modifier = Modifier.height(10.dp))
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -201,6 +201,3 @@ fun RekomendItemExec(exercise: Exercise) {
         }
     }
 }
-
-
-

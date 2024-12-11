@@ -120,7 +120,7 @@ fun UserProfileScreen(
                 false,
                 "Loading...",
                 DiabetesPrediction(
-                    0,
+                    0.0,
                     "Loading...",
                     "Loading..."
                 ),
@@ -144,7 +144,7 @@ fun UserProfileScreen(
                 false,
                 Constants.DEFAULT_ERROR_TEXT,
                 DiabetesPrediction(
-                    0,
+                    0.0,
                     Constants.DEFAULT_ERROR_TEXT,
                     Constants.DEFAULT_ERROR_TEXT
                 ),

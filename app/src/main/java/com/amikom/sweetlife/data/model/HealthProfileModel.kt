@@ -15,7 +15,7 @@ data class HealthProfileModel(
 )
 
 data class DiabetesPrediction(
-    val riskPercentage: Int,
+    val riskPercentage: Double,
     val riskLevel: String,
     val note: String?
 )

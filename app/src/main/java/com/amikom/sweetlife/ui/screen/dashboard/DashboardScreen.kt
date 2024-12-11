@@ -1,5 +1,6 @@
 package com.amikom.sweetlife.ui.screen.dashboard
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,9 +20,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -49,7 +50,7 @@ fun DashboardScreen(
     viewModel: DashboardViewModel = hiltViewModel(),
     navController: NavHostController,
 ) {
-    val dashboardData by viewModel.dashboardData.observeAsState()
+    val dashboardData by viewModel.dashboardState.collectAsState()
     val isUserLoggedIn by viewModel.isUserLoggedIn.collectAsState()
 
     if (!isUserLoggedIn) {
@@ -123,14 +124,17 @@ fun DashboardScreenUI(data: Data, navController: NavController) {
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            Log.d("DashboardScreenUI", "data: $data")
             UserHeader(
                 name = data.user.name,
-                diabetesType = data.user.diabetesType
+                diabetesType = data.user.diabetesType.toString(),
+                isDiabete = data.user.diabetes
             )
 
             DailyProgressCard(
                 glucose = data.dailyProgress.glucose,
-                calorie = data.dailyProgress.calorie
+                calorie = data.dailyProgress.calorie,
+                carbohydrate = data.dailyProgress.carbs
             )
 
             StatusCard(
@@ -145,8 +149,11 @@ fun DashboardScreenUI(data: Data, navController: NavController) {
 @Composable
 private fun UserHeader(
     name: String,
-    diabetesType: String
+    diabetesType: String,
+    isDiabete: String
 ) {
+    var expanded by remember { mutableStateOf(false) }
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -159,10 +166,13 @@ private fun UserHeader(
             style = MaterialTheme.typography.titleLarge,
             fontWeight = FontWeight.Bold
         )
-        Text(
-            text = "Diabetes $diabetesType",
-            style = MaterialTheme.typography.titleMedium
-        )
+        if (isDiabete == "true") {
+            expanded = true
+            Text(
+                text = "Diabetes Type: $diabetesType",
+                style = MaterialTheme.typography.titleMedium
+            )
+        }
     }
 }
 
@@ -170,8 +180,10 @@ private fun UserHeader(
 @Composable
 private fun DailyProgressCard(
     glucose: ProgressDetail,
-    calorie: ProgressDetail
+    calorie: ProgressDetail,
+    carbohydrate: ProgressDetail,
 ) {
+    Log.d("DailyProgressCard", "glucose: $glucose, calorie: $calorie, carbohydrate: $carbohydrate")
     Card(
         modifier = Modifier
             .fillMaxWidth(),
@@ -190,15 +202,22 @@ private fun DailyProgressCard(
                 title = "🔥 Calorie",
                 current = calorie.current,
                 target = calorie.target,
-                percentage = calorie.percentage.toInt(),
+                percentage = calorie.percentage,
                 satisfaction = calorie.satisfaction
             )
             ProgressItem(
                 title = "🧋 Glucose",
                 current = glucose.current,
                 target = glucose.target,
-                percentage = glucose.percentage.toInt(),
+                percentage = glucose.percentage,
                 satisfaction = glucose.satisfaction
+            )
+            ProgressItem(
+                title = "🍚 Carbohydrate",
+                current = carbohydrate.current,
+                target = carbohydrate.target,
+                percentage = carbohydrate.percentage,
+                satisfaction = carbohydrate.satisfaction
             )
         }
     }
@@ -208,9 +227,9 @@ private fun DailyProgressCard(
 @Composable
 private fun ProgressItem(
     title: String,
-    current: Int,
-    target: Int,
-    percentage: Int,
+    current: Double,
+    target: Double,
+    percentage: Double,
     satisfaction: String
 ) {
     Row(
@@ -218,19 +237,20 @@ private fun ProgressItem(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
+        Log.d("ProgressItem", "satisfaction: ${ProgressDetail(current, percentage, satisfaction, target)}")
         Text(text = title, style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold)
         Text(
-            text = "$current / $target Ccal",
+            text = if (title == "🔥 Calorie") "$current / $target Kcal" else if (title == "🧋 Glucose") "$current / $target mg" else "$current / $target g",
             style = MaterialTheme.typography.bodyMedium
         )
     }
     LinearProgressIndicator(
         modifier = Modifier.fillMaxWidth().height(8.dp),
-        progress = percentage / 100f,
+        progress = percentage.toFloat() / 100,
         //belom tau nilai satisfactionya apa
         color = when (satisfaction) {
-            "UNDER" -> Color.Green
-            "Satisfactory" -> Color.Yellow
+            "PAS" -> Color.Green
+            "UNDER" -> Color.Yellow
             else -> Color.Red
         }
     )
@@ -249,9 +269,10 @@ private fun StatusCard(
         painter = painterResource(
             //belom tau nilai satisfac apa
             id = when (satisfaction) {
-                "UNDER" -> R.drawable.idle
-                "Improving" -> R.drawable.gendut
-                else -> R.drawable.kurus
+                "PAS" -> R.drawable.idle
+                "OVER" -> R.drawable.gendut
+                "MODERATE"-> R.drawable.kurus
+                else -> R.drawable.idle
             }
         ),
         contentDescription = "Status Icon",

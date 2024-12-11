@@ -1,5 +1,6 @@
 package com.amikom.sweetlife.data.remote.repository
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import com.amikom.sweetlife.data.model.DailyProgress
@@ -26,28 +27,37 @@ class DashboardRepositoryImpl(
         try {
             // Perform API call
             val response = featureApiService.dashboard()
-
             if (response.isSuccessful) {
                 // Parse response body
+                // Di dalam blok if (response.isSuccessful)
+                Log.d("DashboardRepository", "Raw Response: $response")
+                Log.d("DashboardRepository", "Parsed Dashboard Model: ${response.body()}")
                 val rawData = response.body()
                 val data = response.body()?.data
 
+//                val re : Double = 0.0
+
                 val dashboardModel = DashboardModel(
-                    message = rawData?.message ?: "",
                     status = rawData?.status ?: false,
                     data = Data(
                         dailyProgress = DailyProgress(
                             calorie = ProgressDetail(
-                                current = data?.dailyProgress?.calorie?.current ?: 0,
+                                current = data?.dailyProgress?.calorie?.current ?: 0.0,
                                 percentage = data?.dailyProgress?.calorie?.percentage ?: 0.0,
                                 satisfaction = data?.dailyProgress?.calorie?.satisfaction ?: "",
-                                target = data?.dailyProgress?.calorie?.target ?: 0
+                                target = data?.dailyProgress?.calorie?.target ?: 0.0
                             ),
                             glucose = ProgressDetail(
-                                current = data?.dailyProgress?.glucose?.current ?: 0,
+                                current = data?.dailyProgress?.glucose?.current ?: 0.0,
                                 percentage = data?.dailyProgress?.glucose?.percentage ?: 0.0,
                                 satisfaction = data?.dailyProgress?.glucose?.satisfaction ?: "",
-                                target = data?.dailyProgress?.glucose?.target ?: 0
+                                target = data?.dailyProgress?.glucose?.target ?: 0.0
+                            ),
+                            carbs = ProgressDetail(
+                                current = data?.dailyProgress?.carbs?.current ?: 0.0,
+                                percentage = data?.dailyProgress?.carbs?.percentage ?: 0.0,
+                                satisfaction = data?.dailyProgress?.carbs?.satisfaction ?: "",
+                                target = data?.dailyProgress?.carbs?.target ?: 0.0
                             )
                         ),
                         status = Status(
@@ -56,8 +66,9 @@ class DashboardRepositoryImpl(
                         ),
                         user = User(
                             name = data?.user?.name ?: "",
-                            diabetesType = data?.user?.diabetesType ?: ""
-                        )
+                            diabetesType = data?.user?.diabetesType ?: false,
+                            diabetes = data?.user?.diabetes ?: ""
+                        ),
                     )
                 )
 
@@ -68,7 +79,8 @@ class DashboardRepositoryImpl(
                 }
             } else {
                 // Handle error response
-                val errorBody = Gson().fromJson(response.errorBody()?.string(), ErrorResponse::class.java)
+                val errorBody =
+                    Gson().fromJson(response.errorBody()?.string(), ErrorResponse::class.java)
                 val message = errorBody?.error ?: response.message()
                 appExecutors.mainThread.execute {
                     result.value = Result.Error(message)

@@ -1,5 +1,6 @@
 package com.amikom.sweetlife.ui.screen.dashboard
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -14,6 +15,7 @@ import com.amikom.sweetlife.domain.usecases.dashboard.DashboardUseCases
 import com.amikom.sweetlife.domain.usecases.profile.ProfileUseCases
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 @HiltViewModel
 class DashboardViewModel @Inject constructor(
@@ -24,8 +26,8 @@ class DashboardViewModel @Inject constructor(
     private val _isUserLoggedIn = MutableStateFlow(true)
     val isUserLoggedIn: StateFlow<Boolean> = _isUserLoggedIn
 
-    private val _dashboardState = MutableLiveData<Result<DashboardModel>>()
-    val dashboardData: LiveData<Result<DashboardModel>> = _dashboardState
+    private val _dashboardState = MutableStateFlow<Result<DashboardModel>>(Result.Loading)
+    val dashboardState = _dashboardState.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -38,16 +40,13 @@ class DashboardViewModel @Inject constructor(
 
     private fun fetchDashboard() {
         viewModelScope.launch {
-            _dashboardState.postValue(Result.Loading)
-
             try {
-                val result = dashboardUseCases.fetchData()
-
+                val result = dashboardUseCases.fetchData.invoke()
                 result.observeForever { dashboardResult ->
-                    _dashboardState.postValue(dashboardResult)
+                    _dashboardState.value = dashboardResult
                 }
             } catch (e: Exception) {
-                _dashboardState.postValue(Result.Error(e.message ?: "Unexpected Error"))
+                _dashboardState.value = Result.Error(e.message ?: "Unexpected Error")
             }
         }
     }

@@ -55,7 +55,6 @@ fun getBottomNavButtons(
             selected = index == selectedIndex.value,
             onClick = {
                 selectedIndex.value = index
-
                 navController.navigate(BottomNavItems.routes[index]) {
                     launchSingleTop = true
                     restoreState = true
@@ -75,6 +74,7 @@ fun BottomNavigationBar(
     selectedItemColor: Color = MaterialTheme.colorScheme.primary,
     fabBackgroundColor: Color = MaterialTheme.colorScheme.primary
 ) {
+    //rizki achmad
     RioBottomNavigation(
         fabIcon = fabIcon,
         buttons = buttons,

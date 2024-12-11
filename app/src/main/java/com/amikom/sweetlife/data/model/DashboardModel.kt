@@ -1,7 +1,6 @@
 package com.amikom.sweetlife.data.model
 
 data class DashboardModel(
-    val message: String,
     val status: Boolean,
     val data: Data
 )
@@ -9,19 +8,20 @@ data class DashboardModel(
 data class Data(
     val dailyProgress: DailyProgress,
     val status: Status,
-    val user: User
+    val user: User,
 )
 
 data class DailyProgress(
     val calorie: ProgressDetail,
-    val glucose: ProgressDetail
+    val glucose: ProgressDetail,
+    val carbs: ProgressDetail,
 )
 
 data class ProgressDetail(
-    val current: Int,
-    val percentage: Double,
-    val satisfaction: String,
-    val target: Int
+    val current: Double = 0.0,
+    val percentage: Double = 0.0,
+    val satisfaction: String = "",
+    val target: Double = 0.0
 )
 
 data class Status(
@@ -30,6 +30,7 @@ data class Status(
 )
 
 data class User(
-    val diabetesType: String,
-    val name: String
+    val diabetesType: Boolean,
+    val name: String,
+    val diabetes: String
 )

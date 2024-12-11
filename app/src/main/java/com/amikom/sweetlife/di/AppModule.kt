@@ -41,6 +41,7 @@ import com.amikom.sweetlife.domain.usecases.dashboard.FetchData
 import com.amikom.sweetlife.domain.usecases.profile.FetchDataHealthProfile
 import com.amikom.sweetlife.domain.usecases.profile.FetchDataProfile
 import com.amikom.sweetlife.domain.usecases.profile.ProfileUseCases
+import com.amikom.sweetlife.ui.screen.History.HistoryRepository
 import com.amikom.sweetlife.util.AppExecutors
 import dagger.Module
 import dagger.Provides
@@ -207,4 +208,6 @@ object AppModule {
     fun provideEditHealthDataRepository(
         featureApiService: FeatureApiService
     ): EditHealthDataRepository = EditHealthRepositoryImpl(featureApiService)
+
+
 }
