@@ -1,91 +1,100 @@
 package com.amikom.sweetlife.ui.screen.History
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
+import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
-import coil.compose.AsyncImage
-import coil.compose.rememberImagePainter
-import dagger.hilt.android.AndroidEntryPoint
+import com.amikom.sweetlife.data.remote.dto.HistoryResponse.FoodLog
+import com.amikom.sweetlife.domain.nvgraph.Route
+import com.amikom.sweetlife.ui.component.BottomNavigationBar
+import com.amikom.sweetlife.ui.component.getBottomNavButtons
+import com.amikom.sweetlife.util.Constants
 
 @Composable
 fun HistoryScreen(
     viewModel: HistoryViewModel = hiltViewModel(),
     navController: NavController
 ) {
-    val foodLogs by viewModel.foodLogs.observeAsState(emptyList())
+    val foodLogs by viewModel.foodHistory.observeAsState(emptyList())
     val isLoading by viewModel.isLoading.observeAsState(false)
     val error by viewModel.error.observeAsState(null)
+    val selectedIndex = Constants.CURRENT_BOTTOM_BAR_PAGE_ID
+    val buttons = getBottomNavButtons(selectedIndex, navController)
 
     LaunchedEffect(Unit) {
         viewModel.fetchHistory()
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        when {
-            isLoading -> CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-            error != null -> Text(
-                text = error ?: "",
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.align(Alignment.Center)
+    Scaffold(
+        bottomBar = {
+            BottomNavigationBar(
+                buttons = buttons,
+                navController = navController,
+                currentScreen = Route.RekomenScreen
             )
+        },
+        modifier = Modifier
+            .fillMaxSize()
+            .navigationBarsPadding(),
+    ) {  fillMaxSize ->
+        Box(modifier = Modifier
+            .fillMaxSize()
+            .padding(vertical = 16.dp)) {
+            when {
+                isLoading -> CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                error != null -> Text(
+                    text = error ?: "An unknown error occurred.",
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.align(Alignment.Center)
+                )
 
-            foodLogs.isEmpty() -> Text(
-                text = "No food logs available.",
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.align(Alignment.Center)
-            )
+                foodLogs?.isEmpty() == true -> Text(
+                    text = "No food logs available.",
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.align(Alignment.Center)
+                )
 
-            else -> LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(foodLogs) { foodLog ->
-                    FoodLogItem(foodLog = foodLog)
+                else -> LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(bottom = 70.dp),
+                ) {
+                    item {
+                        Text(
+                            text = "History",
+                            style = MaterialTheme.typography.titleLarge,
+                            fontWeight = FontWeight.Bold,
+                            modifier = Modifier.padding(16.dp, 32.dp)
+                        )
+                    }
+                    items(foodLogs.orEmpty()) { foodHistory -> // Loop over FoodHistory
+                        foodHistory.entries.forEach { foodLog -> // Loop over FoodLog entries inside each FoodHistory
+                            FoodLogItem(foodLog = foodLog)
+                        }
+                    }
                 }
             }
         }
     }
 }
 
-
 @Composable
-fun FoodLogItem(foodLog: EntriesItem) {
+fun FoodLogItem(foodLog: FoodLog) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(8.dp),
+            .padding(vertical = 12.dp, horizontal = 16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Row(
@@ -95,42 +104,31 @@ fun FoodLogItem(foodLog: EntriesItem) {
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            // Icon Column
-            Column(
-                modifier = Modifier.padding(16.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Image(
-                    painter = rememberImagePainter(foodLog.icon?.url ?: ""),
-                    contentDescription = null,
-                    modifier = Modifier
-                        .size(40.dp)
-                        .padding(4.dp)
-                )
-            }
             // Food Details Column
             Column(
-                modifier = Modifier.weight(1f)
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = 16.dp)
             ) {
                 Text(
-                    text = foodLog.foodName ?: "Unknown Food",
-                    style = MaterialTheme.typography.bodyLarge,
+                    text = foodLog.foodName.ifEmpty { "Unknown Food" },
+                    style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Bold
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
-                    text = foodLog.time?.substring(11, 16) ?: "Unknown Time",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                    text = foodLog.time.ifEmpty { "Unknown Time" },
+                    style = MaterialTheme.typography.bodySmall,
                 )
             }
+
             // Calories Column
             Column(
-                modifier = Modifier.padding(16.dp)
+                horizontalAlignment = Alignment.End
             ) {
                 Text(
-                    text = "${foodLog.calories} kcal",
-                    style = MaterialTheme.typography.bodyLarge,
+                    text = "${foodLog.calories?.toString() ?: "Unknown"} kcal",
+                    style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Bold
                 )
             }
@@ -138,36 +136,26 @@ fun FoodLogItem(foodLog: EntriesItem) {
     }
 }
 
-
-@Preview(showBackground = true, showSystemUi = true)
+@Preview
 @Composable
 fun PreviewFoodLogItem() {
-    Column {
-        FoodLogItem(
-            EntriesItem(
-                foodName = "Nasi Goreng",
-                editable = false,
-                icon = Icon(
-                    backgroundColor = "#FF0000",
-                    url = "https://icons8.com/icon/qRqBSN5tASTC/taco"
-                ),
-                id = "1",
-                calories = 100,
-                time = "2023-10-01T12:00:00Z"
-            )
+
+    FoodLogItem(
+        foodLog = FoodLog(
+            id = "1",
+            foodName = "Nasi Goreng",
+            calories = 500,
+            time = "12:00",
+            totalUnits = 1
         )
-        FoodLogItem(
-            EntriesItem(
-                foodName = "Nasi Goreng",
-                editable = false,
-                icon = Icon(
-                    backgroundColor = "#FF0000",
-                    url = "https://icons8.com/icon/qRqBSN5tASTC/taco"
-                ),
-                id = "1",
-                calories = 100,
-                time = "2023-10-01T12:00:00Z"
-            )
+    )
+    FoodLogItem(
+        foodLog = FoodLog(
+            id = "1",
+            foodName = "Nasi Goreng",
+            calories = 500,
+            time = "12:00",
+            totalUnits = 1
         )
-    }
+    )
 }

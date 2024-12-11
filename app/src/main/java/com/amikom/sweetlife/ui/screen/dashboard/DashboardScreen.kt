@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
@@ -54,7 +55,7 @@ fun DashboardScreen(
     viewModel: DashboardViewModel = hiltViewModel(),
     navController: NavHostController,
 ) {
-    val dashboardData by viewModel.dashboardData.observeAsState()
+    val dashboardData by viewModel.dashboardState.collectAsState()
     val isUserLoggedIn by viewModel.isUserLoggedIn.collectAsState()
 
     if (!isUserLoggedIn) {
@@ -140,7 +141,8 @@ fun DashboardScreenUI(data: Data, navController: NavController) {
         ) {
             UserHeader(
                 name = data.user.name,
-                isDiabetes = data.user.diabetes
+                isDiabetes = data.user.diabetes,
+                diabetesType = data.user.diabetesType
             )
 
             DailyProgressCard(
@@ -162,7 +164,8 @@ fun DashboardScreenUI(data: Data, navController: NavController) {
 @Composable
 private fun UserHeader(
     name: String,
-    isDiabetes: Boolean
+    isDiabetes: Boolean,
+    diabetesType: String
 ) {
     Row(
         modifier = Modifier
@@ -178,7 +181,7 @@ private fun UserHeader(
         )
         if(isDiabetes) {
             Text(
-                text = "Has Diabetes",
+                text = "Diabetes $diabetesType",
                 style = MaterialTheme.typography.titleMedium
             )
         }
@@ -245,9 +248,16 @@ private fun ProgressItem(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
+        val displayText = when (title) {
+            "calories" -> "$current / $target kcal"
+            "protein" -> "$current g dari $target g"
+            "carbs" -> "$current g dari $target g"
+            else -> "$current / $target"
+        }
+
         Text(text = title, style = MaterialTheme.typography.bodySmall, fontWeight = FontWeight.Bold)
         Text(
-            text = "$current / $target Ccal",
+            text = displayText,
             style = MaterialTheme.typography.bodyMedium
         )
     }
@@ -285,6 +295,8 @@ private fun StatusCard(
         modifier = Modifier
             .fillMaxWidth()
             .padding(16.dp)
+            .height(300.dp)
+            .width(300.dp)
             .fillMaxSize(),
         painter = painterResource(
             //belom tau nilai satisfac apa

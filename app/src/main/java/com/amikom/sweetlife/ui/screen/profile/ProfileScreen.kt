@@ -26,6 +26,7 @@ import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.LocationOn
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.outlined.ExitToApp
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
@@ -122,7 +123,7 @@ fun UserProfileScreen(
                 false,
                 "Loading...",
                 DiabetesPrediction(
-                    0,
+                    0.0,
                     "Loading...",
                     "Loading..."
                 ),
@@ -146,7 +147,7 @@ fun UserProfileScreen(
                 false,
                 Constants.DEFAULT_ERROR_TEXT,
                 DiabetesPrediction(
-                    0,
+                    0.0,
                     Constants.DEFAULT_ERROR_TEXT,
                     Constants.DEFAULT_ERROR_TEXT
                 ),
@@ -221,13 +222,14 @@ fun UserProfileScreen(
                     }
                 )
                 ProfileMenuItem(
-                    icon = Icons.Default.LocationOn,
+                    icon = Icons.Outlined.ExitToApp,
                     text = "Logout",
                     shape = RoundedCornerShape(bottomEnd = 16.dp, bottomStart = 16.dp),
                     textColor = Color.Red,
                     onClick = {
                         navController.navigate(Route.LoginScreen) {
                             profileViewModel.logout()
+                            popUpTo<Route.LoginScreen>() {inclusive=true}
                             launchSingleTop = true
                         }
                     }

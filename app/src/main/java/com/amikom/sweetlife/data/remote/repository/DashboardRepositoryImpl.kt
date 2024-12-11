@@ -69,12 +69,11 @@ class DashboardRepositoryImpl(
                         ),
                         user = User(
                             name = data?.user?.name ?: "",
-                            diabetes = data?.user?.diabetes ?: false
+                            diabetes = data?.user?.diabetes ?: false,
+                            diabetesType = data?.user?.diabetesType ?: ""
                         )
                     )
                 )
-
-
                 // Update result on main thread
                 appExecutors.mainThread.execute {
                     result.value = Result.Success(dashboardModel)

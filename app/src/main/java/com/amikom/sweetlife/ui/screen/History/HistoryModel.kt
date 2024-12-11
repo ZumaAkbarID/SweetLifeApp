@@ -1,78 +1,29 @@
 package com.amikom.sweetlife.ui.screen.History
-
 import com.google.gson.annotations.SerializedName
 
-data class HistoryModel(
-
-	@field:SerializedName("data")
-	val data: Data? = null,
-
-	@field:SerializedName("status")
-	val status: String? = null
+// Root model
+data class ApiResponse(
+	@SerializedName("status") val status: String,
+	@SerializedName("data") val data: Data
 )
 
-data class Pagination(
-
-	@field:SerializedName("totalItems")
-	val totalItems: Int? = null,
-
-	@field:SerializedName("itemsPerPage")
-	val itemsPerPage: Int? = null,
-
-	@field:SerializedName("totalPages")
-	val totalPages: Int? = null,
-
-	@field:SerializedName("currentPage")
-	val currentPage: Int? = null
-)
-
-data class Icon(
-
-	@field:SerializedName("backgroundColor")
-	val backgroundColor: String? = null,
-
-	@field:SerializedName("url")
-	val url: String? = null
-)
-
-data class EntriesItem(
-
-	@field:SerializedName("foodName")
-	val foodName: String? = null,
-
-	@field:SerializedName("editable")
-	val editable: Boolean? = null,
-
-	@field:SerializedName("icon")
-	val icon: Icon? = null,
-
-	@field:SerializedName("id")
-	val id: String? = null,
-
-	@field:SerializedName("calories")
-	val calories: Int? = null,
-
-	@field:SerializedName("time")
-	val time: String? = null
-)
-
-data class FoodLogsItem(
-
-	@field:SerializedName("date")
-	val date: String? = null,
-
-	@field:SerializedName("entries")
-	val entries: List<EntriesItem?>? = null,
-
-	@field:SerializedName("totalCalories")
-	val totalCalories: Int? = null
-)
-
+// Data class
 data class Data(
+	@SerializedName("food_history") val foodHistory: List<FoodHistory>
+)
 
-	@field:SerializedName	("pagination")
-	val pagination: Pagination? = null,
+// FoodHistory class
+data class FoodHistory(
+	@SerializedName("date") val date: String,
+	@SerializedName("total_calories") val totalCalories: Int,  // Adjusted field name
+	@SerializedName("entries") val entries: List<Entry>
+)
 
-	@field:SerializedName("foodLogs")
-	val foodLogs: List<FoodLogsItem?>? = null
+// Entry class
+data class Entry(
+	@SerializedName("id") val id: String,
+	@SerializedName("food_name") val foodName: String,  // Adjusted field name
+	@SerializedName("calories") val calories: Int,
+	@SerializedName("time") val time: String,
+	@SerializedName("total_units") val totalUnits: Int  // Added missing field
 )

@@ -32,7 +32,10 @@ data class User(
 	val name: String? = null,
 
 	@field:SerializedName("diabetes")
-	val diabetes: Boolean? = null
+	val diabetes: Boolean? = null,
+
+	@field:SerializedName("diabetesType")
+	val diabetesType: String? = null
 )
 
 data class DailyProgress(
