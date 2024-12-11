@@ -153,6 +153,8 @@ dependencies {
     implementation("androidx.compose.ui:ui:1.7.5")
     implementation("androidx.compose.ui:ui-tooling:1.7.5")
     implementation("com.google.accompanist:accompanist-permissions:0.36.0")
+
+    implementation("androidx.compose.foundation:foundation:1.7.6")
 }
 
 kapt {

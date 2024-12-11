@@ -50,5 +50,7 @@ sealed class Route {
     data object CameraScreen : Route()
 
     @Serializable
-    data object ResultScanScreen : Route()
+    data class ResultScanScreen(
+        val listFood: String
+    ) : Route()
 }

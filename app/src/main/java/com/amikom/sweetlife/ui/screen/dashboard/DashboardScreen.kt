@@ -90,6 +90,8 @@ fun DashboardScreen(
         }
 
         is Result.Error -> {
+//            val data = (dashboardData as Result.Success<DashboardModel>).data
+//            DashboardScreenUI(data.data, navController)
             Text(
                 text = (dashboardData as Result.Error).error,
                 style = MaterialTheme.typography.titleLarge,
@@ -247,8 +249,8 @@ private fun ProgressItem(
         progress = percentage / 100f,
         //belom tau nilai satisfactionya apa
         color = when (satisfaction) {
-            "PASS" -> Color.Green
-            "OVER" -> Color.Red
+            "PASS" -> MaterialTheme.colorScheme.onBackground
+            "OVER" -> MaterialTheme.colorScheme.onBackground
             else -> Color.Yellow
         }
     )
@@ -266,8 +268,8 @@ private fun StatusCard(
         modifier = Modifier.fillMaxWidth().
         padding(16.dp, 16.dp, 16.dp, 0.dp),
         color = when(satisfaction) {
-            "PASS" -> Color.Green
-            "UNDER" -> Color.Yellow
+            "PASS" -> MaterialTheme.colorScheme.onBackground
+            "UNDER" -> MaterialTheme.colorScheme.onBackground
             else -> Color.Red
         },
         style = MaterialTheme.typography.titleMedium

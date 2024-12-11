@@ -39,6 +39,8 @@ import com.amikom.sweetlife.domain.usecases.auth.SaveNewToken
 import com.amikom.sweetlife.domain.usecases.auth.SaveUserInfoLogin
 import com.amikom.sweetlife.domain.usecases.dashboard.DashboardUseCases
 import com.amikom.sweetlife.domain.usecases.dashboard.FetchData
+import com.amikom.sweetlife.domain.usecases.dashboard.FindFood
+import com.amikom.sweetlife.domain.usecases.dashboard.SaveFood
 import com.amikom.sweetlife.domain.usecases.dashboard.ScanFood
 import com.amikom.sweetlife.domain.usecases.profile.CreateHealthProfile
 import com.amikom.sweetlife.domain.usecases.profile.FetchDataHealthProfile
@@ -124,6 +126,7 @@ object AppModule {
             .build()
 
         return Retrofit.Builder()
+//            .baseUrl("http://192.168.100.191:3000/")
             .baseUrl(baseUrl)
             .addConverterFactory(GsonConverterFactory.create())
             .client(client)
@@ -192,7 +195,9 @@ object AppModule {
     ) : DashboardUseCases {
         return DashboardUseCases(
             fetchData = FetchData(dashboardRepository = dashboardRepository),
-            scanFood = ScanFood(dashboardRepository = dashboardRepository)
+            scanFood = ScanFood(dashboardRepository = dashboardRepository),
+            findFood = FindFood(dashboardRepository = dashboardRepository),
+            saveFood = SaveFood(dashboardRepository = dashboardRepository)
         )
     }
 
