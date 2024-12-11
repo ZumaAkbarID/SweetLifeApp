@@ -2,6 +2,7 @@ package com.amikom.sweetlife.data.remote.repository
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.os.Build
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import com.amikom.sweetlife.data.model.DailyProgress
@@ -149,7 +150,9 @@ class ProfileRepositoryImpl(
 
             val profilePicturePart = dataProfile.profilePicture?.let { bitmap ->
                 val file = File(context.cacheDir, "profile_picture.jpg").apply {
-                    OutputStream.nullOutputStream().use { bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it) }
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                        OutputStream.nullOutputStream().use { bitmap.compress(Bitmap.CompressFormat.JPEG, 100, it) }
+                    }
                 }
                 val requestFile = file.asRequestBody("image/jpeg".toMediaTypeOrNull())
                 MultipartBody.Part.createFormData("profile_picture", file.name, requestFile)

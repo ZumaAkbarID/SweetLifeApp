@@ -61,7 +61,7 @@ fun DashboardScreen(
         CustomDialog(
             icon = R.drawable.baseline_info_outline_24,
             title = "Info",
-            message = "You'r session is ended. Please login again",
+            message = "Your session is ended. Please login again",
             openDialogCustom = remember { mutableStateOf(true) },
             buttons = listOf(
                 "Ok" to {
@@ -264,8 +264,12 @@ private fun StatusCard(
         text = message,
         textAlign = TextAlign.Center,
         modifier = Modifier.fillMaxWidth().
-        padding(16.dp),
-        color = MaterialTheme.colorScheme.primary,
+        padding(16.dp, 16.dp, 16.dp, 0.dp),
+        color = when(satisfaction) {
+            "PASS" -> Color.Green
+            "UNDER" -> Color.Yellow
+            else -> Color.Red
+        },
         style = MaterialTheme.typography.titleMedium
     )
     Image(

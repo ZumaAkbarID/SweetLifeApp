@@ -39,7 +39,7 @@ fun CheckEmailScreen(
     ) {
         Text(
             text = "Check Your Email",
-            color = Color.Black,
+            color = MaterialTheme.colorScheme.onBackground,
             fontWeight = FontWeight.SemiBold,
             style = MaterialTheme.typography.titleLarge
         )
@@ -47,7 +47,7 @@ fun CheckEmailScreen(
             text = "we have sent a password recover instruction\n" +
                     "to your email",
             textAlign = TextAlign.Center,
-            color = Color.Black,
+            color = MaterialTheme.colorScheme.onSecondary,
             style = MaterialTheme.typography.bodyMedium,
             modifier = Modifier.padding(0.dp, 10.dp)
         )

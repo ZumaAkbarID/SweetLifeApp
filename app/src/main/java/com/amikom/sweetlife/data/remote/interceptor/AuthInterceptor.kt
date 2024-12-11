@@ -1,6 +1,7 @@
 package com.amikom.sweetlife.data.remote.interceptor
 
 import android.util.Log
+import com.amikom.sweetlife.data.model.NewTokenModel
 import com.amikom.sweetlife.data.remote.Result
 import com.amikom.sweetlife.domain.manager.LocalAuthUserManager
 import com.amikom.sweetlife.domain.repository.AuthRepository
@@ -43,8 +44,9 @@ class AuthInterceptor @Inject constructor(
                 synchronized(lock) {
                     if (!isRefreshing) {
                         isRefreshing = true
+                        var newTokenResult: Result<NewTokenModel>? = null
                         try {
-                            val newTokenResult = runBlocking { authRepository.refreshToken(refreshToken) }
+                            newTokenResult = runBlocking { authRepository.refreshToken(refreshToken) }
 
                             if (newTokenResult is Result.Success) {
                                 val newToken = newTokenResult.data
@@ -63,7 +65,9 @@ class AuthInterceptor @Inject constructor(
                                 oldResponse
                             }
                         } finally {
-                            runBlocking { localAuthUserManager.logout() }
+//                            if (newTokenResult !is Result.Success || newTokenResult.data.accessToken == "") {
+//                                runBlocking { localAuthUserManager.logout() } // GAGAL TERUS ASUK
+//                            }
                             isRefreshing = false
                         }
                     } else {

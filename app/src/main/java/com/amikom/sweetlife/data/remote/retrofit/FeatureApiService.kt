@@ -7,6 +7,7 @@ import com.amikom.sweetlife.data.remote.dto.health_profile.HealthProfileResponse
 import com.amikom.sweetlife.data.remote.dto.profile.ProfileResponse
 import com.amikom.sweetlife.data.remote.dto.profile.UpdateProfileResponse
 import com.amikom.sweetlife.data.remote.dto.rekomen.RekomenResponse
+import com.amikom.sweetlife.data.remote.dto.scan.ScanResponse
 import com.amikom.sweetlife.data.remote.json_request.EditHealthRequest
 import com.amikom.sweetlife.data.remote.json_request.HealthRequest
 import com.amikom.sweetlife.data.remote.json_request.ProfileRequest
@@ -47,6 +48,10 @@ interface FeatureApiService {
     @Multipart
     @PUT("${Constants.API_VERSION}users/profile")
     suspend fun uploadProfileImage(@Part image: MultipartBody.Part): ProfileResponse
+
+    @Multipart
+    @POST("${Constants.API_VERSION}food/scan")
+    suspend fun foodScan(@Part image: MultipartBody.Part): Response<ScanResponse>
 
     @Multipart
     @PUT("${Constants.API_VERSION}users/profile")

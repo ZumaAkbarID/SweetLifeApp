@@ -1,5 +1,6 @@
 package com.amikom.sweetlife.data.remote.repository
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
 import com.amikom.sweetlife.data.model.DailyProgress
@@ -10,10 +11,13 @@ import com.amikom.sweetlife.data.model.Status
 import com.amikom.sweetlife.data.model.User
 import com.amikom.sweetlife.data.remote.Result
 import com.amikom.sweetlife.data.remote.dto.ErrorResponse
+import com.amikom.sweetlife.data.remote.dto.scan.ScanResponse
 import com.amikom.sweetlife.data.remote.retrofit.FeatureApiService
 import com.amikom.sweetlife.domain.repository.DashboardRepository
 import com.amikom.sweetlife.util.AppExecutors
 import com.google.gson.Gson
+import okhttp3.MultipartBody
+import java.io.File
 
 class DashboardRepositoryImpl(
     private val featureApiService: FeatureApiService,
@@ -70,6 +74,39 @@ class DashboardRepositoryImpl(
                 // Update result on main thread
                 appExecutors.mainThread.execute {
                     result.value = Result.Success(dashboardModel)
+                }
+            } else {
+                // Handle error response
+                val errorBody = Gson().fromJson(response.errorBody()?.string(), ErrorResponse::class.java)
+                val message = errorBody?.error ?: response.message()
+                appExecutors.mainThread.execute {
+                    result.value = Result.Error(message)
+                }
+            }
+        } catch (e: Exception) {
+            // Handle exceptions
+            appExecutors.mainThread.execute {
+                result.value = e.message?.let { Result.Error(it) }
+            }
+        }
+
+        return result
+    }
+
+    override suspend fun scanFood(image:  MultipartBody.Part): LiveData<Result<ScanResponse>> {
+        val result = MediatorLiveData<Result<ScanResponse>>()
+        result.value = Result.Loading
+
+        try {
+            // Perform API call
+            val response = featureApiService.foodScan(image)
+            Log.d("UPLOAD_SCAN", "Raw REQUEST: $image")
+            Log.d("UPLOAD_SCAN", "Raw response: ${response.body()}")
+
+            if (response.isSuccessful) {
+                // Update result on main thread
+                appExecutors.mainThread.execute {
+                    result.value = Result.Success(response.body()!!)
                 }
             } else {
                 // Handle error response

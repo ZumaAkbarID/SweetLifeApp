@@ -39,6 +39,7 @@ import com.amikom.sweetlife.domain.usecases.auth.SaveNewToken
 import com.amikom.sweetlife.domain.usecases.auth.SaveUserInfoLogin
 import com.amikom.sweetlife.domain.usecases.dashboard.DashboardUseCases
 import com.amikom.sweetlife.domain.usecases.dashboard.FetchData
+import com.amikom.sweetlife.domain.usecases.dashboard.ScanFood
 import com.amikom.sweetlife.domain.usecases.profile.CreateHealthProfile
 import com.amikom.sweetlife.domain.usecases.profile.FetchDataHealthProfile
 import com.amikom.sweetlife.domain.usecases.profile.FetchDataProfile
@@ -55,6 +56,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 @Module
@@ -116,6 +118,9 @@ object AppModule {
         val client: OkHttpClient = OkHttpClient.Builder()
             .addInterceptor(loggingInterceptor)
             .addInterceptor(authInterceptor)
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .writeTimeout(30, TimeUnit.SECONDS)
             .build()
 
         return Retrofit.Builder()
@@ -186,7 +191,8 @@ object AppModule {
         dashboardRepository: DashboardRepository,
     ) : DashboardUseCases {
         return DashboardUseCases(
-            fetchData = FetchData(dashboardRepository = dashboardRepository)
+            fetchData = FetchData(dashboardRepository = dashboardRepository),
+            scanFood = ScanFood(dashboardRepository = dashboardRepository)
         )
     }
 
