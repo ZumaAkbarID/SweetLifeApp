@@ -1,5 +1,6 @@
 package com.amikom.sweetlife.ui.screen.assesment
 
+import android.util.Log
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -16,6 +17,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.Face
+import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.*
@@ -27,12 +30,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.amikom.sweetlife.BuildConfig
 import com.amikom.sweetlife.R
+import com.amikom.sweetlife.data.model.DiabetesStatus
 import com.amikom.sweetlife.data.remote.Result
 import com.amikom.sweetlife.domain.nvgraph.Route
 import com.amikom.sweetlife.ui.component.CustomDialog
@@ -80,24 +85,43 @@ fun DropdownSelector(
 ) {
     var expanded by remember { mutableStateOf(false) }
 
-    Button(
+    // Outlined Button with icon and text
+    OutlinedButton(
         onClick = { expanded = true },
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth(),
         shape = RoundedCornerShape(15.dp),
-        colors = ButtonDefaults.buttonColors(
+        border = BorderStroke(1.dp, Color.Gray),
+        colors = ButtonDefaults.outlinedButtonColors(
             containerColor = Color.Transparent,
             contentColor = MaterialTheme.colorScheme.onBackground
-        ),
-        border = BorderStroke(1.dp, Color.Gray)
-    ) {
-        Text(
-            text = selectedValue.ifEmpty { placeholder },
-            style = MaterialTheme.typography.bodyMedium,
-            textAlign = TextAlign.Start,
-            color = MaterialTheme.colorScheme.onBackground,
         )
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(0.dp, 8.dp, 0.dp, 8.dp),
+        ) {
+            // Teks pilihan atau placeholder
+            Text(
+                text = selectedValue.ifEmpty { placeholder },
+                style = MaterialTheme.typography.bodyMedium,
+                textAlign = TextAlign.Start,
+                color = Color.Gray,
+                modifier = Modifier.weight(1f)
+            )
+
+            Icon(
+                imageVector = Icons.Filled.KeyboardArrowDown,
+                contentDescription = "Dropdown Icon",
+                tint = Color.Gray,
+                modifier = Modifier.size(20.dp)
+            )
+        }
     }
 
+    // Dropdown Menu
     DropdownMenu(
         expanded = expanded,
         onDismissRequest = { expanded = false },
@@ -124,7 +148,7 @@ fun AssessmentScreen(navController: NavController, viewModel: AssessmentViewMode
         { NextDiabetesStatusScreen(viewModel) },
         { ActivityScreen1(viewModel) },
         { ActivityScreen2(viewModel) },
-        { DayGoalsScreen(viewModel) }
+//        { DayGoalsScreen(viewModel) }
     )
 
     val showDialog = remember { mutableStateOf(false) }
@@ -168,7 +192,7 @@ fun AssessmentScreen(navController: NavController, viewModel: AssessmentViewMode
             2 -> viewModel.validateNextDiabetesStatus()
             3 -> viewModel.validateActivityData()
             4 -> viewModel.validateHealthHistory()
-            5 -> viewModel.validateDayGoals()
+//            5 -> viewModel.validateDayGoals()
         }
     }
 
@@ -180,7 +204,8 @@ fun AssessmentScreen(navController: NavController, viewModel: AssessmentViewMode
         },
         bottomBar = {
 
-            val isNotLoading = updateProfileResult !is Result.Loading && createHealth !is Result.Loading
+            val isNotLoading =
+                updateProfileResult !is Result.Loading && createHealth !is Result.Loading
 
             Row(
                 modifier = Modifier
@@ -220,6 +245,7 @@ fun AssessmentScreen(navController: NavController, viewModel: AssessmentViewMode
                     onClick = {
                         if (isLastPage) {
                             viewModel.submitDataToServer()
+
                         } else {
                             currentPage =
                                 if (currentPage == 1 && !viewModel.diabetesStatus.isDiabetic) {
@@ -297,6 +323,7 @@ fun AssessmentScreen(navController: NavController, viewModel: AssessmentViewMode
 
     LaunchedEffect(result) {
         if (result) {
+            Log.d("BIJIX", "Result: $result")
             navController.navigate(Route.DashboardScreen) {
                 popUpTo<Route.AssessmentScreen> { inclusive = true }
                 launchSingleTop = true
@@ -379,18 +406,22 @@ fun PersonalDataScreen(viewModel: AssessmentViewModel) {
 }
 
 @Composable
-fun DatePickerButton(date: String, onDateSelected: (String) -> Unit) {
+fun DatePickerButton(
+    date: String,
+    onDateSelected: (String) -> Unit
+) {
     val context = LocalContext.current
     val calendar = Calendar.getInstance()
 
-    // Default date values
+    // Default values for DatePickerDialog
     val year = calendar.get(Calendar.YEAR)
     val month = calendar.get(Calendar.MONTH)
     val day = calendar.get(Calendar.DAY_OF_MONTH)
 
     var selectedDate by remember { mutableStateOf(date) }
 
-    Button(
+    // Button to open DatePickerDialog
+    OutlinedButton(
         onClick = {
             val datePicker = android.app.DatePickerDialog(
                 context,
@@ -408,53 +439,104 @@ fun DatePickerButton(date: String, onDateSelected: (String) -> Unit) {
             datePicker.show()
         },
         modifier = Modifier
-            .fillMaxWidth()
-            .width(16.dp),
+            .fillMaxWidth(),
         shape = RoundedCornerShape(15.dp),
-        colors = ButtonColors(
-            Color.Transparent,
-            MaterialTheme.colorScheme.primary,
-            Color.Gray,
-            MaterialTheme.colorScheme.onBackground
-        ),
-        border = BorderStroke(1.dp, Color.Gray)
+        border = BorderStroke(1.dp, Color.Gray),
+        colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Gray)
     ) {
-        Text(
-            textAlign = TextAlign.Start,
-            text = if (selectedDate.isEmpty()) "Select Date of Birth" else "Born Date: $selectedDate",
-            style = MaterialTheme.typography.bodyMedium,
-            color = Color.Black
-        )
+        Row(
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(0.dp, 8.dp, 0.dp, 8.dp),
+        ) {
+            // Icon kalender di sebelah kiri
+            Icon(
+                imageVector = Icons.Filled.DateRange,
+                contentDescription = "Date Icon",
+                tint = Color.Gray,
+                modifier = Modifier.size(28.dp)
+            )
+            Spacer(modifier = Modifier.width(6.dp)) // Spasi antara ikon kalender dan teks
+
+            // Teks tanggal
+            Text(
+                text = if (selectedDate.isEmpty()) "Select Date" else "$selectedDate",
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.Gray,
+                textAlign = TextAlign.Start,
+                modifier = Modifier.weight(1f) // Membuat teks mengisi ruang di antara ikon
+            )
+
+            Spacer(modifier = Modifier.width(8.dp)) // Spasi antara teks dan ikon dropdown
+
+            // Icon dropdown di sebelah kanan
+            Icon(
+                imageVector = Icons.Filled.KeyboardArrowDown,
+                contentDescription = "Dropdown Icon",
+                tint = Color.Gray,
+                modifier = Modifier.size(24.dp)
+            )
+        }
     }
 }
 
 @Composable
-fun GenderPickerButton(selectedGender: String, onGenderSelected: (String) -> Unit) {
+fun GenderPickerButton(
+    selectedGender: String,
+    onGenderSelected: (String) -> Unit
+) {
     val genderOptions = listOf("Male", "Female")
     var expanded by remember { mutableStateOf(false) }
 
-    Button(
+    // Button with icons and text
+    OutlinedButton(
         onClick = { expanded = true },
         modifier = Modifier
-            .fillMaxWidth()
-            .width(16.dp),
-        shape = RoundedCornerShape(15.dp),
-        colors = ButtonColors(
-            Color.Transparent,
-            MaterialTheme.colorScheme.primary,
-            Color.Gray,
-            MaterialTheme.colorScheme.onBackground
-        ),
-        border = BorderStroke(1.dp, Color.Gray)
+            .fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        border = BorderStroke(1.dp, Color.Gray),
+        colors = ButtonDefaults.outlinedButtonColors(contentColor = Color.Gray)
     ) {
-        Text(
-            text = if (selectedGender.isEmpty()) "Select Gender" else "Gender: $selectedGender",
-            style = MaterialTheme.typography.bodyMedium,
-            color = Color.Black,
-            textAlign = TextAlign.Start,
-        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(0.dp, 8.dp, 0.dp, 8.dp),
+        ) {
+            // Ikon person di sebelah kiri
+            Icon(
+                imageVector = Icons.Filled.Person,
+                contentDescription = "Gender Icon",
+                tint = Color.Gray,
+                modifier = Modifier.size(28.dp)
+            )
+
+            Spacer(modifier = Modifier.width(6.dp)) // Spasi antara ikon dan teks
+
+            // Teks gender yang dipilih atau default
+            Text(
+                text = if (selectedGender.isEmpty()) "Select Gender" else "$selectedGender",
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.Gray,
+                textAlign = TextAlign.Start,
+                modifier = Modifier.weight(1f)
+            )
+
+            Spacer(modifier = Modifier.width(8.dp)) // Spasi antara teks dan ikon dropdown
+
+            // Ikon dropdown di sebelah kanan
+            Icon(
+                imageVector = Icons.Filled.KeyboardArrowDown,
+                contentDescription = "Dropdown Icon",
+                tint = Color.Gray,
+                modifier = Modifier.size(24.dp)
+            )
+        }
     }
 
+    // Dropdown Menu
     DropdownMenu(
         expanded = expanded,
         onDismissRequest = { expanded = false },
@@ -532,7 +614,7 @@ fun DiabetesStatusScreen(viewModel: AssessmentViewModel) {
                         .padding(vertical = 8.dp)
                         .border(
                             width = 1.dp,
-                            color = if (selectedOption == option) Color.Blue else MainBlue,
+                            color = if (selectedOption == option) Color.Gray else Color.Gray,
                             shape = RoundedCornerShape(15.dp)
                         )
                         .clickable {
@@ -553,7 +635,7 @@ fun DiabetesStatusScreen(viewModel: AssessmentViewModel) {
                         Text(
                             text = option,
                             style = MaterialTheme.typography.bodyMedium,
-                            color = if (selectedOption == option) MainBlue else Color.Gray,
+                            color = if (selectedOption == option) Color.Gray else Color.Gray,
                             modifier = Modifier.weight(1f)
                         )
                         RadioButton(
@@ -618,30 +700,41 @@ fun NextDiabetesStatusScreen(viewModel: AssessmentViewModel) {
                 },
                 placeholder = "Select Your Diabetic Type"
             )
-            Spacer(modifier = Modifier.height(8.dp))
-            ValidatedTextField(
-                value = viewModel.nextDiabetesStatus.insulinLevel.toString(),
-                onValueChange = { value ->
-                    viewModel.nextDiabetesStatus = viewModel.nextDiabetesStatus.copy(
-                        insulinLevel = value.toDoubleOrNull() ?: 0.0
-                    )
-                },
-                label = "Insulin Level",
-                keyboardType = KeyboardType.Decimal,
-                validator = String::isValidDecimal
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            ValidatedTextField(
-                value = viewModel.nextDiabetesStatus.bloodPressure.toString(),
-                onValueChange = { value ->
-                    viewModel.nextDiabetesStatus = viewModel.nextDiabetesStatus.copy(
-                        bloodPressure = value.toIntOrNull() ?: 0
-                    )
-                },
-                label = "Blood Sugar Pressure",
-                keyboardType = KeyboardType.Number,
-                validator = String::isValidInteger
-            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp), // Spasi antar field
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Field pertama: Insulin Level
+                ValidatedTextField(
+                    value = viewModel.nextDiabetesStatus.insulinLevel.toString(),
+                    onValueChange = { value ->
+                        viewModel.nextDiabetesStatus = viewModel.nextDiabetesStatus.copy(
+                            insulinLevel = value.toDoubleOrNull() ?: 0.0
+                        )
+                    },
+                    label = "Insulin Level",
+                    keyboardType = KeyboardType.Decimal,
+                    validator = String::isValidDecimal,
+                    modifier = Modifier.weight(1f) // Menyamakan lebar kedua field
+                )
+
+                // Field kedua: Blood Sugar Pressure
+                ValidatedTextField(
+                    value = viewModel.nextDiabetesStatus.bloodPressure.toString(),
+                    onValueChange = { value ->
+                        viewModel.nextDiabetesStatus = viewModel.nextDiabetesStatus.copy(
+                            bloodPressure = value.toIntOrNull() ?: 0
+                        )
+                    },
+                    label = "Blood Pressure",
+                    keyboardType = KeyboardType.Number,
+                    validator = String::isValidInteger,
+                    modifier = Modifier.weight(1f) // Menyamakan lebar kedua field
+                )
+            }
         }
     }
 }
@@ -650,7 +743,7 @@ fun NextDiabetesStatusScreen(viewModel: AssessmentViewModel) {
 fun ActivityScreen1(viewModel: AssessmentViewModel) {
     Column(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxWidth()
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -679,6 +772,7 @@ fun ActivityScreen1(viewModel: AssessmentViewModel) {
                 validator = String::isValidInteger,
                 modifier = Modifier.weight(1f)
             )
+            Spacer(modifier = Modifier.height(16.dp))
             ValidatedTextField(
                 value = viewModel.activityData1.weight.toString(),
                 onValueChange = { value ->
@@ -749,7 +843,6 @@ fun ActivityScreen2(viewModel: AssessmentViewModel) {
                 viewModel.activityData2 = viewModel.activityData2.copy(smokingHistory = it)
             }
         )
-
         Spacer(modifier = Modifier.height(16.dp))
         Activity2Select(
             typeOptions = listOf("Yes", "No"),
@@ -771,28 +864,54 @@ fun Activity2Select(
 ) {
     var expanded by remember { mutableStateOf(false) }
 
-    Button(
+    // Outlined Button with two icons and text
+    OutlinedButton(
         onClick = { expanded = true },
         modifier = Modifier
-            .fillMaxWidth()
-            .width(16.dp),
+            .fillMaxWidth(),
         shape = RoundedCornerShape(15.dp),
-        colors = ButtonColors(
-            Color.Transparent,
-            MaterialTheme.colorScheme.primary,
-            Color.Gray,
-            MaterialTheme.colorScheme.onBackground
-        ),
-        border = BorderStroke(1.dp, Color.Gray)
-    ) {
-        Text(
-            text = selectedType.ifEmpty { title },
-            style = MaterialTheme.typography.bodyMedium,
-            color = Color.Black,
-            textAlign = TextAlign.Start,
+        border = BorderStroke(1.dp, Color.Gray),
+        colors = ButtonDefaults.outlinedButtonColors(
+            containerColor = Color.Transparent,
+            contentColor = MaterialTheme.colorScheme.onBackground
         )
+    ) {
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(0.dp, 8.dp, 0.dp, 8.dp),
+        ) {
+            // Ikon List di sebelah kiri
+            Icon(
+                imageVector = Icons.Filled.Face,
+                contentDescription = "Activity Icon",
+                tint = Color.Gray,
+                modifier = Modifier.size(28.dp)
+            )
+
+            Spacer(modifier = Modifier.width(8.dp)) // Spasi antara ikon dan teks
+
+            // Teks pilihan atau placeholder
+            Text(
+                text = selectedType.ifEmpty { title },
+                style = MaterialTheme.typography.bodyMedium,
+                textAlign = TextAlign.Start,
+                color = Color.Gray,
+                modifier = Modifier.weight(1f)
+            )
+
+            // Ikon Dropdown di sebelah kanan
+            Icon(
+                imageVector = Icons.Filled.KeyboardArrowDown,
+                contentDescription = "Dropdown Icon",
+                tint = Color.Gray,
+                modifier = Modifier.size(20.dp)
+            )
+        }
     }
 
+    // Dropdown Menu
     DropdownMenu(
         expanded = expanded,
         onDismissRequest = { expanded = false },
@@ -810,106 +929,54 @@ fun Activity2Select(
     }
 }
 
+@Preview(showBackground = true)
 @Composable
-fun DayGoalsScreen(viewModel: AssessmentViewModel) {
-    // Parent container
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-//        verticalArrangement = Arrangement.SpaceBetween,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        // Title and Subtitle
-        Column(
-            horizontalAlignment = Alignment.Start,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Text(
-                text = "Day Goals",
-                fontSize = 30.sp,
-                style = MaterialTheme.typography.titleLarge,
-                fontWeight = FontWeight.Bold,
-                color = Color.Gray
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = "Complete your data to find out your assessment results",
-                style = MaterialTheme.typography.bodyLarge,
-                fontSize = 16.sp,
-                color = Color.Gray
-            )
-        }
+fun DatePickerButtonPreview() {
+    DatePickerButton(
+        date = "2023-06-15",
+        onDateSelected = {}
+    )
+}
 
-        Spacer(modifier = Modifier.height(16.dp))
+@Preview(showBackground = true)
+@Composable
+fun GenderPickerButtonPreview() {
+    GenderPickerButton(
+        selectedGender = "Female",
+        onGenderSelected = {}
+    )
+}
 
-        Column(
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(150.dp)
-            ) {
-                Text(
-                    text = "Calories",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color.Gray
-                )
+@Preview(showBackground = true)
+@Composable
+fun DropdownSelectorPreview() {
+    DropdownSelector(
+        selectedValue = "Type 2",
+        options = listOf("Type 1", "Type 2", "Type 3", "Gestational"),
+        onValueSelected = {},
+        placeholder = "Select Your Diabetic Type"
+    )
+}
 
-                Text(
-                    text = "Sugar Intake",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color.Gray
-                )
-            }
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                OutlinedTextField(
-                    value = viewModel.dayGoals.calories.toString(),
-                    onValueChange = {
-                        viewModel.dayGoals = viewModel.dayGoals.copy(
-                            calories = it.toIntOrNull() ?: 0
-                        )
-                    },
-                    modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(15.dp),
-                    label = {
-                        Text(
-                            "Kcal",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = Color.Gray
-                        )
-                    },
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Decimal // Memungkinkan angka dengan koma
-                    ),
-                    singleLine = true
-                )
+@Preview(showBackground = true)
+@Composable
+fun ValidatedTextFieldPreview() {
+    ValidatedTextField(
+        value = "5.5",
+        onValueChange = {},
+        label = "Insulin Level",
+        keyboardType = KeyboardType.Decimal,
+        validator = { true }
+    )
+}
 
-                OutlinedTextField(
-                    value = viewModel.dayGoals.sugarIntake.toString(),
-                    onValueChange = {
-                        viewModel.dayGoals = viewModel.dayGoals.copy(
-                            sugarIntake = it.toIntOrNull() ?: 0
-                        )
-                    },
-                    modifier = Modifier.weight(1f),
-                    shape = RoundedCornerShape(15.dp),
-                    label = {
-                        Text(
-                            "gram",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = Color.Gray
-                        )
-                    },
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Decimal // Memungkinkan angka dengan koma
-                    ),
-                    singleLine = true
-                )
-            }
-        }
-    }
+@Preview(showBackground = true)
+@Composable
+fun Activity2SelectPreview() {
+    Activity2Select(
+        typeOptions = listOf("Never", "Current", "Former", "Ever"),
+        title = "Select your smoking history",
+        selectedType = "Former",
+        onTypeSelected = {}
+    )
 }

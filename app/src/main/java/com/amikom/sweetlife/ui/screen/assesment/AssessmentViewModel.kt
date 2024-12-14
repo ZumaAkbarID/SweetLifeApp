@@ -25,7 +25,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
-
 // ViewModel to handle the form data
 @HiltViewModel
 class AssessmentViewModel @Inject constructor(
@@ -74,7 +73,7 @@ class AssessmentViewModel @Inject constructor(
     var isNextDiabetesStatusValid by mutableStateOf(false)
     var isActivityDataValid by mutableStateOf(false)
     var isHealthHistoryValid by mutableStateOf(false)
-    var isDayGoalsValid by mutableStateOf(false)
+//    var isDayGoalsValid by mutableStateOf(false)
 
     // Validation logic
     fun validatePersonalData() {
@@ -107,11 +106,11 @@ class AssessmentViewModel @Inject constructor(
         isHealthHistoryValid = activityData2.smokingHistory.isNotBlank() &&
                 activityData2.heartDiseaseHistory.isNotBlank()
     }
-
-    fun validateDayGoals() {
-        isDayGoalsValid = dayGoals.calories > 0 &&
-                dayGoals.sugarIntake > 0
-    }
+//
+//    fun validateDayGoals() {
+//        isDayGoalsValid = dayGoals.calories > 0 &&
+//                dayGoals.sugarIntake > 0
+//    }
 
     // Call all validations before submitting data
     private fun validateAll(): Boolean {
@@ -120,13 +119,13 @@ class AssessmentViewModel @Inject constructor(
         validateNextDiabetesStatus()
         validateActivityData()
         validateHealthHistory()
-        validateDayGoals()
+//        validateDayGoals()
         return isPersonalDataValid &&
                 isDiabetesStatusValid &&
                 isNextDiabetesStatusValid &&
                 isActivityDataValid &&
-                isHealthHistoryValid &&
-                isDayGoalsValid
+                isHealthHistoryValid
+//                isDayGoalsValid
     }
 
     fun dismissError() {

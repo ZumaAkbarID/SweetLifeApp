@@ -1,10 +1,12 @@
 package com.amikom.sweetlife.data.remote.repository
 
+
 import android.content.Context
 import android.graphics.Bitmap
 import android.os.Build
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MediatorLiveData
+import com.amikom.sweetlife.data.model.DiabetesDetails
 import com.amikom.sweetlife.data.model.DiabetesPrediction
 import com.amikom.sweetlife.data.model.HealthProfileModel
 import com.amikom.sweetlife.data.model.ProfileModel
@@ -96,12 +98,14 @@ class ProfileRepositoryImpl(
                     height = data?.height ?: 0.0,
                     weight = data?.weight ?: 0.0,
                     isDiabetic = data?.isDiabetic ?: false,
-                    diabeticType = data?.diabeticType ?: defaultErrorValue,
-                    insulinLevel = data?.insulinLevel ?: 0,
-                    bloodPressure = data?.bloodPressure ?: 0,
                     smokingHistory = data?.smokingHistory ?: defaultErrorValue,
                     hasHeartDisease = data?.hasHeartDisease ?: false,
                     activityLevel = data?.activityLevel ?: defaultErrorValue,
+                    diabetesDetails = DiabetesDetails(
+                        diabeticType = data?.diabetesDetails?.diabeticType ?: defaultErrorValue,
+                        insulinLevel = data?.diabetesDetails?.insulinLevel ?: 0.0,
+                        bloodPressure = data?.diabetesDetails?.bloodPressure ?: 0
+                    ),
                     diabetesPrediction = DiabetesPrediction(
                         riskPercentage = data?.diabetesPrediction?.riskPercentage ?: 0.0,
                         riskLevel = data?.diabetesPrediction?.riskLevel ?: defaultErrorValue,

@@ -84,7 +84,7 @@ fun EditDataScreen(
     val showDialog = remember { mutableStateOf(false) }
     var smokingStatus by remember { mutableStateOf("") }
     var diabetesType by remember { mutableStateOf("") }
-    var insulinLevel by remember { mutableStateOf(0) }
+    var insulinLevel by remember { mutableStateOf(0.0) }
     var bloodPressure by remember { mutableStateOf(0) }
     var heartDisease by remember { mutableStateOf("") }
     var activityLevel by remember { mutableStateOf("") }
@@ -105,11 +105,11 @@ fun EditDataScreen(
                 heartDisease = if (healthProfile.hasHeartDisease == true) "Yes" else "No"
                 activityLevel = healthProfile.activityLevel ?: ""
                 if (healthProfile.isDiabetic == true) {
-                    Log.d("EditDataScreen", "Diabetic Type: ${healthProfile.diabeticType}")
+                    Log.d("EditDataScreen", "Diabetic Type: ${healthProfile.diabetesDetails?.diabeticType}")
                     showDiabetesDetails = true
-                    diabetesType = healthProfile.diabeticType ?: ""
-                    insulinLevel = healthProfile.insulinLevel?: 0
-                    bloodPressure = healthProfile.bloodPressure?: 0
+                    diabetesType = healthProfile.diabetesDetails?.diabeticType ?: ""
+                    insulinLevel = healthProfile.diabetesDetails?.insulinLevel ?: 0.0
+                    bloodPressure = healthProfile.diabetesDetails?.bloodPressure ?: 0
                 }
             }
 
@@ -161,7 +161,7 @@ fun EditDataScreen(
                 showDiabetesDetails = it == "Yes"
                 if (it == "No") {
                     diabetesType = ""
-                    insulinLevel = 0
+                    insulinLevel = 0.0
                     bloodPressure = 0
                 }
             }
@@ -192,41 +192,43 @@ fun EditDataScreen(
                 ) {
                     // Insulin Level
                     Column(
-                        modifier = Modifier.weight(0.5f).fillMaxWidth(),
+                        modifier = Modifier
+                            .weight(0.5f)
+                            .fillMaxWidth(),
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.Start
                     ) {
-                        Text(
-                            text = "Insulin Level",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = Color.Gray
-                        )
+//                        Text(
+//                            text = "Insulin Level",
+//                            style = MaterialTheme.typography.bodyMedium,
+//                            color = Color.Gray
+//                        )
                         Spacer(modifier = Modifier.height(4.dp))
                         InsulinLevel(
-                            label = "",
+                            label = "Insulin Level",
                             value = insulinLevel.toString(),
-                            onValueChange = { insulinLevel = insulinLevel }
+                            onValueChange = { input ->
+                                insulinLevel = input.toDoubleOrNull() ?: insulinLevel
+                            }
                         )
                     }
-
                     Spacer(modifier = Modifier.width(16.dp))
-
                     // Blood Pressure
                     Column(
                         modifier = Modifier.weight(1f),
                         verticalArrangement = Arrangement.Center,
                         horizontalAlignment = Alignment.Start
                     ) {
-                        Text(
-                            text = "Blood Pressure",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = Color.Gray
-                        )
+//                        Text(
+//                            text = "Blood Pressure",
+//                            style = MaterialTheme.typography.bodyMedium,
+//                            color = Color.Gray
+//                        )
                         Spacer(modifier = Modifier.height(4.dp))
                         BloodSugarLevel(
-                            label = "",
+                            label = "Blood Pressure",
                             value = bloodPressure.toString(),
-                            onValueChange = { bloodPressure = bloodPressure }
+                            onValueChange = { bloodPressure = it.toInt() }
                         )
                     }
                 }
@@ -372,15 +374,13 @@ fun InsulinLevel(
 ) {
     OutlinedTextField(
         value = value,
-        onValueChange = { newValue ->
-            // Filter hanya angka
-            if (newValue.all { it.isDigit() }) {
-                onValueChange(newValue)
-            }
+        onValueChange = {
+            val validatedValue = it.toDoubleOrNull()?.toString() ?: "0.0"
+            onValueChange(validatedValue)
         },
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(15.dp),
-        label = { Text(label, style = MaterialTheme.typography.bodyMedium, color = Color.Gray) },
+        label = { Text(label, style = MaterialTheme.typography.bodyMedium) },
         keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
     )
 }
@@ -393,15 +393,10 @@ fun BloodSugarLevel(
 ) {
     OutlinedTextField(
         value = value,
-        onValueChange = { newValue ->
-            // Filter hanya angka
-            if (newValue.all { it.isDigit() }) {
-                onValueChange(newValue)
-            }
-        },
+        onValueChange = { onValueChange(it) },
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(15.dp),
-        label = { Text(label, style = MaterialTheme.typography.bodyMedium, color = Color.Gray) },
+        label = { Text(label, style = MaterialTheme.typography.bodyMedium) },
         keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
     )
 }
@@ -499,7 +494,11 @@ fun CustomDropdown(
 ) {
     var expanded by remember { mutableStateOf(false) }
 
-    Box(modifier = Modifier.fillMaxWidth().background(MaterialTheme.colorScheme.surface)) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.surface)
+    ) {
         Card(
             shape = RoundedCornerShape(15.dp),
             colors = CardDefaults.cardColors(

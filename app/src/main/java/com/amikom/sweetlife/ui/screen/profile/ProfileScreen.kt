@@ -53,6 +53,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import coil.compose.rememberAsyncImagePainter
 import com.amikom.sweetlife.R
+import com.amikom.sweetlife.data.model.DiabetesDetails
 import com.amikom.sweetlife.data.model.DiabetesPrediction
 import com.amikom.sweetlife.data.model.HealthProfileModel
 import com.amikom.sweetlife.data.model.ProfileModel
@@ -112,20 +113,23 @@ fun UserProfileScreen(
     when (healthRawData) {
         Result.Loading -> {
             healthData = HealthProfileModel(
-                "Loading...",
-                0.0,
-                0.0,
-                false,
-                diabeticType = "Loading...",
-                insulinLevel = 0,
-                bloodPressure = 0,
-                "Loading...",
-                false,
-                "Loading...",
+                "",  // weight
+                0.0,  // isDiabetic
+                0.0,  // smokingHistory
+                false,  // hasHeartDisease
+                "Loading...",  // activityLevel
+                false,  // diabeticType
+                "Loading...",  // insulinLevel
+                diabetesDetails = DiabetesDetails(
+                    "Loading...",  // diabeticType
+                    0.0,  // insulinLevel
+                    0,
+                ),
+                // bloodPressure
                 DiabetesPrediction(
-                    0.0,
-                    "Loading...",
-                    "Loading..."
+                    0.0,  // riskPercentage
+                    "Loading...",  // riskLevel
+                    "Loading..."  // note
                 ),
             )
         }
@@ -141,11 +145,13 @@ fun UserProfileScreen(
                 0.0,
                 false,
                 Constants.DEFAULT_ERROR_TEXT,
-                0,
-                0,
-                Constants.DEFAULT_ERROR_TEXT,
                 false,
                 Constants.DEFAULT_ERROR_TEXT,
+                diabetesDetails = DiabetesDetails(
+                    Constants.DEFAULT_ERROR_TEXT,
+                    0.0,
+                    0,
+                ),
                 DiabetesPrediction(
                     0.0,
                     Constants.DEFAULT_ERROR_TEXT,
@@ -167,7 +173,11 @@ fun UserProfileScreen(
 
     Scaffold(
         bottomBar = {
-            BottomNavigationBar(buttons = buttons, navController = navController, currentScreen = Route.ProfileScreen)
+            BottomNavigationBar(
+                buttons = buttons,
+                navController = navController,
+                currentScreen = Route.ProfileScreen
+            )
         },
         modifier = Modifier
             .fillMaxSize()
@@ -230,7 +240,7 @@ fun UserProfileScreen(
                     shape = RoundedCornerShape(bottomEnd = 16.dp, bottomStart = 16.dp),
                     textColor = Color.Red,
                     onClick = {
-                       //
+                        //
                     }
                 )
                 Spacer(modifier = Modifier.height(16.dp))

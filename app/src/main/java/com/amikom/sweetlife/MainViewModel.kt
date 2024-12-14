@@ -61,9 +61,9 @@ class MainViewModel @Inject constructor(
                     authUseCases.checkHasHealthProfile().collect { hasHealthProfile ->
                         _startDestination = when {
                             isLoggedIn && hasHealthProfile && shouldStartFromHomeScreen -> Route.DashboardScreen
-                            isLoggedIn && hasHealthProfile && !shouldStartFromHomeScreen -> Route.DashboardScreen
-                            isLoggedIn && !hasHealthProfile && !shouldStartFromHomeScreen -> Route.DashboardScreen
-                            isLoggedIn && !hasHealthProfile && shouldStartFromHomeScreen -> Route.DashboardScreen
+                            isLoggedIn && hasHealthProfile && !shouldStartFromHomeScreen -> Route.OnboardingScreen
+                            isLoggedIn && !hasHealthProfile && !shouldStartFromHomeScreen -> Route.OnboardingScreen
+                            isLoggedIn && !hasHealthProfile && shouldStartFromHomeScreen -> Route.AssessmentScreen
                             !isLoggedIn && !hasHealthProfile && !shouldStartFromHomeScreen -> Route.OnboardingScreen
                             else -> Route.LoginScreen
                         }

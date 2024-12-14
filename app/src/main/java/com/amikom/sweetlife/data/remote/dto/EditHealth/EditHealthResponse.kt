@@ -4,13 +4,16 @@ import com.amikom.sweetlife.data.remote.dto.profile.Data
 import com.google.gson.annotations.SerializedName
 
 data class EditHealthResponse(
-    @field:SerializedName("status")
+    @SerializedName("status")
     val status: Boolean? = null,
 
-    @field:SerializedName("data")
+    @SerializedName("message")
+    val message: String? = null,
+
+    @SerializedName("data")
     val data: Data? = null,
-) {
-}
+)
+
 data class Data(
     @SerializedName("height")
     val height: Float, // Tinggi badan dalam desimal
@@ -30,13 +33,17 @@ data class Data(
     @SerializedName("activity_level")
     val activityLevel: String, // Tingkat aktivitas
 
+    @SerializedName("diabetes_details")
+    val diabetesDetails: DiabetesDetails? = null, // Detil diabetes (opsional)
+)
+
+data class DiabetesDetails(
     @SerializedName("diabetic_type")
     val diabeticType: String?, // Tipe diabetes (opsional)
 
     @SerializedName("insulin_level")
-    val insulinLevel: Int?, // Level insulin (opsional)
+    val insulinLevel: Double?, // Level insulin (opsional)
 
     @SerializedName("blood_pressure")
-    val bloodPressure: Int? // Tekanan darah (opsional)
+    val bloodPressure: Int?, // Tekanan darah (opsional)
 )
-

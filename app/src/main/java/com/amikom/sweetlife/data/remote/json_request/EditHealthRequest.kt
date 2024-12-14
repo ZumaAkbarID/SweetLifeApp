@@ -26,8 +26,8 @@ data class EditHealthRequest(
     val diabeticType: String? = null, // Optional, bisa null
 
     @SerializedName("insulin_level")
-    val insulinLevel: Int? = null, // Optional, bisa null
+    val insulinLevel: Double? = 0.0, // Optional, bisa null
 
     @SerializedName("blood_pressure")
-    val bloodPressure: Int? = null, // Optional, bisa null
+    val bloodPressure: Int? = 0, // Optional, bisa null
 )

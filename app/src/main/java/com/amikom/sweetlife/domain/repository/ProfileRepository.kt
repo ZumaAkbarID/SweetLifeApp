@@ -1,5 +1,6 @@
 package com.amikom.sweetlife.domain.repository
 
+
 import androidx.lifecycle.LiveData
 import com.amikom.sweetlife.data.model.HealthProfileModel
 import com.amikom.sweetlife.data.model.ProfileModel

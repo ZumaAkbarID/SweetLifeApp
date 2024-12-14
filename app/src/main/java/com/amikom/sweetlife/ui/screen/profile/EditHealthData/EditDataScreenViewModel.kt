@@ -75,6 +75,8 @@ data class EditHealthData(
     val diabetesStatus: String?,
     val smokingStatus: String?,
     val bloodSugarLevel: Int?,
+    val insulinLevel: Double?,
+    val bloodPressure: Int?,
     val heartDisease: String?,
     val activityLevel: String?
 )

@@ -47,10 +47,13 @@ fun HistoryScreen(
         modifier = Modifier
             .fillMaxSize()
             .navigationBarsPadding(),
-    ) {  fillMaxSize ->
-        Box(modifier = Modifier
-            .fillMaxSize()
-            .padding(vertical = 16.dp)) {
+    ) { fillMaxSize ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(fillMaxSize)
+                .padding(vertical = 16.dp)
+        ) {
             when {
                 isLoading -> CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 error != null -> Text(
@@ -76,8 +79,14 @@ fun HistoryScreen(
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.padding(16.dp, 32.dp)
                         )
+
                     }
                     items(foodLogs.orEmpty()) { foodHistory -> // Loop over FoodHistory
+                        Text(
+                            text = foodHistory.date,
+                            style = MaterialTheme.typography.bodyMedium,
+                            modifier = Modifier.padding(16.dp, 8.dp)
+                        )
                         foodHistory.entries.forEach { foodLog -> // Loop over FoodLog entries inside each FoodHistory
                             FoodLogItem(foodLog = foodLog)
                         }
@@ -135,10 +144,9 @@ fun FoodLogItem(foodLog: FoodLog) {
     }
 }
 
-@Preview
+@Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun PreviewFoodLogItem() {
-
     FoodLogItem(
         foodLog = FoodLog(
             id = "1",

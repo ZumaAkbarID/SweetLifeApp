@@ -34,23 +34,26 @@ data class Data(
 	@field:SerializedName("is_diabetic")
 	val isDiabetic: Boolean? = null,
 
-	@field:SerializedName("diabetic_type")
-	val diabeticType: String? = null,
-
-	@field:SerializedName("insulin_level")
-	val insulinLevel: Int? = null,
-
-	@field:SerializedName("blood_pressure")
-	val bloodPressure: Int? = null,
+	@field:SerializedName("diabetes_details")
+	val diabetesDetails: DiabetesDetails? = null, // Mendukung nested diabetes_details
 
 	@field:SerializedName("has_heart_disease")
 	val hasHeartDisease: Boolean? = null,
 
 	@field:SerializedName("height")
-	val height: Double? = null,
+	val height: Double? = null
+)
 
-	@field:SerializedName("diabetes")
-	val diabetes: String = ""
+data class DiabetesDetails(
+
+	@field:SerializedName("diabetic_type")
+	val diabeticType: String? = null, // Tipe diabetes (opsional)
+
+	@field:SerializedName("insulin_level")
+	val insulinLevel: Double? = null, // Level insulin (opsional)
+
+	@field:SerializedName("blood_pressure")
+	val bloodPressure: Int? = null // Tekanan darah (opsional)
 )
 
 data class DiabetesPrediction(

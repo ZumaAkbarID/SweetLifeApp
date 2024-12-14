@@ -1,8 +1,10 @@
 package com.amikom.sweetlife.ui.screen.rekomend
 
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -35,6 +37,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -71,14 +74,21 @@ fun RekomenScreen(
 
     Scaffold(
         bottomBar = {
-            BottomNavigationBar(buttons = buttons, navController = navController, currentScreen = Route.RekomenScreen)
+            BottomNavigationBar(
+                buttons = buttons,
+                navController = navController,
+                currentScreen = Route.RekomenScreen
+            )
         },
-        modifier = Modifier.fillMaxSize().navigationBarsPadding(),
-    ) { fillMaxSize ->
+        modifier = Modifier
+            .fillMaxSize()
+            .navigationBarsPadding(),
+    ) { innerPadding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp)
+                .padding(innerPadding)
         ) {
             TabRow(selectedTabIndex = selectedTabIndex) {
                 tabTitles.forEachIndexed { index, title ->
@@ -118,9 +128,11 @@ fun RekomenScreen(
                             }
                         }
                         if (selectedTabIndex == 1) {
-                            val exerciseList = exerciseRecommendations.value?.exerciseList ?: emptyList()
-                            items(exerciseList) { exercise ->
-                                RekomendItemExec(exercise = exercise)
+                            val exerciseRecommendation = exerciseRecommendations.value
+                            exerciseRecommendation?.let { recommendation ->
+                                item {
+                                    RekomendItemExec(exercise = recommendation)
+                                }
                             }
                         }
                     }
@@ -135,8 +147,11 @@ fun RekomendItemFood(item: FoodRecommendation) {
     Spacer(modifier = Modifier.height(16.dp))
     Row(
         modifier = Modifier
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surfaceContainerHighest, RoundedCornerShape(15.dp))
+            .fillMaxSize()
+            .background(
+                MaterialTheme.colorScheme.surfaceContainerHighest,
+                RoundedCornerShape(15.dp)
+            )
             .padding(vertical = 12.dp, horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -162,42 +177,99 @@ fun RekomendItemFood(item: FoodRecommendation) {
         }
     }
 }
+
 @Composable
-fun RekomendItemExec(exercise: Exercise) {
-    Spacer(modifier = Modifier.height(10.dp))
-    Row(
+fun RekomendItemExec(exercise: ExerciseRecommendations) {
+    Spacer(modifier = Modifier.height(16.dp))
+    Column(
         modifier = Modifier
-            .fillMaxWidth()
-            .background(MaterialTheme.colorScheme.surfaceContainerHighest, RoundedCornerShape(15.dp))
-            .padding(vertical = 12.dp, horizontal = 16.dp),
-        verticalAlignment = Alignment.CenterVertically
+            .fillMaxSize()
     ) {
-        // Gambar untuk latihan
-        AsyncImage(
-            model = exercise.image, // URL gambar
-            contentDescription = "Exercise Image",
+        Box(
             modifier = Modifier
-                .size(64.dp)
-                .clip(RoundedCornerShape(8.dp))
-                .background(MaterialTheme.colorScheme.secondary),
-            contentScale = ContentScale.Crop
-        )
-        Spacer(modifier = Modifier.width(16.dp))
-        Column(modifier = Modifier.weight(1f)) {
-            // Nama Latihan
-            Text(
-                text = exercise.name,
-                style = MaterialTheme.typography.titleSmall,
-                color = MaterialTheme.colorScheme.onBackground
-            )
-            Spacer(modifier = Modifier.height(4.dp))
-            // Deskripsi Latihan
-            Text(
-                text = exercise.desc,
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onBackground
-            )
+                .padding(bottom = 16.dp)
+                .fillMaxWidth()
+                .background(
+                    MaterialTheme.colorScheme.surfaceContainerHighest,
+                    RoundedCornerShape(15.dp)
+                )
+                .padding(vertical = 12.dp, horizontal = 16.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                // Duration
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = "Duration: ",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Text(
+                        text = "${exercise.exerciseDuration.toInt()} Minutes",
+                        style = MaterialTheme.typography.titleSmall,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+
+                // Calories Burned
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = "Calories: ",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                    Text(
+                        text = "${exercise.caloriesBurned}",
+                        style = MaterialTheme.typography.titleSmall,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+            }
+        }
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Daftar Exercise
+        exercise.exerciseList.forEachIndexed { index, exerciseItem ->
+            Spacer(modifier = Modifier.height(if (index > 0) 10.dp else 0.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        MaterialTheme.colorScheme.surfaceContainerHighest,
+                        RoundedCornerShape(15.dp)
+                    )
+                    .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                AsyncImage(
+                    model = exerciseItem.image,
+                    contentDescription = "Exercise Image",
+                    modifier = Modifier
+                        .size(64.dp)
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(MaterialTheme.colorScheme.secondary),
+                    contentScale = ContentScale.Crop,
+                )
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = exerciseItem.name.ifEmpty { "Unnamed Exercise" },
+                        style = MaterialTheme.typography.titleSmall,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    Text(
+                        text = exerciseItem.desc.ifEmpty { "No description available" },
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onBackground
+                    )
+                }
+            }
         }
     }
 }
-
