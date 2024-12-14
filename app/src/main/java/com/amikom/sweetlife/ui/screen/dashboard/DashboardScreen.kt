@@ -93,8 +93,15 @@ fun DashboardScreen(
         is Result.Error -> {
 //            val data = (dashboardData as Result.Success<DashboardModel>).data
 //            DashboardScreenUI(data.data, navController)
+            val errorText = (dashboardData as Result.Error).error
+            if(errorText == "Unauthorized") {
+                navController.navigate(Route.LoginScreen) {
+                    launchSingleTop = true
+                }
+            }
+
             Text(
-                text = (dashboardData as Result.Error).error,
+                text = errorText,
                 style = MaterialTheme.typography.titleLarge,
                 modifier = Modifier.fillMaxSize().padding(16.dp),
                 textAlign = TextAlign.Center,
@@ -259,8 +266,8 @@ private fun ProgressItem(
         progress = percentage / 100f,
         //belom tau nilai satisfactionya apa
         color = when (satisfaction) {
-            "PASS" -> MaterialTheme.colorScheme.onBackground
-            "OVER" -> MaterialTheme.colorScheme.onBackground
+            "PASS" -> Color.Green
+            "OVER" -> Color.Red
             else -> Color.Yellow
         }
     )

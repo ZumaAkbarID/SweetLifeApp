@@ -31,6 +31,7 @@ import com.amikom.sweetlife.domain.usecases.auth.CheckHasHealthProfile
 import com.amikom.sweetlife.domain.usecases.auth.CheckIsUserLogin
 import com.amikom.sweetlife.domain.usecases.auth.ForgotUserPassword
 import com.amikom.sweetlife.domain.usecases.auth.LoginAction
+import com.amikom.sweetlife.domain.usecases.auth.LogoutAction
 import com.amikom.sweetlife.domain.usecases.auth.ReadUserAllToken
 import com.amikom.sweetlife.domain.usecases.auth.RefreshNewTokenAction
 import com.amikom.sweetlife.domain.usecases.auth.RegisterAction
@@ -149,8 +150,9 @@ object AppModule {
     @Singleton
     fun provideAuthRepository(
         authApi: AuthApiService,
-        appExecutors: AppExecutors
-    ): AuthRepository = AuthRepositoryImpl(authApi, appExecutors)
+        appExecutors: AppExecutors,
+        authUserManager: LocalAuthUserManager
+    ): AuthRepository = AuthRepositoryImpl(authApi, appExecutors, authUserManager)
 
     @Provides
     @Singleton
@@ -183,7 +185,8 @@ object AppModule {
             refreshNewToken = RefreshNewTokenAction(authRepository = authRepository),
             saveNewToken = SaveNewToken(localAuthUserManager = localAuthUserManager),
             checkHasHealthProfile = CheckHasHealthProfile(localAuthUserManager = localAuthUserManager),
-            saveHealthProfile = SaveHealthProfile(localAuthUserManager = localAuthUserManager)
+            saveHealthProfile = SaveHealthProfile(localAuthUserManager = localAuthUserManager),
+            logout = LogoutAction(authRepository = authRepository)
         )
     }
 

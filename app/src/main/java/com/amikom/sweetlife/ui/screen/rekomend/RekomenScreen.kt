@@ -121,7 +121,7 @@ fun RekomenScreen(
                         modifier = Modifier.align(Alignment.Center)
                     )
 
-                    else -> LazyColumn(modifier = Modifier.fillMaxSize()) {
+                    else -> LazyColumn(modifier = Modifier.fillMaxSize().padding(bottom = 70.dp)) {
                         if (selectedTabIndex == 0) {
                             items(foodRecommendations) { food ->
                                 RekomendItemFood(food)
