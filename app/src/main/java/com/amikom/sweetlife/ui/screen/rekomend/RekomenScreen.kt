@@ -83,12 +83,11 @@ fun RekomenScreen(
         modifier = Modifier
             .fillMaxSize()
             .navigationBarsPadding(),
-    ) { innerPadding ->
+    ) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp)
-                .padding(innerPadding)
+                .padding(16.dp),
         ) {
             TabRow(selectedTabIndex = selectedTabIndex) {
                 tabTitles.forEachIndexed { index, title ->

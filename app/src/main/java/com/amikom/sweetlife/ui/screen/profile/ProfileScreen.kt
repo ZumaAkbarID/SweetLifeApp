@@ -60,6 +60,7 @@ import com.amikom.sweetlife.data.model.ProfileModel
 import com.amikom.sweetlife.data.remote.Result
 import com.amikom.sweetlife.domain.nvgraph.Route
 import com.amikom.sweetlife.ui.component.BottomNavigationBar
+import com.amikom.sweetlife.ui.component.ConfirmSave
 import com.amikom.sweetlife.ui.component.CustomDialog
 import com.amikom.sweetlife.ui.component.getBottomNavButtons
 import com.amikom.sweetlife.ui.presentation.onboarding.OnboardingModel.FirstPages.image
@@ -75,7 +76,8 @@ fun UserProfileScreen(
     val profileRawData by profileViewModel.profileData.observeAsState()
     val healthRawData by profileViewModel.healthData.observeAsState()
     val isUserLoggedIn by profileViewModel.isUserLoggedIn.collectAsState()
-
+    val showDialog = remember { mutableStateOf(false) }
+    val showSuccessDialog = remember { mutableStateOf(false) }
     val selectedIndex = Constants.CURRENT_BOTTOM_BAR_PAGE_ID
     val buttons = getBottomNavButtons(selectedIndex, navController)
 
@@ -240,11 +242,45 @@ fun UserProfileScreen(
                     shape = RoundedCornerShape(bottomEnd = 16.dp, bottomStart = 16.dp),
                     textColor = Color.Red,
                     onClick = {
-                        //
+                        showDialog.value = true
                     }
                 )
                 Spacer(modifier = Modifier.height(16.dp))
+                if (showDialog.value) {
+                    ConfirmSave(
+                        openDialogCustom = showDialog,
+                        title = "Logout",
+                        message = "Are you sure you want to Logout?",
+                        buttons = listOf(
+                            "Yes, Confirm" to {
+                                showDialog.value = false
+                                showSuccessDialog.value = true
+                            },
+                            "No, Cancel" to {
+                                showDialog.value = false
+                            }
+                        )
+                    )
+                }
 
+                if (showSuccessDialog.value) {
+                    CustomDialog(
+                        openDialogCustom = showSuccessDialog,
+                        icon = R.drawable.baseline_check_circle_outline_24,
+                        title = "Success!",
+                        message = "You have successfully logged out",
+                        buttons = listOf(
+                            "Okay" to {
+                                showSuccessDialog.value = false
+                                navController.navigate(Route.LoginScreen) {
+                                    profileViewModel.logout()
+                                    popUpTo<Route.LoginScreen>() {inclusive=true}
+                                    launchSingleTop = true
+                                }
+                            }
+                        )
+                    )
+                }
             }
         }
     }
