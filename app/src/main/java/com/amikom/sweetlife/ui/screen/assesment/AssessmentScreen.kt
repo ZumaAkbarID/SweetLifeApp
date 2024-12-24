@@ -203,7 +203,6 @@ fun AssessmentScreen(navController: NavController, viewModel: AssessmentViewMode
             )
         },
         bottomBar = {
-
             val isNotLoading =
                 updateProfileResult !is Result.Loading && createHealth !is Result.Loading
 
@@ -927,56 +926,4 @@ fun Activity2Select(
             )
         }
     }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DatePickerButtonPreview() {
-    DatePickerButton(
-        date = "2023-06-15",
-        onDateSelected = {}
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GenderPickerButtonPreview() {
-    GenderPickerButton(
-        selectedGender = "Female",
-        onGenderSelected = {}
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun DropdownSelectorPreview() {
-    DropdownSelector(
-        selectedValue = "Type 2",
-        options = listOf("Type 1", "Type 2", "Type 3", "Gestational"),
-        onValueSelected = {},
-        placeholder = "Select Your Diabetic Type"
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun ValidatedTextFieldPreview() {
-    ValidatedTextField(
-        value = "5.5",
-        onValueChange = {},
-        label = "Insulin Level",
-        keyboardType = KeyboardType.Decimal,
-        validator = { true }
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun Activity2SelectPreview() {
-    Activity2Select(
-        typeOptions = listOf("Never", "Current", "Former", "Ever"),
-        title = "Select your smoking history",
-        selectedType = "Former",
-        onTypeSelected = {}
-    )
 }

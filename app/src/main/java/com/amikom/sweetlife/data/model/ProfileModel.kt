@@ -26,3 +26,7 @@ data class UpdateProfileModel(
     val gender: String = "",
     val profilePicture: Bitmap? = null
 )
+
+data class UpdateProfilePictModel(
+    val profilePicture: Bitmap? = null
+)

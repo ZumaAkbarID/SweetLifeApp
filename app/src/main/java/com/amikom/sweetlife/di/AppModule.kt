@@ -216,6 +216,19 @@ object AppModule {
         )
     }
 
+//    @Provides
+//    @Singleton
+//    fun provideEditProfilePictureUseCases(
+//        profileRepository: ProfileRepository
+//    ) : ProfileUseCases {
+//        return ProfileUseCases(
+//            fetchDataProfile = FetchDataProfile(profileRepository = profileRepository),
+//            fetchDataHealthProfile = FetchDataHealthProfile(profileRepository = profileRepository),
+//            updateDataProfile = UpdateDataProfile(profileRepository = profileRepository),
+//            createHealthProfile = CreateHealthProfile(profileRepository = profileRepository)
+//        )
+//    }
+
     @Provides
     @Singleton
     fun provideEditProfileRepository(

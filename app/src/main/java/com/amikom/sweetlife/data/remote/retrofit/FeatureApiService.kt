@@ -2,6 +2,7 @@ package com.amikom.sweetlife.data.remote.retrofit
 
 import com.amikom.sweetlife.data.model.FoodRequest
 import com.amikom.sweetlife.data.remote.dto.EditHealth.EditHealthResponse
+import com.amikom.sweetlife.data.remote.dto.EditProfilePictResponse.EditProfilePictResponse
 import com.amikom.sweetlife.data.remote.dto.HistoryResponse.HistoryResponse
 import com.amikom.sweetlife.data.remote.dto.dashboard.DashboardResponse
 import com.amikom.sweetlife.data.remote.dto.health_profile.CreateHealthResponse
@@ -60,8 +61,8 @@ interface FeatureApiService {
     suspend fun getHistory(): Response<HistoryResponse>
 
     @Multipart
-    @PUT("${Constants.API_VERSION}users/profile")
-    suspend fun uploadProfileImage(@Part image: MultipartBody.Part): ProfileResponse
+    @PUT("${Constants.API_VERSION}users/profile/image")
+    suspend fun uploadProfileImage(@Part profilePicture: MultipartBody.Part): Response<EditProfilePictResponse>
 
     @Multipart
     @POST("${Constants.API_VERSION}food/scan")

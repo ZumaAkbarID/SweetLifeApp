@@ -77,7 +77,7 @@ fun RekomenScreen(
             BottomNavigationBar(
                 buttons = buttons,
                 navController = navController,
-                currentScreen = Route.RekomenScreen
+                currentScreen = Route.RekomenScreen,
             )
         },
         modifier = Modifier
@@ -87,50 +87,61 @@ fun RekomenScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp),
+                .padding(0.dp),
         ) {
-            TabRow(selectedTabIndex = selectedTabIndex) {
-                tabTitles.forEachIndexed { index, title ->
-                    Tab(
-                        selected = selectedTabIndex == index,
-                        onClick = { selectedTabIndex = index },
-                        text = { Text(text = title) }
-                    )
+            Column(
+                modifier = Modifier
+                    .padding(vertical = 12.dp, horizontal = 16.dp)
+            ) {
+
+
+                TabRow(selectedTabIndex = selectedTabIndex) {
+                    tabTitles.forEachIndexed { index, title ->
+                        Tab(
+                            selected = selectedTabIndex == index,
+                            onClick = { selectedTabIndex = index },
+                            text = { Text(text = title) }
+                        )
+                    }
                 }
-            }
 
-            Box(modifier = Modifier.fillMaxSize()) {
-                when {
-                    isLoading -> CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
-                    error != null -> Text(
-                        text = error ?: "Unknown error",
-                        style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier.align(Alignment.Center)
-                    )
+                Box(modifier = Modifier.fillMaxSize()) {
+                    when {
+                        isLoading -> CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
+                        error != null -> Text(
+                            text = error ?: "Unknown error",
+                            style = MaterialTheme.typography.bodyLarge,
+                            modifier = Modifier.align(Alignment.Center)
+                        )
 
-                    selectedTabIndex == 0 && foodRecommendations.isEmpty() -> Text(
-                        text = "No food recommendations available",
-                        style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier.align(Alignment.Center)
-                    )
+                        selectedTabIndex == 0 && foodRecommendations.isEmpty() -> Text(
+                            text = "No food recommendations available",
+                            style = MaterialTheme.typography.bodyLarge,
+                            modifier = Modifier.align(Alignment.Center)
+                        )
 
-                    selectedTabIndex == 1 && exerciseRecommendations.value == null -> Text(
-                        text = "No exercise recommendations available",
-                        style = MaterialTheme.typography.bodyLarge,
-                        modifier = Modifier.align(Alignment.Center)
-                    )
+                        selectedTabIndex == 1 && exerciseRecommendations.value == null -> Text(
+                            text = "No exercise recommendations available",
+                            style = MaterialTheme.typography.bodyLarge,
+                            modifier = Modifier.align(Alignment.Center)
+                        )
 
-                    else -> LazyColumn(modifier = Modifier.fillMaxSize().padding(bottom = 70.dp)) {
-                        if (selectedTabIndex == 0) {
-                            items(foodRecommendations) { food ->
-                                RekomendItemFood(food)
+                        else -> LazyColumn(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(bottom = 70.dp)
+                        ) {
+                            if (selectedTabIndex == 0) {
+                                items(foodRecommendations) { food ->
+                                    RekomendItemFood(food)
+                                }
                             }
-                        }
-                        if (selectedTabIndex == 1) {
-                            val exerciseRecommendation = exerciseRecommendations.value
-                            exerciseRecommendation?.let { recommendation ->
-                                item {
-                                    RekomendItemExec(exercise = recommendation)
+                            if (selectedTabIndex == 1) {
+                                val exerciseRecommendation = exerciseRecommendations.value
+                                exerciseRecommendation?.let { recommendation ->
+                                    item {
+                                        RekomendItemExec(exercise = recommendation)
+                                    }
                                 }
                             }
                         }

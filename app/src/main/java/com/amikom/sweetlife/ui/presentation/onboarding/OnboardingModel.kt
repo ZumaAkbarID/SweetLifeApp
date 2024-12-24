@@ -10,17 +10,19 @@ sealed class OnboardingModel(
 ) {
     data object FirstPages : OnboardingModel(
         image = R.drawable.welco1,
-        title = "Welcome to sweetLife.",
-        description = "Lorem Ipsum is simply dummy text of the printing and typesetting induy. Lorem Ipsum has been the industry's standard dummy "
+        title = "Welcome to SweetLife.",
+        description = "Take control of your health with SweetLife, the app designed to monitor calories and support a healthier lifestyle."
     )
+
     data object SecondPages : OnboardingModel(
         image = R.drawable.welco2,
         title = "Safe and reliable to use.",
-        description = "Lorem Ipsum is simply dummy text of the printing and typesetting induy. Lorem Ipsum has been the industry's standard dummy "
+        description = "SweetLife provides accurate data and is safe to use, helping you manage your diet and daily activities."
     )
+
     data object ThirdPages : OnboardingModel(
         image = R.drawable.welco3,
         title = "Can scan various types\nof food.",
-        description = "Lorem Ipsum is simply dummy text of the printing and typesetting induy. Lorem Ipsum has been the industry's standard dummy "
+        description = "Scan different types of food with SweetLife and get nutritional information to support your health goals."
     )
 }

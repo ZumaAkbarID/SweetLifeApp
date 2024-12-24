@@ -47,12 +47,11 @@ fun HistoryScreen(
         modifier = Modifier
             .fillMaxSize()
             .navigationBarsPadding(),
-    ) { fillMaxSize ->
+    ) { padding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(fillMaxSize)
-                .padding(vertical = 16.dp)
+                .padding(0.dp)
         ) {
             when {
                 isLoading -> CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
@@ -142,27 +141,4 @@ fun FoodLogItem(foodLog: FoodLog) {
             }
         }
     }
-}
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun PreviewFoodLogItem() {
-    FoodLogItem(
-        foodLog = FoodLog(
-            id = "1",
-            foodName = "Nasi Goreng",
-            calories = 500,
-            time = "12:00",
-            totalUnits = 1
-        )
-    )
-    FoodLogItem(
-        foodLog = FoodLog(
-            id = "1",
-            foodName = "Nasi Goreng",
-            calories = 500,
-            time = "12:00",
-            totalUnits = 1
-        )
-    )
 }

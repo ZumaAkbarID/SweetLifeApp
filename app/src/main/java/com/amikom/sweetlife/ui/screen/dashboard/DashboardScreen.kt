@@ -103,7 +103,9 @@ fun DashboardScreen(
             Text(
                 text = errorText,
                 style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.fillMaxSize().padding(16.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
                 textAlign = TextAlign.Center,
             )
         }
@@ -112,7 +114,9 @@ fun DashboardScreen(
             Text(
                 text = "Unknown error",
                 style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.fillMaxSize().padding(16.dp),
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
                 textAlign = TextAlign.Center
             )
         }
@@ -129,32 +133,42 @@ fun DashboardScreenUI(data: Data, navController: NavController) {
         bottomBar = {
             BottomNavigationBar(buttons = buttons, navController = navController, currentScreen = Route.DashboardScreen)
         },
-        modifier = Modifier.fillMaxSize().navigationBarsPadding(),
-    ) { innerPadding ->
+        modifier = Modifier
+            .fillMaxSize()
+            .navigationBarsPadding(),
+    ) { padding ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
-                .padding(16.dp)
+                .padding(0.dp)
                 .verticalScroll(rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            UserHeader(
-                name = data.user.name,
-                isDiabetes = data.user.diabetes,
-                diabetesType = data.user.diabetesType
-            )
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
 
-            DailyProgressCard(
-                calories = data.dailyProgress.calories,
-                carbs = data.dailyProgress.carbs,
-                sugar = data.dailyProgress.sugar,
-            )
 
-            StatusCard(
-                satisfaction = data.status.satisfaction,
-                message = data.status.message
-            )
+                UserHeader(
+                    name = data.user.name,
+                    isDiabetes = data.user.diabetes,
+                    diabetesType = data.user.diabetesType
+                )
+
+                DailyProgressCard(
+                    calories = data.dailyProgress.calories,
+                    carbs = data.dailyProgress.carbs,
+                    sugar = data.dailyProgress.sugar,
+                )
+
+                StatusCard(
+                    satisfaction = data.status.satisfaction,
+                    message = data.status.message
+                )
+            }
         }
     }
 }
@@ -262,7 +276,9 @@ private fun ProgressItem(
         )
     }
     LinearProgressIndicator(
-        modifier = Modifier.fillMaxWidth().height(16.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(16.dp),
         progress = percentage / 100f,
         //belom tau nilai satisfactionya apa
         color = when (satisfaction) {
@@ -282,8 +298,9 @@ private fun StatusCard(
     Text(
         text = message,
         textAlign = TextAlign.Center,
-        modifier = Modifier.fillMaxWidth().
-        padding(16.dp, 16.dp, 16.dp, 0.dp),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(16.dp, 16.dp, 16.dp, 0.dp),
         color = when(satisfaction) {
             "PASS" -> MaterialTheme.colorScheme.onBackground
             "UNDER" -> MaterialTheme.colorScheme.onBackground

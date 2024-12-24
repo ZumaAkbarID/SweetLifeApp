@@ -75,15 +75,11 @@ fun EditProfileScreen(
     val showSuccessDialog = remember { mutableStateOf(false) }
     val userProfile by viewModel.userProfile.observeAsState()
     val profileLoadState by viewModel.profileLoadState.collectAsState()
-
     val context = LocalContext.current
     val profileData: EditProfileModel
-
     val selectedImage by remember { mutableStateOf<Bitmap?>(null) }
-
     // Tambahkan observasi status upload
     val imageUploadStatus by viewModel.imageUploadStatus.observeAsState()
-
     val imageUploadState by viewModel.imageUploadState.collectAsState()
 
     // Handle status upload
@@ -91,14 +87,13 @@ fun EditProfileScreen(
         if (status == "success") {
             Log.d("Success", "Image uploaded successfully.")
             Log.d("Success", "Image URL: ")
-            viewModel.uploadProfileImage(selectedImage!!, context)
+            viewModel.updateProfilePicture(selectedImage!!, context)
         } else {
             Log.e("Error", "Failed to upload image. Please try again.")
             Toast.makeText(context, "Failed to upload image. Please try again.", Toast.LENGTH_SHORT)
                 .show()
         }
     }
-
 
     // Handle state upload
     LaunchedEffect(imageUploadState) {
@@ -149,20 +144,27 @@ fun EditProfileScreen(
         uri?.let {
             try {
                 val bitmap = MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
-                viewModel.uploadProfileImage(bitmap, context)
-                Log.e("Error", "Failed to load image. Please try again.${bitmap}")
+
+                // Tambahkan validasi tambahan
+                if (bitmap != null && bitmap.width > 0 && bitmap.height > 0) {
+                    viewModel.updateProfilePicture(bitmap, context)
+                } else {
+                    Toast.makeText(context, "Invalid image", Toast.LENGTH_SHORT).show()
+                }
             } catch (e: Exception) {
+                Log.e("ImageLoad", "Error loading image", e)
                 Toast.makeText(context, "Failed to load image", Toast.LENGTH_SHORT).show()
             }
         }
     }
 
-    // Launcher untuk kamera
     val cameraLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.TakePicturePreview()
     ) { bitmap ->
-        bitmap?.let {
-            viewModel.uploadProfileImage(it, context)
+        if (bitmap != null) {
+            viewModel.updateProfilePicture(bitmap, context)
+        } else {
+            Toast.makeText(context, "Failed to capture image", Toast.LENGTH_SHORT).show()
         }
     }
 

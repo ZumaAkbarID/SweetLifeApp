@@ -184,17 +184,17 @@ fun UserProfileScreen(
         modifier = Modifier
             .fillMaxSize()
             .navigationBarsPadding(),
-    ) { innerPadding ->
+    ) { padding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding)
-                .padding(16.dp)
+                .padding(0.dp)
                 .verticalScroll(rememberScrollState()),
             contentAlignment = Alignment.Center
         ) {
             Column(
                 modifier = Modifier
+                    .padding(vertical = 12.dp, horizontal = 16.dp)
                     .fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center
@@ -245,7 +245,7 @@ fun UserProfileScreen(
                         showDialog.value = true
                     }
                 )
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(32.dp))
                 if (showDialog.value) {
                     ConfirmSave(
                         openDialogCustom = showDialog,
